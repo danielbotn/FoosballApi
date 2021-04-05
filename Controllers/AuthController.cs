@@ -64,11 +64,11 @@ namespace FoosballApi.Controllers
            
            _authService.CreateUser(userModel);
            var tmpUser = _userService.GetUserByEmail(userCreateDto.Email);
-           var gaur = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
+           var vModel = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
 
            var userReadDto = _mapper.Map<UserReadDto>(userModel);
 
-           _emailService.SendVerificationEmail(gaur, tmpUser, Request.Headers["origin"]);
+           _emailService.SendVerificationEmail(vModel, tmpUser, Request.Headers["origin"]);
 
            return CreatedAtRoute(nameof(UsersController.GetUserById), new {Id= userReadDto.Id}, userReadDto);
         }
