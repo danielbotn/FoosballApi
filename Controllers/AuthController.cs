@@ -33,13 +33,13 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Authenticate([FromBody]AuthenticateModel model)
+        public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
             var user = _authService.Authenticate(model.Username, model.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
-            
+
             string tokenString = _authService.CreateToken(user);
 
             return Ok(new
@@ -55,22 +55,23 @@ namespace FoosballApi.Controllers
         [HttpPost("register")]
         public ActionResult<UserReadDto> CreateUser(UserCreateDto userCreateDto)
         {
-           var userModel = _mapper.Map<User>(userCreateDto);
-           var user = _userService.GetUserByEmail(userCreateDto.Email);
+            var userModel = _mapper.Map<User>(userCreateDto);
+            var user = _userService.GetUserByEmail(userCreateDto.Email);
 
-           if (user != null) {
-               return Conflict();
-           }
-           
-           _authService.CreateUser(userModel);
-           var tmpUser = _userService.GetUserByEmail(userCreateDto.Email);
-           var vModel = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
+            if (user != null)
+            {
+                return Conflict();
+            }
 
-           var userReadDto = _mapper.Map<UserReadDto>(userModel);
+            _authService.CreateUser(userModel);
+            var tmpUser = _userService.GetUserByEmail(userCreateDto.Email);
+            var vModel = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
 
-           _emailService.SendVerificationEmail(vModel, tmpUser, Request.Headers["origin"]);
+            var userReadDto = _mapper.Map<UserReadDto>(userModel);
 
-           return CreatedAtRoute(nameof(UsersController.GetUserById), new {Id= userReadDto.Id}, userReadDto);
+            _emailService.SendVerificationEmail(vModel, tmpUser, Request.Headers["origin"]);
+
+            return CreatedAtRoute(nameof(UsersController.GetUserById), new { Id = userReadDto.Id }, userReadDto);
         }
 
         [HttpPost("verify-email")]

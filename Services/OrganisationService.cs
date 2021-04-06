@@ -52,7 +52,7 @@ namespace FoosballApi.Services
 
         public void UpdateOrganisation(OrganisationModel organisation)
         {
-           // Do nothing
+            // Do nothing
         }
 
         public bool SaveChanges()
@@ -62,10 +62,11 @@ namespace FoosballApi.Services
 
         public void DeleteOrganisation(OrganisationModel organisation)
         {
-            if (organisation == null) {
+            if (organisation == null)
+            {
                 throw new ArgumentNullException(nameof(organisation));
             }
-           _context.Organisations.Remove(organisation);
+            _context.Organisations.Remove(organisation);
         }
     }
 }

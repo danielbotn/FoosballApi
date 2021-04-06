@@ -27,10 +27,11 @@ namespace FoosballApi.Services
 
         public void DeleteUser(User user)
         {
-            if (user == null) {
+            if (user == null)
+            {
                 throw new ArgumentNullException(nameof(user));
             }
-           _context.Users.Remove(user);
+            _context.Users.Remove(user);
         }
 
         public IEnumerable<User> GetAllUsers()
@@ -49,7 +50,7 @@ namespace FoosballApi.Services
 
         public User GetUserById(int id)
         {
-           return _context.Users.FirstOrDefault(p => p.Id == id);
+            return _context.Users.FirstOrDefault(p => p.Id == id);
         }
 
         public bool SaveChanges()
@@ -59,7 +60,7 @@ namespace FoosballApi.Services
 
         public void UpdateUser(User user)
         {
-           // Do nothing
+            // Do nothing
         }
     }
 }

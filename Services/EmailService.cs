@@ -43,7 +43,7 @@ namespace FoosballApi
 
         public void SendPasswordResetEmail(VerificationModel vModel, User user, string origin)
         {
-           string message;
+            string message;
             if (!string.IsNullOrEmpty(origin))
             {
                 var resetUrl = $"{origin}/auth/reset-password?token={vModel.PasswordResetToken}";

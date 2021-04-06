@@ -56,7 +56,7 @@ namespace FoosballApi.Services
 
         public void CreateUser(User user)
         {
-           if (user == null)
+            if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
@@ -100,7 +100,8 @@ namespace FoosballApi.Services
         {
             var account = _context.Verifications.SingleOrDefault(x => x.VerificationToken == token);
 
-            if (account == null) {
+            if (account == null)
+            {
                 throw new ArgumentNullException(nameof(account));
             }
 
