@@ -55,6 +55,12 @@ namespace FoosballApi.Controllers
                 return NotFound();
             }
 
+            string userId = User.Identity.Name;
+
+            if (int.Parse(userId) != id) {
+                return Forbid();
+            }
+
             var organisationToPatch = _mapper.Map<OrganisationUpdateDto>(orgItem);
             patchDoc.ApplyTo(organisationToPatch, ModelState);
 
@@ -90,6 +96,12 @@ namespace FoosballApi.Controllers
             if (organisation == null)
             {
                 return NotFound();
+            }
+
+            string userId = User.Identity.Name;
+
+            if (int.Parse(userId) != id) {
+                return Forbid();
             }
 
             _organisationService.DeleteOrganisation(organisation);

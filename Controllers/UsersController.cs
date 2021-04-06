@@ -57,6 +57,12 @@ namespace FoosballApi.Controllers
                 return NotFound();
             }
 
+            string userId = User.Identity.Name;
+
+            if (int.Parse(userId) != id) {
+                return Forbid();
+            }
+
             var userToPatch = _mapper.Map<UserUpdateDto>(userModelFromRepo);
             patchDoc.ApplyTo(userToPatch, ModelState);
 
@@ -83,6 +89,12 @@ namespace FoosballApi.Controllers
             if (userModelFromRepo == null)
             {
                 return NotFound();
+            }
+
+            string userId = User.Identity.Name;
+
+            if (int.Parse(userId) != id) {
+                return Forbid();
             }
 
             _userService.DeleteUser(userModelFromRepo);
