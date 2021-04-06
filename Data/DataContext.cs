@@ -9,11 +9,11 @@ using FoosballApi.Models.Leagues;
 
 namespace FoosballApi.Data
 {
-    public class DataContext: DbContext
+    public class DataContext : DbContext
     {
         private static readonly Regex _keysRegex = new Regex("^(PK|FK|IX)_", RegexOptions.Compiled);
-        public DataContext(DbContextOptions<DataContext> options) : base (options)
-        {}
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,15 +53,15 @@ namespace FoosballApi.Data
 
         private void ConvertToSnake(INpgsqlNameTranslator mapper, object entity)
         {
-                switch (entity)
-                {
-                    case IMutableEntityType table:
-                        table.SetTableName(ConvertGeneralToSnake(mapper, table.GetTableName()));
-                        if (table.GetTableName().StartsWith("asp_net_"))
-                        {
-                            table.SetTableName(table.GetTableName().Replace("asp_net_", string.Empty));
-                            table.SetSchema("identity");
-                        }
+            switch (entity)
+            {
+                case IMutableEntityType table:
+                    table.SetTableName(ConvertGeneralToSnake(mapper, table.GetTableName()));
+                    if (table.GetTableName().StartsWith("asp_net_"))
+                    {
+                        table.SetTableName(table.GetTableName().Replace("asp_net_", string.Empty));
+                        table.SetSchema("identity");
+                    }
 
                     break;
                 case IMutableProperty property:

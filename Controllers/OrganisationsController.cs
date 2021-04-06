@@ -22,18 +22,18 @@ namespace FoosballApi.Controllers
             _organisationService = organisationService;
             _mapper = mapper;
         }
-        
+
         [Authorize]
         [HttpGet]
-        public ActionResult <IEnumerable<OrganisationReadDto>> GetAllOrganisations()
+        public ActionResult<IEnumerable<OrganisationReadDto>> GetAllOrganisations()
         {
             var orgItems = _organisationService.GettAllOrganisations();
             return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(orgItems));
         }
 
         [Authorize]
-        [HttpGet("{id}", Name="getOrganisationById")]
-        public ActionResult <OrganisationReadDto> GetOrganisationById(int id)
+        [HttpGet("{id}", Name = "getOrganisationById")]
+        public ActionResult<OrganisationReadDto> GetOrganisationById(int id)
         {
             var userItem = _organisationService.GetOrganisationById(id);
 
@@ -41,16 +41,16 @@ namespace FoosballApi.Controllers
             {
                 return Ok(_mapper.Map<OrganisationReadDto>(userItem));
             }
-            
+
             return NotFound();
         }
 
         [Authorize]
         [HttpPatch("{id}")]
-         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
-         {
+        public ActionResult PartialUserUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
+        {
             var orgItem = _organisationService.GetOrganisationById(id);
-            if(orgItem == null)
+            if (orgItem == null)
             {
                 return NotFound();
             }
@@ -58,11 +58,11 @@ namespace FoosballApi.Controllers
             var organisationToPatch = _mapper.Map<OrganisationUpdateDto>(orgItem);
             patchDoc.ApplyTo(organisationToPatch, ModelState);
 
-            if(!TryValidateModel(organisationToPatch))
+            if (!TryValidateModel(organisationToPatch))
             {
                 return ValidationProblem(ModelState);
             }
-            
+
             _mapper.Map(organisationToPatch, orgItem);
 
             _organisationService.UpdateOrganisation(orgItem);
@@ -70,11 +70,11 @@ namespace FoosballApi.Controllers
             _organisationService.SaveChanges();
 
             return NoContent();
-         }
+        }
 
         [Authorize]
         [HttpGet("user")]
-        public ActionResult <OrganisationReadDto> GetOrganisationsByUser(int id)
+        public ActionResult<OrganisationReadDto> GetOrganisationsByUser(int id)
         {
             var userItem = _organisationService.GetOrganisationsByUser(id);
 
@@ -87,7 +87,7 @@ namespace FoosballApi.Controllers
         {
             var organisation = _organisationService.GetOrganisationById(id);
 
-            if(organisation == null)
+            if (organisation == null)
             {
                 return NotFound();
             }

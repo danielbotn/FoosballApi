@@ -17,7 +17,7 @@ namespace FoosballApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        
+
         public UsersController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
@@ -26,7 +26,7 @@ namespace FoosballApi.Controllers
 
         [Authorize]
         [HttpGet]
-        public ActionResult <IEnumerable<UserReadDto>> GetAllUsers()
+        public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
             var commandItems = _userService.GetAllUsers();
 
@@ -34,8 +34,8 @@ namespace FoosballApi.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}", Name="GetUserById")]
-        public ActionResult <UserReadDto> GetUserById(int id)
+        [HttpGet("{id}", Name = "GetUserById")]
+        public ActionResult<UserReadDto> GetUserById(int id)
         {
             var userItem = _userService.GetUserById(id);
 
@@ -43,7 +43,7 @@ namespace FoosballApi.Controllers
             {
                 return Ok(_mapper.Map<UserReadDto>(userItem));
             }
-            
+
             return NotFound();
         }
 
@@ -52,7 +52,7 @@ namespace FoosballApi.Controllers
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<UserUpdateDto> patchDoc)
         {
             var userModelFromRepo = _userService.GetUserById(id);
-            if(userModelFromRepo == null)
+            if (userModelFromRepo == null)
             {
                 return NotFound();
             }
@@ -60,7 +60,7 @@ namespace FoosballApi.Controllers
             var userToPatch = _mapper.Map<UserUpdateDto>(userModelFromRepo);
             patchDoc.ApplyTo(userToPatch, ModelState);
 
-            if(!TryValidateModel(userToPatch))
+            if (!TryValidateModel(userToPatch))
             {
                 return ValidationProblem(ModelState);
             }
@@ -80,7 +80,7 @@ namespace FoosballApi.Controllers
         {
             var userModelFromRepo = _userService.GetUserById(id);
 
-            if(userModelFromRepo == null)
+            if (userModelFromRepo == null)
             {
                 return NotFound();
             }

@@ -48,16 +48,17 @@ namespace FoosballApi
             // Connection string
             var builder = new Npgsql.NpgsqlConnectionStringBuilder(
                 Configuration.GetConnectionString("DefaultConnection"));
-                builder.Password = Configuration["DbPassword"];
-                builder.Username = Configuration["DBUserId"];
-                builder.Database = Configuration["DBDatabase"];
-                builder.Port = int.Parse(Configuration["DBPort"]);
-                builder.Pooling = bool.Parse(Configuration["DBPooling"]);
-                builder.Host = Configuration["DBServer"]; 
-                _connection = builder.ConnectionString;
+            builder.Password = Configuration["DbPassword"];
+            builder.Username = Configuration["DBUserId"];
+            builder.Database = Configuration["DBDatabase"];
+            builder.Port = int.Parse(Configuration["DBPort"]);
+            builder.Pooling = bool.Parse(Configuration["DBPooling"]);
+            builder.Host = Configuration["DBServer"];
+            _connection = builder.ConnectionString;
 
-            services.AddControllers().AddNewtonsoftJson(s => {
-              s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            services.AddControllers().AddNewtonsoftJson(s =>
+            {
+                s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IOrganisationService, OrganisationService>();
@@ -78,16 +79,16 @@ namespace FoosballApi
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme."
                 });
- 
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
                             {
-                                Reference = new OpenApiReference 
-                                { 
-                                    Type = ReferenceType.SecurityScheme, 
-                                    Id = "Bearer" 
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
                                 }
                             },
                             new string[] {}
