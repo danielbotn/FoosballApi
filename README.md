@@ -18,8 +18,6 @@ The project run on port `5001` -->  `https://localhost:5001/swagger/index.html`
 
 If the project is run in `Visual Studio` by clicking the play button the project runs at port `44329` --> `https://localhost:44329/swagger/`
 
-```
-
 ## Entity Framework Core
 
 ```sh
