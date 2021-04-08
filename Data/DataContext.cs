@@ -15,11 +15,13 @@ namespace FoosballApi.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         { }
 
+        static DataContext()
+        => NpgsqlConnection.GlobalTypeMapper.MapEnum<LeagueType>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.UseSerialColumns();
-            modelBuilder.HasPostgresEnum<LeagueType>();
             FixSnakeCaseNames(modelBuilder);
         }
 

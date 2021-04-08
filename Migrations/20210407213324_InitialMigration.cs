@@ -1,4 +1,5 @@
 ﻿using System;
+using FoosballApi.Models.Leagues;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -8,9 +9,6 @@ namespace FoosballApi.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:Enum:league_type", "single_league,double_league");
-
             migrationBuilder.CreateTable(
                 name: "organisations",
                 columns: table => new
@@ -50,7 +48,7 @@ namespace FoosballApi.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     name = table.Column<string>(type: "text", nullable: false),
-                    type_of_league = table.Column<int>(type: "integer", nullable: false),
+                    type_of_league = table.Column<LeagueType>(type: "league_type", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     up_to = table.Column<int>(type: "integer", nullable: false),
                     organisation_id = table.Column<int>(type: "integer", nullable: false)
