@@ -100,5 +100,7 @@ namespace FoosballApi.Data
         public DbSet<VerificationModel> Verifications { get; set; }
 
         public DbSet<LeagueModel> Leagues { get; set; }
+
+        public DbSet<LeaguePlayersModel> LeaguePlayers { get; set; }
     }
 }

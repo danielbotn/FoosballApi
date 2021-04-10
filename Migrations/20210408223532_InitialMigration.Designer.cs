@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FoosballApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210407213324_InitialMigration")]
+    [Migration("20210408223532_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,6 +58,38 @@ namespace FoosballApi.Migrations
                         .HasDatabaseName("ix_leagues_organisation_id");
 
                     b.ToTable("leagues");
+                });
+
+            modelBuilder.Entity("FoosballApi.Models.Leagues.LeaguePlayersModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+
+                    b.Property<DateTime>("Created_at")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("integer")
+                        .HasColumnName("league_id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_league_players");
+
+                    b.HasIndex("LeagueId")
+                        .HasDatabaseName("ix_league_players_league_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_league_players_user_id");
+
+                    b.ToTable("league_players");
                 });
 
             modelBuilder.Entity("FoosballApi.Models.OrganisationListModel", b =>
@@ -202,6 +234,27 @@ namespace FoosballApi.Migrations
                         .IsRequired();
 
                     b.Navigation("OrganisationModel");
+                });
+
+            modelBuilder.Entity("FoosballApi.Models.Leagues.LeaguePlayersModel", b =>
+                {
+                    b.HasOne("FoosballApi.Models.Leagues.LeagueModel", "League")
+                        .WithMany()
+                        .HasForeignKey("LeagueId")
+                        .HasConstraintName("fk_league_players_leagues_league_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoosballApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_league_players_users_user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FoosballApi.Models.OrganisationListModel", b =>
