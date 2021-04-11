@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class LeaguesController : ControllerBase
     {
         private readonly ILeagueService _leagueService;
@@ -45,5 +47,49 @@ namespace FoosballApi.Controllers
 
             return NotFound();
         }
+
+        [Authorize]
+        [HttpGet("leaguePlayers")]
+        public ActionResult<IEnumerable<LeaguePlayersReadDto>> GetLeaguePlayers(int leagueId)
+        {
+            string userId = User.Identity.Name;
+            var leaguePlayers = _leagueService.GetLeaguesPlayers(leagueId);
+
+            int organisationId = _leagueService.GetOrganisationId(leagueId);
+
+            bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
+
+            if (!hasAccess)
+                return Forbid();
+
+            if (leaguePlayers != null)
+            {
+                return Ok(_mapper.Map<IEnumerable<LeaguePlayersReadDto>>(leaguePlayers));
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost()]
+        public IActionResult CreateLeague([FromBody] LeagueModelCreate leagueModelCreate)
+        {
+            LeagueModel leagueModel = new LeagueModel();
+            leagueModel.Name = leagueModelCreate.Name;
+            leagueModel.OrganisationId = leagueModelCreate.OrganisationId;
+            leagueModel.TypeOfLeague = leagueModelCreate.TypeOfLeague;
+            leagueModel.UpTo = leagueModelCreate.UpTo;
+            
+            int userId = int.Parse(User.Identity.Name);
+            bool hasAccess = _leagueService.CheckLeagueAccess(userId, leagueModelCreate.OrganisationId);
+
+            if (!hasAccess)
+                return Forbid();
+
+            _leagueService.CreateLeague(leagueModel);
+
+            // TODO CreatedAtRoute
+            return Ok();
+        }
+
     }
 }

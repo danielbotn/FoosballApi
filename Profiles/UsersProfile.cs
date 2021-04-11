@@ -21,6 +21,12 @@ namespace FoosballApi.Profiles
 
             CreateMap<LeagueModel, LeagueReadDto>();
             CreateMap<LeagueReadDto, LeagueModel>();
+
+            CreateMap<LeaguePlayersModel, LeaguePlayersReadDto>();
+            CreateMap<LeaguePlayersReadDto, LeaguePlayersModel>();
+
+            CreateMap<LeaguePlayersJoinModel, LeaguePlayersReadDto>();
+            CreateMap<LeaguePlayersReadDto, LeaguePlayersJoinModel>();
         }
 
     }
