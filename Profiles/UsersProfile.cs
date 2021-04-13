@@ -4,6 +4,7 @@ using FoosballApi.Dtos.Organisations;
 using FoosballApi.Dtos.Users;
 using FoosballApi.Models;
 using FoosballApi.Models.Leagues;
+using FoosballApi.Models.Organisations;
 
 namespace FoosballApi.Profiles
 {
@@ -27,6 +28,9 @@ namespace FoosballApi.Profiles
 
             CreateMap<LeaguePlayersJoinModel, LeaguePlayersReadDto>();
             CreateMap<LeaguePlayersReadDto, LeaguePlayersJoinModel>();
+
+            CreateMap<OrganisationReadDto, OrganisationModelCreate>();
+            CreateMap<OrganisationModelCreate, OrganisationReadDto>();
         }
 
     }

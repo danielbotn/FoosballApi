@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Organisations;
 using FoosballApi.Helpers;
+using FoosballApi.Models.Organisations;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -29,6 +30,23 @@ namespace FoosballApi.Controllers
         {
             var orgItems = _organisationService.GettAllOrganisations();
             return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(orgItems));
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult CreateOrganisation([FromBody] OrganisationModelCreate organisationModel)
+        {
+            string userId = User.Identity.Name;
+            
+            if (int.Parse(userId) != organisationModel.UserId) {
+                return Forbid();
+            }
+
+            int organisationId = _organisationService.CreateOrganisation(organisationModel);
+
+            var organisationReadDto = _mapper.Map<OrganisationReadDto>(organisationModel);
+            
+            return CreatedAtRoute("getOrganisationById", new { Id = organisationId }, organisationReadDto);
         }
 
         [Authorize]

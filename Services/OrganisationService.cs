@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FoosballApi.Data;
+using FoosballApi.Models;
+using FoosballApi.Models.Organisations;
 
 namespace FoosballApi.Services
 {
@@ -18,6 +20,8 @@ namespace FoosballApi.Services
         void DeleteOrganisation(OrganisationModel organisation);
 
         bool SaveChanges();
+
+        int CreateOrganisation(OrganisationModelCreate organisation);
     }
     public class OrganisationService : IOrganisationService
     {
@@ -67,6 +71,28 @@ namespace FoosballApi.Services
                 throw new ArgumentNullException(nameof(organisation));
             }
             _context.Organisations.Remove(organisation);
+        }
+
+        public int CreateOrganisation(OrganisationModelCreate organisationModel)
+        {
+            OrganisationModel om = new OrganisationModel();
+            DateTime now = DateTime.Now;
+            om.Name = organisationModel.Name;
+            om.Type = organisationModel.Type;
+            om.CreatedAt = now;
+            
+            _context.Organisations.Add(om);
+            _context.SaveChanges();
+
+            int id = om.Id;
+            OrganisationListModel olm = new OrganisationListModel();
+            olm.OrganisationId = id;
+            olm.UserId = organisationModel.UserId;
+
+            _context.OrganisationList.Add(olm);
+            _context.SaveChanges();
+
+            return id;
         }
     }
 }
