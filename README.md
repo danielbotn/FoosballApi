@@ -1,4 +1,4 @@
-# Foosball Api :cat:
+# Foosball Api ⚽
 
 `Foosball Api`, A REST api written in C# `.NET CORE WEB API 3.1` and uses `Postgresql` database.  
 
