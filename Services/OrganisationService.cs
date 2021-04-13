@@ -80,7 +80,7 @@ namespace FoosballApi.Services
             om.Name = organisationModel.Name;
             om.Type = organisationModel.Type;
             om.CreatedAt = now;
-            
+
             _context.Organisations.Add(om);
             _context.SaveChanges();
 

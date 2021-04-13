@@ -18,7 +18,7 @@ namespace FoosballApi.Models.Leagues
 
         [Required]
         public int LeagueId { get; set; }
-        
+
         [ForeignKey("LeagueId")]
         public virtual LeagueModel League { get; set; }
 

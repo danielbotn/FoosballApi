@@ -78,7 +78,7 @@ namespace FoosballApi.Controllers
             leagueModel.OrganisationId = leagueModelCreate.OrganisationId;
             leagueModel.TypeOfLeague = leagueModelCreate.TypeOfLeague;
             leagueModel.UpTo = leagueModelCreate.UpTo;
-            
+
             int userId = int.Parse(User.Identity.Name);
             bool hasAccess = _leagueService.CheckLeagueAccess(userId, leagueModelCreate.OrganisationId);
 

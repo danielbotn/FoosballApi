@@ -59,7 +59,8 @@ namespace FoosballApi.Controllers
 
             string userId = User.Identity.Name;
 
-            if (int.Parse(userId) != id) {
+            if (int.Parse(userId) != id)
+            {
                 return Forbid();
             }
 
@@ -93,7 +94,8 @@ namespace FoosballApi.Controllers
 
             string userId = User.Identity.Name;
 
-            if (int.Parse(userId) != id) {
+            if (int.Parse(userId) != id)
+            {
                 return Forbid();
             }
 

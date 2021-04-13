@@ -6,7 +6,7 @@ using System;
 
 namespace FoosballApi.Services
 {
-    public interface ILeagueService 
+    public interface ILeagueService
     {
         IEnumerable<LeagueModel> GetLeaguesByOrganisation(int organisationId);
 
@@ -30,13 +30,13 @@ namespace FoosballApi.Services
         public bool CheckLeagueAccess(int userId, int organisationId)
         {
             var query = from o in _context.OrganisationList
-                where o.OrganisationId == organisationId && o.UserId == userId
-                select o;
-            
+                        where o.OrganisationId == organisationId && o.UserId == userId
+                        select o;
+
             var data = query.ToList();
             if (data.Count == 0)
                 return false;
-            
+
             return true;
         }
 
@@ -53,8 +53,8 @@ namespace FoosballApi.Services
         public IEnumerable<LeagueModel> GetLeaguesByOrganisation(int organisationId)
         {
             var query = from o in _context.Leagues
-                where o.OrganisationId == organisationId
-                select o;
+                        where o.OrganisationId == organisationId
+                        select o;
 
             var data = query.ToList();
 
@@ -63,17 +63,18 @@ namespace FoosballApi.Services
         public IEnumerable<LeaguePlayersJoinModel> GetLeaguesPlayers(int leagueId)
         {
             var query = from lp in _context.LeaguePlayers
-                where lp.LeagueId == leagueId
-                join u in _context.Users on lp.UserId equals u.Id
-                select new LeaguePlayersJoinModel {
-                    Id = lp.Id,
-                    UserId = lp.UserId,
-                    LeagueId = lp.LeagueId,
-                    Email = u.Email,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                };
-                
+                        where lp.LeagueId == leagueId
+                        join u in _context.Users on lp.UserId equals u.Id
+                        select new LeaguePlayersJoinModel
+                        {
+                            Id = lp.Id,
+                            UserId = lp.UserId,
+                            LeagueId = lp.LeagueId,
+                            Email = u.Email,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                        };
+
             var data = query.ToList();
 
             return data;
@@ -82,8 +83,8 @@ namespace FoosballApi.Services
         public int GetOrganisationId(int leagueId)
         {
             var query = from o in _context.Leagues
-                where o.Id == leagueId
-                select o.OrganisationId;
+                        where o.Id == leagueId
+                        select o.OrganisationId;
 
             var id = query.FirstOrDefault();
             return id;
