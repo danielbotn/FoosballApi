@@ -65,6 +65,23 @@ To run the project. The following variables are needed
 [EntityFrameworkCore] (https://docs.microsoft.com/en-us/ef/core/)
 [postgresql](https://www.postgresql.org/)
 
+## Code Rules
+
+To come.
+Remember to format the code using  `dotnet-format`
+
+First install `dotnet-format` globally on your machine:
+
+```sh
+dotnet tool install -g dotnet-format
+```
+
+Then format the code using: 
+
+```sh
+dotnet format
+```
+
 ## Thanks
 
 **Foosball** © 2021+, Mossfellsbær City. Released under the [MIT License].<br>
