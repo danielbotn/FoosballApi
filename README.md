@@ -82,6 +82,21 @@ Then format the code using:
 dotnet format
 ```
 
+## PATCH REQUESTS
+
+when doing patch requests. Have the body something like this:
+
+```json
+[
+  {
+    "op": "replace",
+		"path": "/Name",
+		"value": "Some new name"
+
+  }
+]
+```
+
 ## Thanks
 
 **Foosball** © 2021+, Mossfellsbær City. Released under the [MIT License].<br>

@@ -31,6 +31,9 @@ namespace FoosballApi.Profiles
 
             CreateMap<OrganisationReadDto, OrganisationModelCreate>();
             CreateMap<OrganisationModelCreate, OrganisationReadDto>();
+
+            CreateMap<LeagueUpdateDto, LeagueModel>();
+            CreateMap<LeagueModel, LeagueUpdateDto>();
         }
 
     }

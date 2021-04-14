@@ -13,9 +13,6 @@ namespace FoosballApi.Models.Leagues
         public LeagueType TypeOfLeague { get; set; }
 
         [Required]
-        public DateTime Created_at { get; set; }
-
-        [Required]
         public int UpTo { get; set; }
 
         [Required]

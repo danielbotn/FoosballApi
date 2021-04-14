@@ -17,6 +17,11 @@ namespace FoosballApi.Services
         IEnumerable<LeaguePlayersJoinModel> GetLeaguesPlayers(int leagueId);
 
         void CreateLeague(LeagueModel leagueModel);
+
+        LeagueModel GetLeagueById(int id);
+        bool SaveChanges();
+
+        void UpdateLeague(LeagueModel leagueModel);
     }
     public class LeagueService : ILeagueService
     {
@@ -48,6 +53,11 @@ namespace FoosballApi.Services
             }
             _context.Leagues.Add(leagueModel);
             _context.SaveChanges();
+        }
+
+        public LeagueModel GetLeagueById(int id)
+        {
+            return _context.Leagues.FirstOrDefault(l => l.Id == id);
         }
 
         public IEnumerable<LeagueModel> GetLeaguesByOrganisation(int organisationId)
@@ -88,6 +98,16 @@ namespace FoosballApi.Services
 
             var id = query.FirstOrDefault();
             return id;
+        }
+
+        public bool SaveChanges()
+        {
+            return (_context.SaveChanges() >= 0);
+        }
+
+        public void UpdateLeague(LeagueModel leagueModel)
+        {
+            // Do nothing
         }
     }
 }
