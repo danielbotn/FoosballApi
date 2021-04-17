@@ -1,9 +1,11 @@
 using AutoMapper;
 using FoosballApi.Dtos.Leagues;
+using FoosballApi.Dtos.Matches;
 using FoosballApi.Dtos.Organisations;
 using FoosballApi.Dtos.Users;
 using FoosballApi.Models;
 using FoosballApi.Models.Leagues;
+using FoosballApi.Models.Matches;
 using FoosballApi.Models.Organisations;
 
 namespace FoosballApi.Profiles
@@ -34,6 +36,9 @@ namespace FoosballApi.Profiles
 
             CreateMap<LeagueUpdateDto, LeagueModel>();
             CreateMap<LeagueModel, LeagueUpdateDto>();
+
+            CreateMap<FreehandMatchModel, FreehandMatchesReadDto>();
+            CreateMap<FreehandMatchesReadDto, FreehandMatchModel>();
         }
 
     }

@@ -101,7 +101,7 @@ namespace FoosballApi.Controllers
         }
 
         [Authorize]
-        [HttpGet("leaguePlayers")]
+        [HttpGet("league-players")]
         public ActionResult<IEnumerable<LeaguePlayersReadDto>> GetLeaguePlayers(int leagueId)
         {
             string userId = User.Identity.Name;

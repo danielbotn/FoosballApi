@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using System;
 using Npgsql.NameTranslation;
 using FoosballApi.Models.Leagues;
+using FoosballApi.Models.Matches;
+using FoosballApi.Models.Goals;
 
 namespace FoosballApi.Data
 {
@@ -102,5 +104,9 @@ namespace FoosballApi.Data
         public DbSet<LeagueModel> Leagues { get; set; }
 
         public DbSet<LeaguePlayersModel> LeaguePlayers { get; set; }
+
+        public DbSet<FreehandMatchModel> FreehandMatches { get; set; }
+
+        public DbSet<FreehandGoalModel> FreehandGoals { get; set; }
     }
 }
