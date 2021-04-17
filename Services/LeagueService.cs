@@ -58,7 +58,7 @@ namespace FoosballApi.Services
 
         public void DeleteLeague(LeagueModel leagueModel)
         {
-           if (leagueModel == null)
+            if (leagueModel == null)
             {
                 throw new ArgumentNullException(nameof(leagueModel));
             }

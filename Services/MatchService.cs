@@ -20,8 +20,8 @@ namespace FoosballApi.Services
         public IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId)
         {
             var query = from fm in _context.FreehandMatches
-                    where fm.PlayerOneId == userId || fm.PlayerTwoId == userId
-                    select fm;
+                        where fm.PlayerOneId == userId || fm.PlayerTwoId == userId
+                        select fm;
 
             return query.ToList();
         }

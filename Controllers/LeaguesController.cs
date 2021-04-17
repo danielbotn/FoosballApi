@@ -56,12 +56,12 @@ namespace FoosballApi.Controllers
 
             if (!hasAccess)
                 return Forbid();
-            
+
             LeagueModel leagueModel = _leagueService.GetLeagueById(int.Parse(leagueId));
 
             if (leagueModel != null)
                 return Ok(_mapper.Map<LeagueReadDto>(leagueModel));
-            
+
             return NotFound();
 
         }
