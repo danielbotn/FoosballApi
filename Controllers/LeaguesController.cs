@@ -145,5 +145,25 @@ namespace FoosballApi.Controllers
             return Ok();
         }
 
+        [Authorize]
+        [HttpDelete("")]
+        public ActionResult DeleteLeagueById(int leagueId)
+        {
+            string userId = User.Identity.Name;
+            LeagueModel league = _leagueService.GetLeagueById(leagueId);
+            if (league == null)
+                return NotFound();
+
+            bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), league.OrganisationId);
+
+            if (!hasAccess)
+                return Forbid();
+
+            _leagueService.DeleteLeague(league);
+
+            _leagueService.SaveChanges();
+
+            return NoContent();
+        }
     }
 }

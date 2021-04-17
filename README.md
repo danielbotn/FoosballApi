@@ -92,7 +92,6 @@ when doing patch requests. Have the body something like this:
     "op": "replace",
 		"path": "/Name",
 		"value": "Some new name"
-
   }
 ]
 ```

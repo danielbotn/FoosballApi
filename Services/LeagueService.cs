@@ -20,8 +20,9 @@ namespace FoosballApi.Services
 
         LeagueModel GetLeagueById(int id);
         bool SaveChanges();
-
         void UpdateLeague(LeagueModel leagueModel);
+
+        void DeleteLeague(LeagueModel leagueModel);
     }
     public class LeagueService : ILeagueService
     {
@@ -53,6 +54,15 @@ namespace FoosballApi.Services
             }
             _context.Leagues.Add(leagueModel);
             _context.SaveChanges();
+        }
+
+        public void DeleteLeague(LeagueModel leagueModel)
+        {
+           if (leagueModel == null)
+            {
+                throw new ArgumentNullException(nameof(leagueModel));
+            }
+            _context.Leagues.Remove(leagueModel);
         }
 
         public LeagueModel GetLeagueById(int id)
