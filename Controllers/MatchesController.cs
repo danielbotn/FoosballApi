@@ -35,5 +35,43 @@ namespace FoosballApi.Controllers
 
             return NotFound();
         }
+
+        [Authorize]
+        [HttpGet("freehand-matches/{matchId}", Name = "GetFreehandMatchById")]
+        public ActionResult<FreehandMatchesReadDto> GetFreehandMatchById()
+        {
+            string matchId = RouteData.Values["matchId"].ToString();
+            string userId = User.Identity.Name;
+
+            bool hasPermission = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            var allMatches = _matchService.GetFreehandMatchById(int.Parse(matchId));
+
+            if (allMatches != null)
+            {
+                return Ok(_mapper.Map<FreehandMatchesReadDto>(allMatches));
+                // return Ok(_mapper.Map<IEnumerable<FreehandMatchesReadDto>>(allMatches));
+            }
+
+            return NotFound();
+        }
+
+        [Authorize]
+        [HttpPost("freehand-match")]
+        public ActionResult CreateFreehandMatch([FromBody] FreehandMatchCreateDto organisationModel)
+        {
+            string userId = User.Identity.Name;
+
+            _matchService.CreateFreehandMatch(int.Parse(userId), organisationModel);
+
+            var freehandMatchesCreateDto = _mapper.Map<FreehandMatchCreateDto>(organisationModel);
+
+            // TO DO
+            // return CreatedAtRoute("getOrganisationById", new { Id = organisationId }, organisationReadDto);
+            return Ok();
+        }
     }
 }
