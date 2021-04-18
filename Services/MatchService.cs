@@ -12,7 +12,7 @@ namespace FoosballApi.Services
     {
         IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId);
 
-        void CreateFreehandMatch(int userId, FreehandMatchCreateDto freehandMatchCreateDto);
+        FreehandMatchModel CreateFreehandMatch(int userId, FreehandMatchCreateDto freehandMatchCreateDto);
 
         FreehandMatchModel GetFreehandMatchById(int matchId);
 
@@ -60,6 +60,7 @@ namespace FoosballApi.Services
                     if (element.OrganisationId == p1Item.OrganisationId)
                     {
                         sameOrganisationAsPlayerOne = true;
+                        break;
                     }
                 }
 
@@ -68,6 +69,7 @@ namespace FoosballApi.Services
                     if (element.OrganisationId == p2Item.OrganisationId)
                     {
                         sameOrganisationAsPlayerTwo = true;
+                        break;
                     }
                 }
             }
@@ -79,7 +81,7 @@ namespace FoosballApi.Services
             return false;
         }
 
-        public void CreateFreehandMatch(int userId, FreehandMatchCreateDto freehandMatchCreateDto)
+        public FreehandMatchModel CreateFreehandMatch(int userId, FreehandMatchCreateDto freehandMatchCreateDto)
         {
             FreehandMatchModel fmm = new FreehandMatchModel();
             DateTime now = DateTime.Now;
@@ -93,6 +95,8 @@ namespace FoosballApi.Services
             fmm.UpTo = freehandMatchCreateDto.UpTo;
             _context.FreehandMatches.Add(fmm);
             _context.SaveChanges();
+
+            return fmm;
         }
 
         public IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId)

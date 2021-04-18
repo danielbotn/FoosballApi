@@ -51,10 +51,7 @@ namespace FoosballApi.Controllers
             var allMatches = _matchService.GetFreehandMatchById(int.Parse(matchId));
 
             if (allMatches != null)
-            {
                 return Ok(_mapper.Map<FreehandMatchesReadDto>(allMatches));
-                // return Ok(_mapper.Map<IEnumerable<FreehandMatchesReadDto>>(allMatches));
-            }
 
             return NotFound();
         }
@@ -65,13 +62,11 @@ namespace FoosballApi.Controllers
         {
             string userId = User.Identity.Name;
 
-            _matchService.CreateFreehandMatch(int.Parse(userId), organisationModel);
+            var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), organisationModel);
 
-            var freehandMatchesCreateDto = _mapper.Map<FreehandMatchCreateDto>(organisationModel);
+            var freehandMatchesReadDto = _mapper.Map<FreehandMatchesReadDto>(newMatch);
 
-            // TO DO
-            // return CreatedAtRoute("getOrganisationById", new { Id = organisationId }, organisationReadDto);
-            return Ok();
+            return CreatedAtRoute("GetFreehandMatchById", new { matchId = newMatch.Id }, freehandMatchesReadDto);
         }
     }
 }
