@@ -21,7 +21,7 @@ namespace FoosballApi.Services
 
         bool SaveChanges();
 
-        int CreateOrganisation(OrganisationModelCreate organisation);
+        int CreateOrganisation(OrganisationModelCreate organisation, int userId);
     }
     public class OrganisationService : IOrganisationService
     {
@@ -73,7 +73,7 @@ namespace FoosballApi.Services
             _context.Organisations.Remove(organisation);
         }
 
-        public int CreateOrganisation(OrganisationModelCreate organisationModel)
+        public int CreateOrganisation(OrganisationModelCreate organisationModel, int userId)
         {
             OrganisationModel om = new OrganisationModel();
             DateTime now = DateTime.Now;
@@ -87,7 +87,7 @@ namespace FoosballApi.Services
             int id = om.Id;
             OrganisationListModel olm = new OrganisationListModel();
             olm.OrganisationId = id;
-            olm.UserId = organisationModel.UserId;
+            olm.UserId = userId;
 
             _context.OrganisationList.Add(olm);
             _context.SaveChanges();

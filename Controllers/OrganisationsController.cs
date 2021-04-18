@@ -38,12 +38,7 @@ namespace FoosballApi.Controllers
         {
             string userId = User.Identity.Name;
 
-            if (int.Parse(userId) != organisationModel.UserId)
-            {
-                return Forbid();
-            }
-
-            int organisationId = _organisationService.CreateOrganisation(organisationModel);
+            int organisationId = _organisationService.CreateOrganisation(organisationModel, int.Parse(userId));
 
             var organisationReadDto = _mapper.Map<OrganisationReadDto>(organisationModel);
 
@@ -116,13 +111,6 @@ namespace FoosballApi.Controllers
             if (organisation == null)
             {
                 return NotFound();
-            }
-
-            string userId = User.Identity.Name;
-
-            if (int.Parse(userId) != id)
-            {
-                return Forbid();
             }
 
             _organisationService.DeleteOrganisation(organisation);

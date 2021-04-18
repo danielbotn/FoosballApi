@@ -12,7 +12,5 @@ namespace FoosballApi.Models.Organisations
         [Required]
         public string Type { get; set; }
 
-        [Required]
-        public int UserId { get; set; }
     }
 }
