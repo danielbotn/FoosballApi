@@ -8,7 +8,7 @@ using FoosballApi.Models;
 
 namespace FoosballApi.Services
 {
-    public interface IMatchService
+    public interface IFreehandMatchService
     {
         IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId);
 
@@ -17,12 +17,18 @@ namespace FoosballApi.Services
         FreehandMatchModel GetFreehandMatchById(int matchId);
 
         bool CheckFreehandMatchPermission(int matchId, int userId);
+
+        void UpdateFreehandMatch(FreehandMatchModel freehandMatchModel);
+
+        bool SaveChanges();
+
+        void DeleteFreehandMatch(FreehandMatchModel freehandMatchModel);
     }
-    public class MatchService : IMatchService
+    public class FreehandMatchService : IFreehandMatchService
     {
         private readonly DataContext _context;
 
-        public MatchService(DataContext context)
+        public FreehandMatchService(DataContext context)
         {
             _context = context;
         }
@@ -99,6 +105,15 @@ namespace FoosballApi.Services
             return fmm;
         }
 
+        public void DeleteFreehandMatch(FreehandMatchModel freehandMatchModel)
+        {
+            if (freehandMatchModel == null)
+            {
+                throw new ArgumentNullException(nameof(freehandMatchModel));
+            }
+            _context.FreehandMatches.Remove(freehandMatchModel);
+        }
+
         public IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId)
         {
             var query = from fm in _context.FreehandMatches
@@ -113,6 +128,16 @@ namespace FoosballApi.Services
             return _context.FreehandMatches.FirstOrDefault(f => f.Id == matchId);
         }
 
+        public bool SaveChanges()
+        {
+             return (_context.SaveChanges() >= 0);
+        }
+
+        public void UpdateFreehandMatch(FreehandMatchModel freehandMatchModel)
+        {
+           // Do nothing
+        }
+
         private IEnumerable<OrganisationListModel> GetAllOrganisationsOfUser(int userId)
         {
             var query = from org in _context.OrganisationList
@@ -124,10 +149,3 @@ namespace FoosballApi.Services
 
     }
 }
-
-// elisabeth
-// kolbrun
-// solvi 
-// lena
-// Desmond
-// Fridbjorn

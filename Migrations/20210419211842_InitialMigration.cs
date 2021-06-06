@@ -73,7 +73,7 @@ namespace FoosballApi.Migrations
                     player_one_id = table.Column<int>(type: "integer", nullable: false),
                     player_two_id = table.Column<int>(type: "integer", nullable: false),
                     start_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    end_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    end_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     player_one_score = table.Column<int>(type: "integer", nullable: false),
                     player_two_score = table.Column<int>(type: "integer", nullable: false),
                     up_to = table.Column<int>(type: "integer", nullable: false),

@@ -24,8 +24,8 @@ namespace FoosballApi.Models.Matches
 
         [Required]
         public DateTime StartTime { get; set; }
-
-        public DateTime EndTime { get; set; }
+        
+        public DateTime? EndTime { get; set; }
 
         [Required]
         public int PlayerOneScore { get; set; }
