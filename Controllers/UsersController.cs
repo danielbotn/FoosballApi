@@ -5,7 +5,6 @@ using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 
 
@@ -13,6 +12,7 @@ namespace FoosballApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -24,7 +24,6 @@ namespace FoosballApi.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
@@ -33,7 +32,6 @@ namespace FoosballApi.Controllers
             return Ok(_mapper.Map<IEnumerable<UserReadDto>>(commandItems));
         }
 
-        [Authorize]
         [HttpGet("{id}", Name = "GetUserById")]
         public ActionResult<UserReadDto> GetUserById(int id)
         {
@@ -47,7 +45,6 @@ namespace FoosballApi.Controllers
             return NotFound();
         }
 
-        [Authorize]
         [HttpPatch("{id}")]
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<UserUpdateDto> patchDoc)
         {
@@ -81,7 +78,6 @@ namespace FoosballApi.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public ActionResult DeleteUser(int id)
         {

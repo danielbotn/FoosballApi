@@ -10,6 +10,7 @@ namespace FoosballApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FreehandMatchesController : ControllerBase
     {
         private readonly IFreehandMatchService _matchService;
@@ -21,7 +22,6 @@ namespace FoosballApi.Controllers
             _matchService = matchService;
         }
 
-        [Authorize]
         [HttpGet("")]
         public ActionResult<IEnumerable<FreehandMatchesReadDto>> GetAllFreehandMatchesByUser()
         {
@@ -37,7 +37,6 @@ namespace FoosballApi.Controllers
             return NotFound();
         }
 
-        [Authorize]
         [HttpGet("{matchId}", Name = "GetFreehandMatchById")]
         public ActionResult<FreehandMatchesReadDto> GetFreehandMatchById()
         {
@@ -57,7 +56,6 @@ namespace FoosballApi.Controllers
             return NotFound();
         }
 
-        [Authorize]
         [HttpPost("freehand-match")]
         public ActionResult CreateFreehandMatch([FromBody] FreehandMatchCreateDto organisationModel)
         {
@@ -70,7 +68,6 @@ namespace FoosballApi.Controllers
             return CreatedAtRoute("GetFreehandMatchById", new { matchId = newMatch.Id }, freehandMatchesReadDto);
         }
 
-        [Authorize]
         [HttpPatch("freehand-match")]
         public ActionResult UpdateFreehandMatch(int matchId, JsonPatchDocument<FreehandMatchUpdateDto> patchDoc)
         {
@@ -103,7 +100,6 @@ namespace FoosballApi.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpDelete("freehand-match")]
         public ActionResult DeleteFreehandMatchById(int matchId)
         {

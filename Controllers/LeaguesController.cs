@@ -12,6 +12,7 @@ namespace FoosballApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LeaguesController : ControllerBase
     {
         private readonly ILeagueService _leagueService;
@@ -23,7 +24,6 @@ namespace FoosballApi.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
         [HttpGet("organisation")]
         public ActionResult<IEnumerable<LeagueReadDto>> GetLeaguesByOrganisation(int organisationId)
         {
@@ -43,7 +43,6 @@ namespace FoosballApi.Controllers
             return NotFound();
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<LeagueReadDto> GetLeagueById()
         {
@@ -66,7 +65,6 @@ namespace FoosballApi.Controllers
 
         }
 
-        [Authorize]
         [HttpPatch("{id}")]
         public ActionResult PartialLeagueUpdate(int id, JsonPatchDocument<LeagueUpdateDto> patchDoc)
         {
@@ -100,7 +98,6 @@ namespace FoosballApi.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpGet("league-players")]
         public ActionResult<IEnumerable<LeaguePlayersReadDto>> GetLeaguePlayers(int leagueId)
         {
@@ -145,7 +142,6 @@ namespace FoosballApi.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpDelete("")]
         public ActionResult DeleteLeagueById(int leagueId)
         {

@@ -13,6 +13,7 @@ namespace FoosballApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrganisationsController : ControllerBase
     {
         private readonly IOrganisationService _organisationService;
@@ -24,7 +25,6 @@ namespace FoosballApi.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
         [HttpGet]
         public ActionResult<IEnumerable<OrganisationReadDto>> GetAllOrganisations()
         {
@@ -32,7 +32,6 @@ namespace FoosballApi.Controllers
             return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(orgItems));
         }
 
-        [Authorize]
         [HttpPost]
         public ActionResult CreateOrganisation([FromBody] OrganisationModelCreate organisationModel)
         {
@@ -45,7 +44,6 @@ namespace FoosballApi.Controllers
             return CreatedAtRoute("getOrganisationById", new { Id = organisationId }, organisationReadDto);
         }
 
-        [Authorize]
         [HttpGet("{id}", Name = "getOrganisationById")]
         public ActionResult<OrganisationReadDto> GetOrganisationById(int id)
         {
@@ -59,7 +57,6 @@ namespace FoosballApi.Controllers
             return NotFound();
         }
 
-        [Authorize]
         [HttpPatch("{id}")]
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
         {
@@ -93,7 +90,6 @@ namespace FoosballApi.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpGet("user")]
         public ActionResult<OrganisationReadDto> GetOrganisationsByUser(int id)
         {
@@ -102,7 +98,6 @@ namespace FoosballApi.Controllers
             return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(userItem));
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public ActionResult DeleteOrganisation(int id)
         {
