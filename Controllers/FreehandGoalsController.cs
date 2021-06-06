@@ -35,7 +35,7 @@ namespace FoosballApi.Controllers
                 return Forbid();
 
             var allGoals = _goalService.GetFreehandGoalsByMatchId(int.Parse(matchId), int.Parse(userId));
-            
+
             if (allGoals != null)
                 return Ok(_mapper.Map<IEnumerable<FreehandGoalsReadDto>>(allGoals));
 

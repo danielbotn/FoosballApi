@@ -17,7 +17,7 @@ namespace FoosballApi.Dtos.Goals
         public int ScoredByScore { get; set; }
 
         public int OponentScore { get; set; }
-        
+
         public bool WinnerGoal { get; set; }
     }
 }

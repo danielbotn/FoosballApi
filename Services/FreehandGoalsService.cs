@@ -20,7 +20,6 @@ namespace FoosballApi.Services
         public FreehandGoalsService(DataContext context)
         {
             _context = context;
-           
         }
 
         public IEnumerable<FreehandGoalModel> GetFreehandGoalsByMatchId(int matchId, int userId)

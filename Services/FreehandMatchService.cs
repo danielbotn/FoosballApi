@@ -130,12 +130,12 @@ namespace FoosballApi.Services
 
         public bool SaveChanges()
         {
-             return (_context.SaveChanges() >= 0);
+            return (_context.SaveChanges() >= 0);
         }
 
         public void UpdateFreehandMatch(FreehandMatchModel freehandMatchModel)
         {
-           // Do nothing
+            // Do nothing
         }
 
         private IEnumerable<OrganisationListModel> GetAllOrganisationsOfUser(int userId)
