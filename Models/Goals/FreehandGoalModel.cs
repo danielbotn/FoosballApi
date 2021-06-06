@@ -24,13 +24,13 @@ namespace FoosballApi.Models.Goals
         public int ScoredByUserId { get; set; }
 
         [ForeignKey("ScoredByUserId")]
-        public virtual User scoredByUserId { get; set; }
+        public virtual User userScoredByUserId { get; set; }
 
         [Required]
         public int OponentId { get; set; }
 
         [ForeignKey("OponentId")]
-        public virtual User oponentId { get; set; }
+        public virtual User userOponentId { get; set; }
 
         [Required]
         public int ScoredByScore { get; set; }

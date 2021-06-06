@@ -2,7 +2,7 @@ using System;
 
 namespace FoosballApi.Dtos.Goals
 {
-    public class FreehandGoalsReadDto
+    public class FreehandGoalReadDto
     {
         public int Id { get; set; }
 

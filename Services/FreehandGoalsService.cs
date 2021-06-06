@@ -6,12 +6,17 @@ using FoosballApi.Dtos.Matches;
 using System;
 using FoosballApi.Models;
 using FoosballApi.Models.Matches;
+using FoosballApi.Dtos.Goals;
 
 namespace FoosballApi.Services
 {
     public interface IFreehandGoalsService
     {
         IEnumerable<FreehandGoalModel> GetFreehandGoalsByMatchId(int matchId, int userId);
+
+        FreehandGoalModel CreateFreehandGoal(int userId, FreehandGoalCreateDto freehandMatchCreateDto);
+
+        FreehandGoalModel GetFreehandGoalById(int goalId);
     }
     public class FreehandGoalsService : IFreehandGoalsService
     {
@@ -32,14 +37,36 @@ namespace FoosballApi.Services
                             Id = lp.Id,
                             TimeOfGoal = lp.TimeOfGoal,
                             MatchId = lp.MatchId,
-                            ScoredByUserId = lp.scoredByUserId.Id,
-                            OponentId = lp.oponentId.Id,
+                            ScoredByUserId = lp.ScoredByUserId,
+                            OponentId = lp.OponentId,
                             ScoredByScore = lp.ScoredByScore,
                             OponentScore = lp.OponentScore,
                             WinnerGoal = lp.WinnerGoal
                         };
 
             return query.ToList();
+        }
+
+        public FreehandGoalModel CreateFreehandGoal(int userId, FreehandGoalCreateDto freehandGoalCreateDto)
+        {
+            FreehandGoalModel fhg = new FreehandGoalModel();
+            DateTime now = DateTime.Now;
+            fhg.MatchId = freehandGoalCreateDto.MatchId;
+            fhg.OponentScore = freehandGoalCreateDto.OponentScore;
+            fhg.ScoredByScore = freehandGoalCreateDto.ScoredByScore;
+            fhg.ScoredByUserId = freehandGoalCreateDto.ScoredByUserId;
+            fhg.OponentId = freehandGoalCreateDto.OponentId;
+            fhg.TimeOfGoal = now;
+            fhg.WinnerGoal = freehandGoalCreateDto.WinnerGoal;
+            _context.FreehandGoals.Add(fhg);
+            _context.SaveChanges();
+
+            return fhg;
+        }
+
+        public FreehandGoalModel GetFreehandGoalById(int goalId)
+        {
+            return _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
         }
     }
 }

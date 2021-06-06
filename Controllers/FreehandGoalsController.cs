@@ -24,8 +24,8 @@ namespace FoosballApi.Controllers
             _matchService = matchService;
         }
 
-        [HttpGet("{matchId}")]
-        public ActionResult<IEnumerable<FreehandGoalsReadDto>> GetFreehandGoalsByMatchId()
+        [HttpGet("goals/{matchId}")]
+        public ActionResult<IEnumerable<FreehandGoalReadDto>> GetFreehandGoalsByMatchId()
         {
             string matchId = RouteData.Values["matchId"].ToString();
             string userId = User.Identity.Name;
@@ -37,10 +37,47 @@ namespace FoosballApi.Controllers
             var allGoals = _goalService.GetFreehandGoalsByMatchId(int.Parse(matchId), int.Parse(userId));
 
             if (allGoals != null)
-                return Ok(_mapper.Map<IEnumerable<FreehandGoalsReadDto>>(allGoals));
+                return Ok(_mapper.Map<IEnumerable<FreehandGoalReadDto>>(allGoals));
 
             return NotFound();
         }
 
+        [HttpGet("{goalId}", Name = "GetFreehandGoalById")]
+        public ActionResult<FreehandGoalReadDto> GetFreehandGoalById(int matchId)
+        {
+            string goalId = RouteData.Values["goalId"].ToString();
+            string userId = User.Identity.Name;
+
+            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            var allMatches = _goalService.GetFreehandGoalById(int.Parse(goalId));
+
+            if (allMatches != null)
+                return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
+
+            return NotFound();
+        }
+
+        [HttpPost("{matchId}")]
+        public ActionResult CreateFreehandGoal([FromBody] FreehandGoalCreateDto freehandGoalCreateDto)
+        {
+            string matchId = RouteData.Values["matchId"].ToString();
+            string userId = User.Identity.Name;
+
+            bool access = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
+
+            if (!access)
+                return Forbid();
+
+            var newGoal = _goalService.CreateFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
+
+            var freehandGoalReadDto = _mapper.Map<FreehandGoalReadDto>(newGoal);
+
+            return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
+            
+        }
     }
 }
