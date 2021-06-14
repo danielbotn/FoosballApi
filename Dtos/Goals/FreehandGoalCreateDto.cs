@@ -11,7 +11,7 @@ namespace FoosballApi.Dtos.Goals
         public int ScoredByUserId { get; set; }
         [Required]
         public int OponentId { get; set; }
-    	[Required]
+        [Required]
         public int ScoredByScore { get; set; }
         [Required]
         public int OponentScore { get; set; }

@@ -74,9 +74,7 @@ namespace FoosballApi.Controllers
             string userId = User.Identity.Name;
             var matchItem = _matchService.GetFreehandMatchById(matchId);
             if (matchItem == null)
-            {
                 return NotFound();
-            }
 
             bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
@@ -87,9 +85,7 @@ namespace FoosballApi.Controllers
             patchDoc.ApplyTo(freehandMatchToPatch, ModelState);
 
             if (!TryValidateModel(freehandMatchToPatch))
-            {
                 return ValidationProblem(ModelState);
-            }
 
             _mapper.Map(freehandMatchToPatch, matchItem);
 

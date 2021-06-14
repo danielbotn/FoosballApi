@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Goals;
-using FoosballApi.Models.Goals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -78,7 +77,7 @@ namespace FoosballApi.Controllers
             var freehandGoalReadDto = _mapper.Map<FreehandGoalReadDto>(newGoal);
 
             return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
-            
+
         }
 
         [HttpDelete("{goalId}")]
@@ -105,9 +104,7 @@ namespace FoosballApi.Controllers
             string userId = User.Identity.Name;
             var goalItem = _goalService.GetFreehandGoalById(goalID);
             if (goalItem == null)
-            {
                 return NotFound();
-            }
 
             bool hasPermission = _matchService.CheckFreehandMatchPermission(matchID, int.Parse(userId));
 
@@ -118,9 +115,7 @@ namespace FoosballApi.Controllers
             patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
 
             if (!TryValidateModel(freehandGoalToPatch))
-            {
                 return ValidationProblem(ModelState);
-            }
 
             _mapper.Map(freehandGoalToPatch, goalItem);
 
