@@ -4,6 +4,7 @@ using FoosballApi.Dtos.Goals;
 using FoosballApi.Models.Goals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -78,6 +79,56 @@ namespace FoosballApi.Controllers
 
             return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
             
+        }
+
+        [HttpDelete("{goalId}")]
+        public ActionResult DeleteFeehandGoal(int goalID, int matchId)
+        {
+            string userId = User.Identity.Name;
+            var goalItem = _goalService.GetFreehandGoalById(goalID);
+            if (goalItem == null)
+                return NotFound();
+
+            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            _goalService.DeleteFreehandGoal(goalItem);
+
+            return NoContent();
+        }
+
+        [HttpPatch]
+        public ActionResult UpdateFreehandGoal(int goalID, int matchID, JsonPatchDocument<FreehandGoalUpdateDto> patchDoc)
+        {
+            string userId = User.Identity.Name;
+            var goalItem = _goalService.GetFreehandGoalById(goalID);
+            if (goalItem == null)
+            {
+                return NotFound();
+            }
+
+            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchID, int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            var freehandGoalToPatch = _mapper.Map<FreehandGoalUpdateDto>(goalItem);
+            patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
+
+            if (!TryValidateModel(freehandGoalToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(freehandGoalToPatch, goalItem);
+
+            _goalService.UpdateFreehandGoal(goalItem);
+
+            _goalService.SaveChanges();
+
+            return NoContent();
         }
     }
 }
