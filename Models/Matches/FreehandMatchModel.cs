@@ -41,5 +41,12 @@ namespace FoosballApi.Models.Matches
 
         [Required]
         public bool GamePaused { get; set; }
+
+        [Required]
+        public int OrganisationId { get; set; }
+
+        [ForeignKey("OrganisationId")]
+        public virtual OrganisationModel OrganisationModel { get; set; }
+
     }
 }

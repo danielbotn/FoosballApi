@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FoosballApi.Dtos.Organisations;
 
 namespace FoosballApi
 {
@@ -17,6 +18,6 @@ namespace FoosballApi
         public DateTime CreatedAt { get; set; }
 
         [Required]
-        public string Type { get; set; }
+        public OrganisationType OrganisationType { get; set; }
     }
 }

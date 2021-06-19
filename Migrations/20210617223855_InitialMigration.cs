@@ -65,6 +65,62 @@ namespace FoosballApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "freehand_double_matches",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    player_one_team_a = table.Column<int>(type: "integer", nullable: false),
+                    player_two_team_a = table.Column<int>(type: "integer", nullable: true),
+                    player_one_team_b = table.Column<int>(type: "integer", nullable: false),
+                    player_two_team_b = table.Column<int>(type: "integer", nullable: true),
+                    organisation_id = table.Column<int>(type: "integer", nullable: false),
+                    start_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    end_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    team_a_score = table.Column<int>(type: "integer", nullable: true),
+                    team_b_score = table.Column<int>(type: "integer", nullable: true),
+                    nickname_team_a = table.Column<string>(type: "text", nullable: true),
+                    nickname_team_b = table.Column<string>(type: "text", nullable: true),
+                    up_to = table.Column<int>(type: "integer", nullable: true),
+                    game_finished = table.Column<bool>(type: "boolean", nullable: true),
+                    game_paused = table.Column<bool>(type: "boolean", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_freehand_double_matches", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_freehand_double_matches_organisations_organisation_id",
+                        column: x => x.organisation_id,
+                        principalTable: "organisations",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_freehand_double_matches_users_player_one_team_a",
+                        column: x => x.player_one_team_a,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_freehand_double_matches_users_player_one_team_b",
+                        column: x => x.player_one_team_b,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_freehand_double_matches_users_player_two_team_a",
+                        column: x => x.player_two_team_a,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_freehand_double_matches_users_player_two_team_b",
+                        column: x => x.player_two_team_b,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "freehand_matches",
                 columns: table => new
                 {
@@ -78,11 +134,18 @@ namespace FoosballApi.Migrations
                     player_two_score = table.Column<int>(type: "integer", nullable: false),
                     up_to = table.Column<int>(type: "integer", nullable: false),
                     game_finished = table.Column<bool>(type: "boolean", nullable: false),
-                    game_paused = table.Column<bool>(type: "boolean", nullable: false)
+                    game_paused = table.Column<bool>(type: "boolean", nullable: false),
+                    organisation_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_freehand_matches", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_freehand_matches_organisations_organisation_id",
+                        column: x => x.organisation_id,
+                        principalTable: "organisations",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_freehand_matches_users_player_one_id",
                         column: x => x.player_one_id,
@@ -211,6 +274,31 @@ namespace FoosballApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "ix_freehand_double_matches_organisation_id",
+                table: "freehand_double_matches",
+                column: "organisation_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_freehand_double_matches_player_one_team_a",
+                table: "freehand_double_matches",
+                column: "player_one_team_a");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_freehand_double_matches_player_one_team_b",
+                table: "freehand_double_matches",
+                column: "player_one_team_b");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_freehand_double_matches_player_two_team_a",
+                table: "freehand_double_matches",
+                column: "player_two_team_a");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_freehand_double_matches_player_two_team_b",
+                table: "freehand_double_matches",
+                column: "player_two_team_b");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_freehand_goals_match_id",
                 table: "freehand_goals",
                 column: "match_id");
@@ -224,6 +312,11 @@ namespace FoosballApi.Migrations
                 name: "ix_freehand_goals_scored_by_user_id",
                 table: "freehand_goals",
                 column: "scored_by_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_freehand_matches_organisation_id",
+                table: "freehand_matches",
+                column: "organisation_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_freehand_matches_player_one_id",
@@ -268,6 +361,9 @@ namespace FoosballApi.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "freehand_double_matches");
+
             migrationBuilder.DropTable(
                 name: "freehand_goals");
 

@@ -78,9 +78,8 @@ namespace FoosballApi.Services
             OrganisationModel om = new OrganisationModel();
             DateTime now = DateTime.Now;
             om.Name = organisationModel.Name;
-            om.Type = organisationModel.Type;
             om.CreatedAt = now;
-
+            om.OrganisationType = organisationModel.OrganisationType;
             _context.Organisations.Add(om);
             _context.SaveChanges();
 

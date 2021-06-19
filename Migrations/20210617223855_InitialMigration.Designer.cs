@@ -4,15 +4,17 @@ using FoosballApi.Data;
 using FoosballApi.Models.Leagues;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FoosballApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210617223855_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -329,10 +331,6 @@ namespace FoosballApi.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<int?>("CurrentOrganisationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("current_organisation_id");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -357,9 +355,6 @@ namespace FoosballApi.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.HasIndex("CurrentOrganisationId")
-                        .HasDatabaseName("ix_users_current_organisation_id");
-
                     b.ToTable("users");
                 });
 
@@ -380,9 +375,10 @@ namespace FoosballApi.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<int>("OrganisationType")
-                        .HasColumnType("integer")
-                        .HasColumnName("organisation_type");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
 
                     b.HasKey("Id")
                         .HasName("pk_organisations");
@@ -583,16 +579,6 @@ namespace FoosballApi.Migrations
                     b.Navigation("OrganisationModel");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FoosballApi.Models.User", b =>
-                {
-                    b.HasOne("FoosballApi.Models.User", "user")
-                        .WithMany()
-                        .HasForeignKey("CurrentOrganisationId")
-                        .HasConstraintName("fk_users_users_current_organisation_id");
-
-                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("FoosballApi.VerificationModel", b =>

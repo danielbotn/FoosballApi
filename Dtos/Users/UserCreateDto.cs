@@ -19,5 +19,7 @@ namespace FoosballApi.Dtos.Users
         [Required]
         public string LastName { get; set; }
 
+        public int? CurrentOrganisationId { get; set; }
+
     }
 }

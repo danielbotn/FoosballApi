@@ -13,6 +13,6 @@ namespace FoosballApi.Dtos.Organisations
         public DateTime CreatedAt { get; set; }
 
         [Required]
-        public string Type { get; set; }
+        public OrganisationType OrganisationType { get; set; }
     }
 }

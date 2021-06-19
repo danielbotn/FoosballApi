@@ -28,5 +28,10 @@ namespace FoosballApi.Models
 
         [Required]
         public DateTime Created_at { get; set; }
+
+        public int? CurrentOrganisationId { get; set; }
+
+        [ForeignKey("CurrentOrganisationId")]
+        public virtual User user { get; set; }
     }
 }
