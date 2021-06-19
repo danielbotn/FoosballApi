@@ -5,18 +5,18 @@ namespace FoosballApi.Dtos.DoubleMatches
     public class FreehandDoubleMatchReadDto
     {
         public int Id { get; set; }
-     
+
         public int PlayerOneTeamA { get; set; }
 
         public int? PlayerTwoTeamA { get; set; }
 
         public int PlayerOneTeamB { get; set; }
 
-       
+
 
         public int? PlayerTwoTeamB { get; set; }
 
-       
+
         public int OrganisationId { get; set; }
 
         public DateTime? StartTime { get; set; }

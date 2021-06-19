@@ -24,9 +24,9 @@ namespace FoosballApi.Services
         public IEnumerable<FreehandDoubleMatchModel> GetAllFreehandDoubleMatches(int userId)
         {
             var matches = _context.FreehandDoubleMatches
-                .Where(b => b.UserPlayerOneTeamA.Id.Equals(userId) 
-                    || b.UserPlayerOneTeamB.Id.Equals(userId) 
-                    || b.UserPlayerTwoTeamA.Id.Equals(userId) 
+                .Where(b => b.UserPlayerOneTeamA.Id.Equals(userId)
+                    || b.UserPlayerOneTeamB.Id.Equals(userId)
+                    || b.UserPlayerTwoTeamA.Id.Equals(userId)
                     || b.UserPlayerTwoTeamB.Id.Equals(userId))
                 .ToList();
 
