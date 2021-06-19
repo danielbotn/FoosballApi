@@ -68,6 +68,7 @@ namespace FoosballApi
             services.AddScoped<ILeagueService, LeagueService>();
             services.AddScoped<IFreehandMatchService, FreehandMatchService>();
             services.AddScoped<IFreehandGoalsService, FreehandGoalsService>();
+            services.AddScoped<IFreehandDoubleMatchService, FreehandDoubleMatchService>();
             services.AddDbContext<DataContext>(p => p.UseNpgsql(builder.ConnectionString));
             services.AddSwaggerGen(c =>
             {
