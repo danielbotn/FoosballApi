@@ -32,6 +32,6 @@ namespace FoosballApi.Models
         public int? CurrentOrganisationId { get; set; }
 
         [ForeignKey("CurrentOrganisationId")]
-        public virtual User user { get; set; }
+        public virtual OrganisationModel OrganisationModel { get; set; }
     }
 }

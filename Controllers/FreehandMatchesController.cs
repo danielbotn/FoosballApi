@@ -56,19 +56,19 @@ namespace FoosballApi.Controllers
             return NotFound();
         }
 
-        [HttpPost("freehand-match")]
-        public ActionResult CreateFreehandMatch([FromBody] FreehandMatchCreateDto organisationModel)
+        [HttpPost()]
+        public ActionResult CreateFreehandMatch([FromBody] FreehandMatchCreateDto freehandMatchCreateDto)
         {
             string userId = User.Identity.Name;
 
-            var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), organisationModel);
+            var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), freehandMatchCreateDto);
 
             var freehandMatchesReadDto = _mapper.Map<FreehandMatchesReadDto>(newMatch);
 
             return CreatedAtRoute("GetFreehandMatchById", new { matchId = newMatch.Id }, freehandMatchesReadDto);
         }
 
-        [HttpPatch("freehand-match")]
+        [HttpPatch()]
         public ActionResult UpdateFreehandMatch(int matchId, JsonPatchDocument<FreehandMatchUpdateDto> patchDoc)
         {
             string userId = User.Identity.Name;
@@ -96,7 +96,7 @@ namespace FoosballApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("freehand-match")]
+        [HttpDelete()]
         public ActionResult DeleteFreehandMatchById(int matchId)
         {
             string userId = User.Identity.Name;
