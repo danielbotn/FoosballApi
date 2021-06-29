@@ -4,6 +4,7 @@ namespace FoosballApi.Dtos.DoubleGoals
 {
     public class FreehandDoubleGoalsJoinDto
     {
+        public int Id { get; set; }
         public int ScoredByUserId { get; set; }
         public int DoubleMatchId { get; set; }
         public int ScorerTeamScore { get; set; }

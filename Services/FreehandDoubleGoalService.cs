@@ -20,7 +20,6 @@ namespace FoosballApi.Services
             _context = context;
         }
 
-        // Maybe there is a better way to join
         public IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId)
         {
             var query = (from fdg in _context.FreehandDoubleGoals
@@ -32,6 +31,7 @@ namespace FoosballApi.Services
                     
                 select new FreehandDoubleGoalsJoinDto
                 {
+                    Id = fdg.Id,
                     ScoredByUserId = fdg.ScoredByUserId,
                     DoubleMatchId = fdg.DoubleMatchId,
                     ScorerTeamScore = fdg.ScorerTeamScore,
@@ -41,7 +41,7 @@ namespace FoosballApi.Services
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     Email = u.Email
-                }).Distinct().ToList();
+                }).Distinct().OrderBy(f => f.Id).ToList();
 
             return query;
         }
