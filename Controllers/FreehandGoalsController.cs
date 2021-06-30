@@ -62,7 +62,7 @@ namespace FoosballApi.Controllers
 
             if (allMatches == null)
                 return NotFound();
-                
+
             return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
         }
 

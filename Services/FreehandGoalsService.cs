@@ -111,8 +111,7 @@ namespace FoosballApi.Services
 
             var data = query.FirstOrDefault();
 
-            if (data.MatchId == matchId &&
-                (userId == data.PlayerOneId || userId == data.PlayerTwoId))
+            if (data.MatchId == matchId && (userId == data.PlayerOneId || userId == data.PlayerTwoId))
                 return true;
 
             return false;
