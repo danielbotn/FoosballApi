@@ -10,6 +10,10 @@ namespace FoosballApi.Services
     {
         IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId);
 
+        FreehandDoubleGoalModel GetFreehandDoubleGoal(int goalId);
+
+        bool CheckGoalPermission(int userId, int matchId, int goalId);
+
     }
     public class FreehandDoubleGoalService : IFreehandDoubleGoalService
     {
@@ -18,6 +22,28 @@ namespace FoosballApi.Services
         public FreehandDoubleGoalService(DataContext context)
         {
             _context = context;
+        }
+        
+        public bool CheckGoalPermission(int userId, int matchId, int goalId)
+        {
+            var query = from fdg in _context.FreehandDoubleGoals
+                join fdm in _context.FreehandDoubleMatches on fdg.DoubleMatchId equals fdm.Id
+                where fdg.DoubleMatchId == matchId && fdg.Id == goalId
+                select new { 
+                    DoubleMatchId = fdg.DoubleMatchId, 
+                    ScoredByUserId = fdg.ScoredByUserId, 
+                    PlayerOneTeamA = fdm.PlayerOneTeamA,
+                    PlayerTwoTeamA = fdm.PlayerTwoTeamA,
+                    PlayerOneTeamB = fdm.PlayerTwoTeamA,
+                    PlayerTwoTeamB = fdm.PlayerTwoTeamB
+                };
+            
+            var data = query.FirstOrDefault();
+
+            if (data.DoubleMatchId == matchId && (userId == data.PlayerOneTeamA || userId == data.PlayerOneTeamB || userId == data.PlayerTwoTeamA || userId == data.PlayerTwoTeamB))
+                return true;
+            
+            return false;
         }
 
         public IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId)
@@ -44,6 +70,11 @@ namespace FoosballApi.Services
                 }).Distinct().OrderBy(f => f.Id).ToList();
 
             return query;
+        }
+
+        public FreehandDoubleGoalModel GetFreehandDoubleGoal(int goalId)
+        {
+            return _context.FreehandDoubleGoals.FirstOrDefault(x => x.Id == goalId);
         }
     }
 }

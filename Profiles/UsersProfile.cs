@@ -1,4 +1,5 @@
 using AutoMapper;
+using FoosballApi.Dtos.DoubleGoals;
 using FoosballApi.Dtos.DoubleMatches;
 using FoosballApi.Dtos.Goals;
 using FoosballApi.Dtos.Leagues;
@@ -54,6 +55,9 @@ namespace FoosballApi.Profiles
 
             CreateMap<FreehandDoubleMatchReadDto, FreehandDoubleMatchModel>();
             CreateMap<FreehandDoubleMatchModel, FreehandDoubleMatchReadDto>();
+
+            CreateMap<FreehandDoubleGoalReadDto, FreehandDoubleGoalModel>();
+            CreateMap<FreehandDoubleGoalModel, FreehandDoubleGoalReadDto>();
 
         }
 
