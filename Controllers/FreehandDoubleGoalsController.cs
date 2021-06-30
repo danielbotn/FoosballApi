@@ -25,7 +25,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("goals/{matchId}")]
-        public ActionResult <IEnumerable<FreehandDoubleGoalsJoinDto>> GetFreehandDoubleGoalsByMatchId()
+        public ActionResult<IEnumerable<FreehandDoubleGoalsJoinDto>> GetFreehandDoubleGoalsByMatchId()
         {
             string matchId = RouteData.Values["matchId"].ToString();
             string userId = User.Identity.Name;
@@ -41,28 +41,28 @@ namespace FoosballApi.Controllers
                 return NotFound();
 
             return Ok(_mapper.Map<IEnumerable<FreehandDoubleGoalsJoinDto>>(allGoals));
-            
+
         }
 
         [HttpGet("{goalId}")]
         public ActionResult<FreehandDoubleGoalReadDto> GetFreehandDoubleGoalById(int goalId, int matchId)
         {
             string userId = User.Identity.Name;
-            
+
             bool matchAccess = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
             if (!matchAccess)
                 return Forbid();
-            
+
             bool goalAccess = _doubleFreehandGoalervice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
 
             if (!goalAccess)
                 return Forbid();
-            
+
             var freehandDoubleGoal = _doubleFreehandGoalervice.GetFreehandDoubleGoal(goalId);
 
             return Ok(_mapper.Map<FreehandDoubleGoalReadDto>(freehandDoubleGoal));
         }
-        
+
     }
 }

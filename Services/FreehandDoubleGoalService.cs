@@ -23,51 +23,54 @@ namespace FoosballApi.Services
         {
             _context = context;
         }
-        
+
         public bool CheckGoalPermission(int userId, int matchId, int goalId)
         {
             var query = from fdg in _context.FreehandDoubleGoals
-                join fdm in _context.FreehandDoubleMatches on fdg.DoubleMatchId equals fdm.Id
-                where fdg.DoubleMatchId == matchId && fdg.Id == goalId
-                select new { 
-                    DoubleMatchId = fdg.DoubleMatchId, 
-                    ScoredByUserId = fdg.ScoredByUserId, 
-                    PlayerOneTeamA = fdm.PlayerOneTeamA,
-                    PlayerTwoTeamA = fdm.PlayerTwoTeamA,
-                    PlayerOneTeamB = fdm.PlayerTwoTeamA,
-                    PlayerTwoTeamB = fdm.PlayerTwoTeamB
-                };
-            
+                        join fdm in _context.FreehandDoubleMatches on fdg.DoubleMatchId equals fdm.Id
+                        where fdg.DoubleMatchId == matchId && fdg.Id == goalId
+                        select new
+                        {
+                            DoubleMatchId = fdg.DoubleMatchId,
+                            ScoredByUserId = fdg.ScoredByUserId,
+                            PlayerOneTeamA = fdm.PlayerOneTeamA,
+                            PlayerTwoTeamA = fdm.PlayerTwoTeamA,
+                            PlayerOneTeamB = fdm.PlayerTwoTeamA,
+                            PlayerTwoTeamB = fdm.PlayerTwoTeamB
+                        };
+
             var data = query.FirstOrDefault();
 
-            if (data.DoubleMatchId == matchId && (userId == data.PlayerOneTeamA || userId == data.PlayerOneTeamB || userId == data.PlayerTwoTeamA || userId == data.PlayerTwoTeamB))
+            if (data.DoubleMatchId == matchId &&
+                (userId == data.PlayerOneTeamA || userId == data.PlayerOneTeamB
+                || userId == data.PlayerTwoTeamA || userId == data.PlayerTwoTeamB))
                 return true;
-            
+
             return false;
         }
 
         public IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId)
         {
             var query = (from fdg in _context.FreehandDoubleGoals
-                from fdm in _context.FreehandDoubleMatches
-                join u in _context.Users on fdg.ScoredByUserId equals u.Id
-                where (fdg.ScoredByUserId == fdm.PlayerOneTeamA
-                    || fdg.ScoredByUserId == fdm.PlayerOneTeamB || fdg.ScoredByUserId == fdm.PlayerTwoTeamA 
-                    || fdg.ScoredByUserId == fdm.PlayerTwoTeamB) && fdg.DoubleMatchId.Equals(matchId)
-                    
-                select new FreehandDoubleGoalsJoinDto
-                {
-                    Id = fdg.Id,
-                    ScoredByUserId = fdg.ScoredByUserId,
-                    DoubleMatchId = fdg.DoubleMatchId,
-                    ScorerTeamScore = fdg.ScorerTeamScore,
-                    OpponentTeamScore = fdg.OpponentTeamScore,
-                    WinnerGoal = fdg.WinnerGoal,
-                    TimeOfGoal = fdg.TimeOfGoal,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Email = u.Email
-                }).Distinct().OrderBy(f => f.Id).ToList();
+                         from fdm in _context.FreehandDoubleMatches
+                         join u in _context.Users on fdg.ScoredByUserId equals u.Id
+                         where (fdg.ScoredByUserId == fdm.PlayerOneTeamA
+                             || fdg.ScoredByUserId == fdm.PlayerOneTeamB || fdg.ScoredByUserId == fdm.PlayerTwoTeamA
+                             || fdg.ScoredByUserId == fdm.PlayerTwoTeamB) && fdg.DoubleMatchId.Equals(matchId)
+
+                         select new FreehandDoubleGoalsJoinDto
+                         {
+                             Id = fdg.Id,
+                             ScoredByUserId = fdg.ScoredByUserId,
+                             DoubleMatchId = fdg.DoubleMatchId,
+                             ScorerTeamScore = fdg.ScorerTeamScore,
+                             OpponentTeamScore = fdg.OpponentTeamScore,
+                             WinnerGoal = fdg.WinnerGoal,
+                             TimeOfGoal = fdg.TimeOfGoal,
+                             FirstName = u.FirstName,
+                             LastName = u.LastName,
+                             Email = u.Email
+                         }).Distinct().OrderBy(f => f.Id).ToList();
 
             return query;
         }

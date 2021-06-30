@@ -4,7 +4,7 @@ namespace FoosballApi.Dtos.DoubleGoals
 {
     public class FreehandDoubleGoalReadDto
     {
-        
+
         public int Id { get; set; }
 
         public DateTime TimeOfGoal { get; set; }
