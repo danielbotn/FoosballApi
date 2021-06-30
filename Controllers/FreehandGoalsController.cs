@@ -48,17 +48,22 @@ namespace FoosballApi.Controllers
             string goalId = RouteData.Values["goalId"].ToString();
             string userId = User.Identity.Name;
 
-            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+            bool matchPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
-            if (!hasPermission)
+            if (!matchPermission)
+                return Forbid();
+
+            bool goalPermission = _goalService.CheckGoalPermission(int.Parse(userId), matchId, int.Parse(goalId));
+
+            if (!goalPermission)
                 return Forbid();
 
             var allMatches = _goalService.GetFreehandGoalById(int.Parse(goalId));
 
-            if (allMatches != null)
-                return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
-
-            return NotFound();
+            if (allMatches == null)
+                return NotFound();
+                
+            return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
         }
 
         [HttpPost("{matchId}")]

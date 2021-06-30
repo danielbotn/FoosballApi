@@ -23,6 +23,7 @@ namespace FoosballApi.Services
         void UpdateFreehandGoal(FreehandGoalModel freehandMatchModel);
 
         bool SaveChanges();
+        bool CheckGoalPermission(int userId, int matchId, int goalId);
     }
     public class FreehandGoalsService : IFreehandGoalsService
     {
@@ -93,6 +94,28 @@ namespace FoosballApi.Services
         public bool SaveChanges()
         {
             return (_context.SaveChanges() >= 0);
+        }
+
+        public bool CheckGoalPermission(int userId, int matchId, int goalId)
+        {
+            var query = from fg in _context.FreehandGoals
+                        join fm in _context.FreehandMatches on fg.MatchId equals fm.Id
+                        where fg.MatchId == matchId && fg.Id == goalId
+                        select new
+                        {
+                            MatchId = fg.MatchId,
+                            ScoredByUserId = fg.ScoredByUserId,
+                            PlayerOneId = fm.PlayerOneId,
+                            PlayerTwoId = fm.PlayerTwoId,
+                        };
+
+            var data = query.FirstOrDefault();
+
+            if (data.MatchId == matchId &&
+                (userId == data.PlayerOneId || userId == data.PlayerTwoId))
+                return true;
+
+            return false;
         }
     }
 }
