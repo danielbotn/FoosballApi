@@ -66,13 +66,13 @@ namespace FoosballApi.Controllers
             return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
         }
 
-        [HttpPost("{matchId}")]
+        [HttpPost("")]
         public ActionResult CreateFreehandGoal([FromBody] FreehandGoalCreateDto freehandGoalCreateDto)
         {
-            string matchId = RouteData.Values["matchId"].ToString();
+            int matchId = freehandGoalCreateDto.MatchId;
             string userId = User.Identity.Name;
 
-            bool access = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
+            bool access = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
             if (!access)
                 return Forbid();
@@ -82,7 +82,6 @@ namespace FoosballApi.Controllers
             var freehandGoalReadDto = _mapper.Map<FreehandGoalReadDto>(newGoal);
 
             return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
-
         }
 
         [HttpDelete("{goalId}")]

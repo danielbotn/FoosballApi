@@ -13,7 +13,6 @@ namespace FoosballApi.Controllers
     public class FreehandDoubleGoalsController : ControllerBase
     {
         private readonly IFreehandDoubleGoalService _doubleFreehandGoalervice;
-
         private readonly IFreehandDoubleMatchService _doubleFreehandMatchService;
         private readonly IMapper _mapper;
 
@@ -44,7 +43,7 @@ namespace FoosballApi.Controllers
 
         }
 
-        [HttpGet("{goalId}")]
+        [HttpGet("{goalId}", Name = "GetFreehandDoubleGoalById")]
         public ActionResult<FreehandDoubleGoalReadDto> GetFreehandDoubleGoalById(int goalId, int matchId)
         {
             string userId = User.Identity.Name;
@@ -64,5 +63,22 @@ namespace FoosballApi.Controllers
             return Ok(_mapper.Map<FreehandDoubleGoalReadDto>(freehandDoubleGoal));
         }
 
+        [HttpPost("")]
+        public ActionResult CreateFreehandDoubleGoal([FromBody] FreehandDoubleGoalCreateDto freehandGoalCreateDto)
+        {
+            int matchId = freehandGoalCreateDto.DoubleMatchId;
+            string userId = User.Identity.Name;
+
+            bool matchAccess = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+
+            if (!matchAccess)
+                return Forbid();
+
+            var newGoal = _doubleFreehandGoalervice.CreateDoubleFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
+
+            var freehandGoalReadDto = _mapper.Map<FreehandDoubleGoalReadDto>(newGoal);
+
+            return CreatedAtRoute("GetFreehandDoubleGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
+        }
     }
 }

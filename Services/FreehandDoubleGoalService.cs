@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FoosballApi.Data;
@@ -13,6 +14,8 @@ namespace FoosballApi.Services
         FreehandDoubleGoalModel GetFreehandDoubleGoal(int goalId);
 
         bool CheckGoalPermission(int userId, int matchId, int goalId);
+
+        FreehandDoubleGoalModel CreateDoubleFreehandGoal(int userId, FreehandDoubleGoalCreateDto freehandDoubleGoalCreateDto);
 
     }
     public class FreehandDoubleGoalService : IFreehandDoubleGoalService
@@ -47,6 +50,22 @@ namespace FoosballApi.Services
                 return true;
 
             return false;
+        }
+
+        public FreehandDoubleGoalModel CreateDoubleFreehandGoal(int userId, FreehandDoubleGoalCreateDto freehandDoubleGoalCreateDto)
+        {
+            FreehandDoubleGoalModel fhg = new FreehandDoubleGoalModel();
+            DateTime now = DateTime.Now;
+            fhg.DoubleMatchId = freehandDoubleGoalCreateDto.DoubleMatchId;
+            fhg.OpponentTeamScore = freehandDoubleGoalCreateDto.OpponentTeamScore;
+            fhg.ScoredByUserId = freehandDoubleGoalCreateDto.ScoredByUserId;
+            fhg.ScorerTeamScore = freehandDoubleGoalCreateDto.ScorerTeamScore;
+            fhg.TimeOfGoal = now;
+            fhg.WinnerGoal = freehandDoubleGoalCreateDto.WinnerGoal;
+            _context.FreehandDoubleGoals.Add(fhg);
+            _context.SaveChanges();
+
+            return fhg;
         }
 
         public IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId)
