@@ -17,6 +17,8 @@ namespace FoosballApi.Services
 
         FreehandDoubleGoalModel CreateDoubleFreehandGoal(int userId, FreehandDoubleGoalCreateDto freehandDoubleGoalCreateDto);
 
+        void DeleteFreehandGoal(FreehandDoubleGoalModel goalItem);
+
     }
     public class FreehandDoubleGoalService : IFreehandDoubleGoalService
     {
@@ -66,6 +68,16 @@ namespace FoosballApi.Services
             _context.SaveChanges();
 
             return fhg;
+        }
+
+        public void DeleteFreehandGoal(FreehandDoubleGoalModel freehandDoubleGoalModel)
+        {
+            if (freehandDoubleGoalModel == null)
+            {
+                throw new ArgumentNullException(nameof(freehandDoubleGoalModel));
+            }
+            _context.FreehandDoubleGoals.Remove(freehandDoubleGoalModel);
+            _context.SaveChanges();
         }
 
         public IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId)

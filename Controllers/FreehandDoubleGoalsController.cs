@@ -80,5 +80,23 @@ namespace FoosballApi.Controllers
 
             return CreatedAtRoute("GetFreehandDoubleGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
         }
+
+        [HttpDelete("{goalId}")]
+        public ActionResult DeleteDoubleFreehandGoal(int goalId, int matchId)
+        {
+            string userId = User.Identity.Name;
+            var goalItem = _doubleFreehandGoalervice.GetFreehandDoubleGoal(goalId);
+            if (goalItem == null)
+                return NotFound();
+
+            bool hasPermission = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+
+            if (!hasPermission)
+                return Forbid();
+
+            _doubleFreehandGoalervice.DeleteFreehandGoal(goalItem);
+
+            return NoContent();
+        }
     }
 }
