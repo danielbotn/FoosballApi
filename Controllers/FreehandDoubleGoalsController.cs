@@ -3,6 +3,7 @@ using AutoMapper;
 using FoosballApi.Dtos.DoubleGoals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -12,14 +13,14 @@ namespace FoosballApi.Controllers
     [Authorize]
     public class FreehandDoubleGoalsController : ControllerBase
     {
-        private readonly IFreehandDoubleGoalService _doubleFreehandGoalervice;
+        private readonly IFreehandDoubleGoalService _doubleFreehandGoalservice;
         private readonly IFreehandDoubleMatchService _doubleFreehandMatchService;
         private readonly IMapper _mapper;
 
-        public FreehandDoubleGoalsController(IFreehandDoubleGoalService doubleFreehandGoalervice, IMapper mapper, IFreehandDoubleMatchService doubleFreehandMatchService)
+        public FreehandDoubleGoalsController(IFreehandDoubleGoalService doubleFreehandGoalservice, IMapper mapper, IFreehandDoubleMatchService doubleFreehandMatchService)
         {
             _mapper = mapper;
-            _doubleFreehandGoalervice = doubleFreehandGoalervice;
+            _doubleFreehandGoalservice = doubleFreehandGoalservice;
             _doubleFreehandMatchService = doubleFreehandMatchService;
         }
 
@@ -34,7 +35,7 @@ namespace FoosballApi.Controllers
             if (!access)
                 return Forbid();
 
-            var allGoals = _doubleFreehandGoalervice.GetAllFreehandGoals(int.Parse(matchId), int.Parse(userId));
+            var allGoals = _doubleFreehandGoalservice.GetAllFreehandGoals(int.Parse(matchId), int.Parse(userId));
 
             if (allGoals == null)
                 return NotFound();
@@ -53,12 +54,12 @@ namespace FoosballApi.Controllers
             if (!matchAccess)
                 return Forbid();
 
-            bool goalAccess = _doubleFreehandGoalervice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
+            bool goalAccess = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
 
             if (!goalAccess)
                 return Forbid();
 
-            var freehandDoubleGoal = _doubleFreehandGoalervice.GetFreehandDoubleGoal(goalId);
+            var freehandDoubleGoal = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
 
             return Ok(_mapper.Map<FreehandDoubleGoalReadDto>(freehandDoubleGoal));
         }
@@ -74,7 +75,7 @@ namespace FoosballApi.Controllers
             if (!matchAccess)
                 return Forbid();
 
-            var newGoal = _doubleFreehandGoalervice.CreateDoubleFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
+            var newGoal = _doubleFreehandGoalservice.CreateDoubleFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
 
             var freehandGoalReadDto = _mapper.Map<FreehandDoubleGoalReadDto>(newGoal);
 
@@ -85,7 +86,7 @@ namespace FoosballApi.Controllers
         public ActionResult DeleteDoubleFreehandGoal(int goalId, int matchId)
         {
             string userId = User.Identity.Name;
-            var goalItem = _doubleFreehandGoalervice.GetFreehandDoubleGoal(goalId);
+            var goalItem = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
             if (goalItem == null)
                 return NotFound();
 
@@ -94,7 +95,40 @@ namespace FoosballApi.Controllers
             if (!hasPermission)
                 return Forbid();
 
-            _doubleFreehandGoalervice.DeleteFreehandGoal(goalItem);
+            _doubleFreehandGoalservice.DeleteFreehandGoal(goalItem);
+
+            return NoContent();
+        }
+
+        [HttpPatch()]
+        public ActionResult UpdateFreehandDoubleGoal(int goalId, int matchId, JsonPatchDocument<FreehandDoubleGoalUpdateDto> patchDoc)
+        {
+            string userId = User.Identity.Name;
+            var goalItem = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
+            if (goalItem == null)
+                return NotFound();
+
+            bool matchPermission = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+
+            if (!matchPermission)
+                return Forbid();
+            
+            bool goalPermission = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId),matchId, goalId);
+
+            if (!goalPermission)
+                return Forbid();
+
+            var freehandGoalToPatch = _mapper.Map<FreehandDoubleGoalUpdateDto>(goalItem);
+            patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
+
+            if (!TryValidateModel(freehandGoalToPatch))
+                return ValidationProblem(ModelState);
+
+            _mapper.Map(freehandGoalToPatch, goalItem);
+
+            _doubleFreehandGoalservice.UpdateFreehanDoubledGoal(goalItem);
+
+            _doubleFreehandGoalservice.SaveChanges();
 
             return NoContent();
         }

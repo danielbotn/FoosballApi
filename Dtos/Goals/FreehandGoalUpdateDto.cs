@@ -4,8 +4,6 @@ namespace FoosballApi.Dtos.Goals
 {
     public class FreehandGoalUpdateDto
     {
-        public int Id { get; set; }
-
         public DateTime TimeOfGoal { get; set; }
 
         public int MatchId { get; set; }

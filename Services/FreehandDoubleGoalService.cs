@@ -19,6 +19,10 @@ namespace FoosballApi.Services
 
         void DeleteFreehandGoal(FreehandDoubleGoalModel goalItem);
 
+        void UpdateFreehanDoubledGoal(FreehandDoubleGoalModel goalItem);
+
+        bool SaveChanges();
+
     }
     public class FreehandDoubleGoalService : IFreehandDoubleGoalService
     {
@@ -109,6 +113,16 @@ namespace FoosballApi.Services
         public FreehandDoubleGoalModel GetFreehandDoubleGoal(int goalId)
         {
             return _context.FreehandDoubleGoals.FirstOrDefault(x => x.Id == goalId);
+        }
+
+        public bool SaveChanges()
+        {
+            return (_context.SaveChanges() >= 0);
+        }
+
+        public void UpdateFreehanDoubledGoal(FreehandDoubleGoalModel goalItem)
+        {
+            // Do nothing
         }
     }
 }
