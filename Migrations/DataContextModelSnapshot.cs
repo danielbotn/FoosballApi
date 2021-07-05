@@ -127,6 +127,10 @@ namespace FoosballApi.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<bool>("HasLeagueStarted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_league_started");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -331,6 +335,69 @@ namespace FoosballApi.Migrations
                         .HasDatabaseName("ix_freehand_matches_player_two_id");
 
                     b.ToTable("freehand_matches");
+                });
+
+            modelBuilder.Entity("FoosballApi.Models.Matches.SingleLeagueMatchModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("end_time");
+
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("integer")
+                        .HasColumnName("league_id");
+
+                    b.Property<bool?>("MatchEnded")
+                        .HasColumnType("boolean")
+                        .HasColumnName("match_ended");
+
+                    b.Property<bool?>("MatchPaused")
+                        .HasColumnType("boolean")
+                        .HasColumnName("match_paused");
+
+                    b.Property<bool?>("MatchStarted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("match_started");
+
+                    b.Property<int>("PlayerOne")
+                        .HasColumnType("integer")
+                        .HasColumnName("player_one");
+
+                    b.Property<int?>("PlayerOneFinalScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("player_one_final_score");
+
+                    b.Property<int>("PlayerTwo")
+                        .HasColumnType("integer")
+                        .HasColumnName("player_two");
+
+                    b.Property<int?>("PlayerTwoFinalScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("player_two_final_score");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("start_time");
+
+                    b.HasKey("Id")
+                        .HasName("pk_single_league_matches");
+
+                    b.HasIndex("LeagueId")
+                        .HasDatabaseName("ix_single_league_matches_league_id");
+
+                    b.HasIndex("PlayerOne")
+                        .HasDatabaseName("ix_single_league_matches_player_one");
+
+                    b.HasIndex("PlayerTwo")
+                        .HasDatabaseName("ix_single_league_matches_player_two");
+
+                    b.ToTable("single_league_matches");
                 });
 
             modelBuilder.Entity("FoosballApi.Models.OrganisationListModel", b =>
@@ -627,6 +694,36 @@ namespace FoosballApi.Migrations
                     b.Navigation("user");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FoosballApi.Models.Matches.SingleLeagueMatchModel", b =>
+                {
+                    b.HasOne("FoosballApi.Models.Leagues.LeagueModel", "League")
+                        .WithMany()
+                        .HasForeignKey("LeagueId")
+                        .HasConstraintName("fk_single_league_matches_leagues_league_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoosballApi.Models.User", "UserPlayerOne")
+                        .WithMany()
+                        .HasForeignKey("PlayerOne")
+                        .HasConstraintName("fk_single_league_matches_users_player_one")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoosballApi.Models.User", "UserPlayerTwo")
+                        .WithMany()
+                        .HasForeignKey("PlayerTwo")
+                        .HasConstraintName("fk_single_league_matches_users_player_two")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+
+                    b.Navigation("UserPlayerOne");
+
+                    b.Navigation("UserPlayerTwo");
                 });
 
             modelBuilder.Entity("FoosballApi.Models.OrganisationListModel", b =>

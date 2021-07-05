@@ -112,5 +112,7 @@ namespace FoosballApi.Data
         public DbSet<FreehandDoubleMatchModel> FreehandDoubleMatches { get; set; }
 
         public DbSet<FreehandDoubleGoalModel> FreehandDoubleGoals { get; set; }
+
+        public DbSet<SingleLeagueMatchModel> SingleLeagueMatches { get; set; }
     }
 }

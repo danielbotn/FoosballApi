@@ -11,5 +11,7 @@ namespace FoosballApi.Dtos.Leagues
 
         public int UpTo { get; set; }
 
+        public bool HasLeagueStarted { get; set; }
+
     }
 }
