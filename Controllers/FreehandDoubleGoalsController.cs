@@ -112,8 +112,8 @@ namespace FoosballApi.Controllers
 
             if (!matchPermission)
                 return Forbid();
-            
-            bool goalPermission = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId),matchId, goalId);
+
+            bool goalPermission = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
 
             if (!goalPermission)
                 return Forbid();

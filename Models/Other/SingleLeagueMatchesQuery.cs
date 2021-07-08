@@ -4,7 +4,7 @@ namespace FoosballApi.Models.Other
 {
     public class SingleLeagueMatchesQuery
     {
-        public int Id {get;set;}
+        public int Id { get; set; }
         public int PlayerOne { get; set; }
         public int PlayerTwo { get; set; }
 

@@ -16,7 +16,7 @@ namespace FoosballApi.Data
     {
         private static readonly Regex _keysRegex = new Regex("^(PK|FK|IX)_", RegexOptions.Compiled);
         public DataContext(DbContextOptions<DataContext> options) : base(options)
-        { 
+        {
         }
 
         static DataContext()
@@ -31,7 +31,8 @@ namespace FoosballApi.Data
         }
 
         // Query for fromRawSql() function
-        private void PopulateSingleLeagueMatchesQuery(ModelBuilder modelBuilder) {
+        private void PopulateSingleLeagueMatchesQuery(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<SingleLeagueMatchesQuery>(e =>
             {
                 e.HasNoKey();
