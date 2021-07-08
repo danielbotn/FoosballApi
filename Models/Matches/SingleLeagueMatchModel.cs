@@ -33,9 +33,9 @@ namespace FoosballApi.Models.Matches
 
         public DateTime? EndTime { get; set; }
 
-        public int? PlayerOneFinalScore { get; set; }
+        public int? PlayerOneScore { get; set; }
 
-        public int? PlayerTwoFinalScore { get; set; }
+        public int? PlayerTwoScore { get; set; }
 
         public bool? MatchStarted { get; set; }
 

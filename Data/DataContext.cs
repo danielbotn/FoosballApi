@@ -8,6 +8,7 @@ using Npgsql.NameTranslation;
 using FoosballApi.Models.Leagues;
 using FoosballApi.Models.Matches;
 using FoosballApi.Models.Goals;
+using FoosballApi.Models.Other;
 
 namespace FoosballApi.Data
 {
@@ -15,7 +16,8 @@ namespace FoosballApi.Data
     {
         private static readonly Regex _keysRegex = new Regex("^(PK|FK|IX)_", RegexOptions.Compiled);
         public DataContext(DbContextOptions<DataContext> options) : base(options)
-        { }
+        { 
+        }
 
         static DataContext()
         => NpgsqlConnection.GlobalTypeMapper.MapEnum<LeagueType>();
@@ -25,7 +27,20 @@ namespace FoosballApi.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.UseSerialColumns();
             FixSnakeCaseNames(modelBuilder);
+            PopulateSingleLeagueMatchesQuery(modelBuilder);
         }
+
+        // Query for fromRawSql() function
+        private void PopulateSingleLeagueMatchesQuery(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<SingleLeagueMatchesQuery>(e =>
+            {
+                e.HasNoKey();
+            });
+        }
+
+        // When running EF Core migrations comment out this line
+        // Used for making querying database wiht fromsqlraw easier
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
 
         private void FixSnakeCaseNames(ModelBuilder modelBuilder)
         {

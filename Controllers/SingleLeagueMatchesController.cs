@@ -27,9 +27,14 @@ namespace FoosballApi.Controllers
             string userId = User.Identity.Name;
             string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
 
-            var gaur = _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
+            bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
 
-            return Ok();
+            if (!permission)
+                return Forbid();
+
+            var allMatches = _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
+
+            return Ok(allMatches);
 
         }
     }

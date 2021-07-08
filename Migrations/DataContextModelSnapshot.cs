@@ -369,17 +369,17 @@ namespace FoosballApi.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("player_one");
 
-                    b.Property<int?>("PlayerOneFinalScore")
+                    b.Property<int?>("PlayerOneScore")
                         .HasColumnType("integer")
-                        .HasColumnName("player_one_final_score");
+                        .HasColumnName("player_one_score");
 
                     b.Property<int>("PlayerTwo")
                         .HasColumnType("integer")
                         .HasColumnName("player_two");
 
-                    b.Property<int?>("PlayerTwoFinalScore")
+                    b.Property<int?>("PlayerTwoScore")
                         .HasColumnType("integer")
-                        .HasColumnName("player_two_final_score");
+                        .HasColumnName("player_two_score");
 
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("timestamp without time zone")
@@ -543,7 +543,7 @@ namespace FoosballApi.Migrations
                     b.HasOne("FoosballApi.Models.Matches.FreehandDoubleMatchModel", "freehandDoubleMatchModel")
                         .WithMany()
                         .HasForeignKey("DoubleMatchId")
-                        .HasConstraintName("fk_freehand_double_goals_freehand_double_matches_double_match_id")
+                        .HasConstraintName("fk_freehand_double_goals_freehand_double_matches_double_match_")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
