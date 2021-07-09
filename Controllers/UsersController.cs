@@ -37,12 +37,10 @@ namespace FoosballApi.Controllers
         {
             var userItem = _userService.GetUserById(id);
 
-            if (userItem != null)
-            {
-                return Ok(_mapper.Map<UserReadDto>(userItem));
-            }
-
-            return NotFound();
+            if (userItem == null)
+                return NotFound();
+                
+            return Ok(_mapper.Map<UserReadDto>(userItem));
         }
 
         [HttpPatch("{id}")]
@@ -50,24 +48,18 @@ namespace FoosballApi.Controllers
         {
             var userModelFromRepo = _userService.GetUserById(id);
             if (userModelFromRepo == null)
-            {
                 return NotFound();
-            }
 
             string userId = User.Identity.Name;
 
             if (int.Parse(userId) != id)
-            {
                 return Forbid();
-            }
 
             var userToPatch = _mapper.Map<UserUpdateDto>(userModelFromRepo);
             patchDoc.ApplyTo(userToPatch, ModelState);
 
             if (!TryValidateModel(userToPatch))
-            {
                 return ValidationProblem(ModelState);
-            }
 
             _mapper.Map(userToPatch, userModelFromRepo);
 
@@ -84,16 +76,12 @@ namespace FoosballApi.Controllers
             var userModelFromRepo = _userService.GetUserById(id);
 
             if (userModelFromRepo == null)
-            {
                 return NotFound();
-            }
 
             string userId = User.Identity.Name;
 
             if (int.Parse(userId) != id)
-            {
                 return Forbid();
-            }
 
             _userService.DeleteUser(userModelFromRepo);
 

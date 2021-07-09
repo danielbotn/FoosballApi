@@ -29,6 +29,7 @@ namespace FoosballApi.Controllers
         public ActionResult<IEnumerable<OrganisationReadDto>> GetAllOrganisations()
         {
             var orgItems = _organisationService.GettAllOrganisations();
+
             return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(orgItems));
         }
 
@@ -49,37 +50,30 @@ namespace FoosballApi.Controllers
         {
             var userItem = _organisationService.GetOrganisationById(id);
 
-            if (userItem != null)
-            {
-                return Ok(_mapper.Map<OrganisationReadDto>(userItem));
-            }
-
-            return NotFound();
+            if (userItem == null)
+                return NotFound();
+        
+            return Ok(_mapper.Map<OrganisationReadDto>(userItem));
         }
 
         [HttpPatch("{id}")]
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
         {
             var orgItem = _organisationService.GetOrganisationById(id);
+
             if (orgItem == null)
-            {
                 return NotFound();
-            }
 
             string userId = User.Identity.Name;
 
             if (int.Parse(userId) != id)
-            {
                 return Forbid();
-            }
 
             var organisationToPatch = _mapper.Map<OrganisationUpdateDto>(orgItem);
             patchDoc.ApplyTo(organisationToPatch, ModelState);
 
             if (!TryValidateModel(organisationToPatch))
-            {
                 return ValidationProblem(ModelState);
-            }
 
             _mapper.Map(organisationToPatch, orgItem);
 
@@ -104,9 +98,7 @@ namespace FoosballApi.Controllers
             var organisation = _organisationService.GetOrganisationById(id);
 
             if (organisation == null)
-            {
                 return NotFound();
-            }
 
             _organisationService.DeleteOrganisation(organisation);
 

@@ -35,12 +35,10 @@ namespace FoosballApi.Controllers
             if (!hasAccess)
                 return Forbid();
 
-            if (leagues != null)
-            {
-                return Ok(_mapper.Map<IEnumerable<LeagueReadDto>>(leagues));
-            }
-
-            return NotFound();
+            if (leagues == null)
+                return NotFound();
+            
+            return Ok(_mapper.Map<IEnumerable<LeagueReadDto>>(leagues));
         }
 
         [HttpGet("{id}")]
@@ -58,36 +56,30 @@ namespace FoosballApi.Controllers
 
             LeagueModel leagueModel = _leagueService.GetLeagueById(int.Parse(leagueId));
 
-            if (leagueModel != null)
-                return Ok(_mapper.Map<LeagueReadDto>(leagueModel));
+            if (leagueModel == null)
+                return NotFound();
 
-            return NotFound();
-
+            return Ok(_mapper.Map<LeagueReadDto>(leagueModel));
         }
 
         [HttpPatch("{id}")]
         public ActionResult PartialLeagueUpdate(int id, JsonPatchDocument<LeagueUpdateDto> patchDoc)
         {
             var leagueItem = _leagueService.GetLeagueById(id);
+
             if (leagueItem == null)
-            {
                 return NotFound();
-            }
 
             string userId = User.Identity.Name;
 
             if (int.Parse(userId) != id)
-            {
                 return Forbid();
-            }
 
             var leagueToPatch = _mapper.Map<LeagueUpdateDto>(leagueItem);
             patchDoc.ApplyTo(leagueToPatch, ModelState);
 
             if (!TryValidateModel(leagueToPatch))
-            {
                 return ValidationProblem(ModelState);
-            }
 
             _mapper.Map(leagueToPatch, leagueItem);
 
@@ -111,12 +103,10 @@ namespace FoosballApi.Controllers
             if (!hasAccess)
                 return Forbid();
 
-            if (leaguePlayers != null)
-            {
-                return Ok(_mapper.Map<IEnumerable<LeaguePlayersReadDto>>(leaguePlayers));
-            }
-
-            return NotFound();
+            if (leaguePlayers == null)
+                return NotFound();
+                
+            return Ok(_mapper.Map<IEnumerable<LeaguePlayersReadDto>>(leaguePlayers));
         }
 
         [HttpPost()]

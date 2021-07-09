@@ -50,10 +50,7 @@ namespace FoosballApi.Services
                 $"where league_id = {leagueId}"
                 );
 
-            var data = query.ToList();
-
-            return data;
-
+            return query.ToList();
         }
     }
 }
