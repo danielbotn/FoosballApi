@@ -13,6 +13,10 @@ namespace FoosballApi.Services
         IEnumerable<SingleLeagueMatchesQuery> GetAllMatchesByOrganisationId(int organisationId, int leagueId);
 
         bool CheckLeaguePermission(int leagueId, int userId);
+
+        bool CheckMatchPermission(int matchId, int userId);
+
+        SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId);
     }
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
@@ -35,6 +39,18 @@ namespace FoosballApi.Services
             return false;
         }
 
+        public bool CheckMatchPermission(int matchId, int userId)
+        {
+            var query = _context.SingleLeagueMatches.Where(x => x.Id == matchId && x.PlayerOne == userId || x.PlayerOne == userId);
+
+            var data = query.FirstOrDefault();
+
+            if ((data.UserPlayerOne.Id == userId || data.UserPlayerTwo.Id == userId) && data.Id == matchId)
+                return true;
+
+            return false;
+        }
+
         public IEnumerable<SingleLeagueMatchesQuery> GetAllMatchesByOrganisationId(int organisationId, int leagueId)
         {
             var query = _context.Set<SingleLeagueMatchesQuery>().FromSqlRaw(
@@ -51,6 +67,11 @@ namespace FoosballApi.Services
                 );
 
             return query.ToList();
+        }
+
+        public SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId)
+        {
+            return _context.SingleLeagueMatches.FirstOrDefault(f => f.Id == matchId);
         }
     }
 }

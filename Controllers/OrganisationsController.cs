@@ -52,7 +52,7 @@ namespace FoosballApi.Controllers
 
             if (userItem == null)
                 return NotFound();
-        
+
             return Ok(_mapper.Map<OrganisationReadDto>(userItem));
         }
 

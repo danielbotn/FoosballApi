@@ -35,7 +35,24 @@ namespace FoosballApi.Controllers
             var allMatches = _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
 
             return Ok(allMatches);
+        }
 
+        [HttpGet("{matchId}", Name = "GetSingleLeagueMatchById")]
+        public ActionResult<SingleLeagueMatchesReadDto> GetSingleLeagueMatchById(int matchId)
+        {
+            string userId = User.Identity.Name;
+
+            bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            var allMatches = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+
+            if (allMatches == null)
+                return NotFound();
+
+            return Ok(_mapper.Map<SingleLeagueMatchesReadDto>(allMatches));
         }
     }
 }

@@ -37,7 +37,7 @@ namespace FoosballApi.Controllers
 
             if (leagues == null)
                 return NotFound();
-            
+
             return Ok(_mapper.Map<IEnumerable<LeagueReadDto>>(leagues));
         }
 
@@ -105,7 +105,7 @@ namespace FoosballApi.Controllers
 
             if (leaguePlayers == null)
                 return NotFound();
-                
+
             return Ok(_mapper.Map<IEnumerable<LeaguePlayersReadDto>>(leaguePlayers));
         }
 
