@@ -29,5 +29,7 @@ namespace FoosballApi.Models.Leagues
         public virtual OrganisationModel OrganisationModel { get; set; }
 
         public bool HasLeagueStarted { get; set; }
+
+        public int? HowManyRounds { get; set; }
     }
 }

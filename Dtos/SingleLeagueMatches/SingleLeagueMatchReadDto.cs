@@ -2,7 +2,7 @@ using System;
 
 namespace FoosballApi.Dtos.SingleLeagueMatches
 {
-    public class SingleLeagueMatchesReadDto
+    public class SingleLeagueMatchReadDto
     {
         public int Id { get; set; }
 

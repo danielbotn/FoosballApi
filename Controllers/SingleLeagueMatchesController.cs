@@ -3,6 +3,7 @@ using AutoMapper;
 using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -22,7 +23,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet()]
-        public ActionResult<IEnumerable<SingleLeagueMatchesReadDto>> GetAllSingleLeaguesMatchesByOrganisationId(int leagueId)
+        public ActionResult<IEnumerable<SingleLeagueMatchReadDto>> GetAllSingleLeaguesMatchesByOrganisationId(int leagueId)
         {
             string userId = User.Identity.Name;
             string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
@@ -38,7 +39,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{matchId}", Name = "GetSingleLeagueMatchById")]
-        public ActionResult<SingleLeagueMatchesReadDto> GetSingleLeagueMatchById(int matchId)
+        public ActionResult<SingleLeagueMatchReadDto> GetSingleLeagueMatchById(int matchId)
         {
             string userId = User.Identity.Name;
 
@@ -47,12 +48,41 @@ namespace FoosballApi.Controllers
             if (!hasPermission)
                 return Forbid();
 
-            var allMatches = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+            var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
 
-            if (allMatches == null)
+            if (match == null)
                 return NotFound();
 
-            return Ok(_mapper.Map<SingleLeagueMatchesReadDto>(allMatches));
+            return Ok(_mapper.Map<SingleLeagueMatchReadDto>(match));
+        }
+
+        [HttpPatch("")]
+        public ActionResult UpdateSingleLeagueMatch(int matchId, JsonPatchDocument<SingleLeagueMatchUpdateDto> patchDoc)
+        {
+            var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+
+            if (match == null)
+                return NotFound();
+
+            string userId = User.Identity.Name;
+            bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            var matchToPatch = _mapper.Map<SingleLeagueMatchUpdateDto>(match);
+            patchDoc.ApplyTo(matchToPatch, ModelState);
+
+            if (!TryValidateModel(matchToPatch))
+                return ValidationProblem(ModelState);
+
+            _mapper.Map(matchToPatch, match);
+
+            _singleLeagueMatchService.UpdateSingleLeagueMatch(match);
+
+            _singleLeagueMatchService.SaveChanges();
+
+            return NoContent();
         }
     }
 }

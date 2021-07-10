@@ -5,7 +5,6 @@ using FoosballApi.Dtos.Goals;
 using FoosballApi.Dtos.Leagues;
 using FoosballApi.Dtos.Matches;
 using FoosballApi.Dtos.Organisations;
-using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Dtos.Users;
 using FoosballApi.Models;
 using FoosballApi.Models.Goals;
@@ -59,12 +58,6 @@ namespace FoosballApi.Profiles
 
             CreateMap<FreehandDoubleGoalReadDto, FreehandDoubleGoalModel>();
             CreateMap<FreehandDoubleGoalModel, FreehandDoubleGoalReadDto>();
-
-            CreateMap<FreehandDoubleGoalModel, FreehandDoubleGoalUpdateDto>();
-            CreateMap<FreehandDoubleGoalUpdateDto, FreehandDoubleGoalModel>();
-
-            CreateMap<SingleLeagueMatchModel, SingleLeagueMatchesReadDto>();
-            CreateMap<SingleLeagueMatchesReadDto, SingleLeagueMatchModel>();
 
         }
 

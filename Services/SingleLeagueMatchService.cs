@@ -17,6 +17,10 @@ namespace FoosballApi.Services
         bool CheckMatchPermission(int matchId, int userId);
 
         SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId);
+
+        void UpdateSingleLeagueMatch(SingleLeagueMatchModel match);
+
+        bool SaveChanges();
     }
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
@@ -45,7 +49,7 @@ namespace FoosballApi.Services
 
             var data = query.FirstOrDefault();
 
-            if ((data.UserPlayerOne.Id == userId || data.UserPlayerTwo.Id == userId) && data.Id == matchId)
+            if (data.PlayerOne == userId || data.PlayerTwo == userId)
                 return true;
 
             return false;
@@ -72,6 +76,16 @@ namespace FoosballApi.Services
         public SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId)
         {
             return _context.SingleLeagueMatches.FirstOrDefault(f => f.Id == matchId);
+        }
+
+        public bool SaveChanges()
+        {
+            return (_context.SaveChanges() >= 0);
+        }
+
+        public void UpdateSingleLeagueMatch(SingleLeagueMatchModel match)
+        {
+            // Do nothing
         }
     }
 }
