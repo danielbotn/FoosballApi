@@ -37,6 +37,24 @@ namespace FoosballApi.Data
             {
                 e.HasNoKey();
             });
+
+            modelBuilder.Entity<SingleLeagueStandingsMatchesWonAsPlayerOne>(e =>
+            {
+                e.HasNoKey();
+            });
+
+            modelBuilder.Entity<SingleLeagueStandingsMatchesWonAsPlayerTwo>(e =>
+            {
+                e.HasNoKey();
+            });
+            modelBuilder.Entity<SingleLeagueStandingsMatchesLostAsPlayerOne>(e =>
+            {
+                e.HasNoKey();
+            });
+            modelBuilder.Entity<SingleLeagueStandingsMatchesLostAsPlayerTwo>(e =>
+            {
+                e.HasNoKey();
+            });
         }
 
         // When running EF Core migrations comment out this line

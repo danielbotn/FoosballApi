@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Leagues;
+using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Models.Leagues;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -16,11 +17,13 @@ namespace FoosballApi.Controllers
     public class LeaguesController : ControllerBase
     {
         private readonly ILeagueService _leagueService;
+        private readonly ISingleLeagueMatchService _singleLeagueMatchService;
         private readonly IMapper _mapper;
 
-        public LeaguesController(ILeagueService leagueService, IMapper mapper)
+        public LeaguesController(ILeagueService leagueService, ISingleLeagueMatchService singleLeagueMatchService, IMapper mapper)
         {
             _leagueService = leagueService;
+            _singleLeagueMatchService = singleLeagueMatchService;
             _mapper = mapper;
         }
 
@@ -150,6 +153,20 @@ namespace FoosballApi.Controllers
             _leagueService.SaveChanges();
 
             return NoContent();
+        }
+
+        [HttpGet("single-league/standings")]
+        public ActionResult<IEnumerable<SingleLeagueStandingsReadDto>> GetLeagueStandings(int leagueId)
+        {
+            string userId = User.Identity.Name;
+            bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
+
+            if (!permission)
+                return Forbid();
+            
+            var standings = _singleLeagueMatchService.GetSigleLeagueStandings(leagueId);
+
+            return Ok(_mapper.Map<IEnumerable<SingleLeagueStandingsReadDto>>(standings));
         }
     }
 }

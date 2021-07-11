@@ -21,6 +21,8 @@ namespace FoosballApi.Services
         void UpdateSingleLeagueMatch(SingleLeagueMatchModel match);
 
         bool SaveChanges();
+
+        IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId);
     }
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
@@ -73,6 +75,69 @@ namespace FoosballApi.Services
             return query.ToList();
         }
 
+        public IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId)
+        {
+            List<int> userIds =  GetAllUsersOfLeague(leagueId);
+            List<SingleLeagueStandingsQuery> standings = new();
+
+            foreach(int element in userIds)
+            {
+                var matchesWonAsPlayerOne = _context.Set<SingleLeagueStandingsMatchesWonAsPlayerOne>().FromSqlRaw(
+                    "select count(*) as matches_won_as_player_one from " +
+                    "(select slm.id from single_league_matches slm " +
+                    $"where slm.player_one = {element} and slm.match_ended = true and slm.player_one_score > slm.player_two_score) t"
+                );
+
+                var matchesWonAsPlayerTwo = _context.Set<SingleLeagueStandingsMatchesWonAsPlayerTwo>().FromSqlRaw(
+                    "select count(*) as matches_won_as_player_two from " +
+                    "(select slm.id from single_league_matches slm " +
+                    $"where slm.player_two = {element} and slm.match_ended = true and slm.player_two_score > slm.player_one_score) t"
+                );
+
+                var matchesLostAsPlayerOne = _context.Set<SingleLeagueStandingsMatchesLostAsPlayerOne>().FromSqlRaw(
+                    "select count(*) as matches_lost_as_player_one from " +
+                    "(select slm.id from single_league_matches slm " +
+                    $"where slm.player_one = {element} and slm.match_ended = true and slm.player_one_score < slm.player_two_score) t"
+                );
+
+                var matchesLostAsPlayerTwo = _context.Set<SingleLeagueStandingsMatchesLostAsPlayerTwo>().FromSqlRaw(
+                    "select count(*) as matches_lost_as_player_two from " +
+                    "(select slm.id from single_league_matches slm " +
+                    $"where slm.player_two = {element} and slm.match_ended = true and slm.player_two_score < slm.player_one_score) t"
+                );
+
+                var userInfo = _context.Users.Where(x => x.Id == element);
+
+                int totalMatchesWon = matchesWonAsPlayerOne.FirstOrDefault().MatchesWonAsPlayerOne + 
+                matchesWonAsPlayerTwo.FirstOrDefault().MatchesWonAsPlayerTwo;
+
+                int totalMatchesLost = matchesLostAsPlayerOne.FirstOrDefault().MatchesLostAsPlayerOne + 
+                matchesLostAsPlayerTwo.FirstOrDefault().MatchesLostAsPlayerTwo;
+
+                standings.Add(
+                    new SingleLeagueStandingsQuery(
+                        element, 
+                        leagueId, 
+                        totalMatchesWon, 
+                        totalMatchesLost, 
+                        1,
+                        0,
+                        1, 
+                        (totalMatchesLost + totalMatchesWon),
+                        totalMatchesWon * 3,
+                        userInfo.FirstOrDefault().FirstName, 
+                        userInfo.FirstOrDefault().LastName, 
+                        userInfo.FirstOrDefault().Email
+                    )
+                );
+            }
+            
+            var sortedLeague = ReturnSortedLeague(standings);
+            var sortedLeagueWithPositions = AddPositionInLeagueToList(sortedLeague);
+
+            return sortedLeagueWithPositions;
+        }
+
         public SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId)
         {
             return _context.SingleLeagueMatches.FirstOrDefault(f => f.Id == matchId);
@@ -86,6 +151,39 @@ namespace FoosballApi.Services
         public void UpdateSingleLeagueMatch(SingleLeagueMatchModel match)
         {
             // Do nothing
+        }
+
+        private List<int> GetAllUsersOfLeague(int leagueId)
+        {
+            List<int> userIds = new();
+            var allPlayersInLeague = _context.LeaguePlayers
+                .Where(x => x.LeagueId == leagueId)
+                .Select(s => new SingleLeagueStandingsAllPlayersQuery
+                    {
+                        Id = s.Id,
+                        UserId = s.UserId
+                    }).ToList();
+            
+            foreach (SingleLeagueStandingsAllPlayersQuery element in allPlayersInLeague)
+            {
+                userIds.Add(element.UserId);
+            }
+            return userIds;
+        }
+
+        private List<SingleLeagueStandingsQuery> ReturnSortedLeague(List<SingleLeagueStandingsQuery> singleLeagueStandings)
+        {
+           return singleLeagueStandings.OrderByDescending(x => x.Points).ToList();
+        }
+
+        private List<SingleLeagueStandingsQuery> AddPositionInLeagueToList(List<SingleLeagueStandingsQuery> standings)
+        {
+            List<SingleLeagueStandingsQuery> result = standings;
+            foreach (var item in result.Select((value, i) => new { i, value }))
+            {
+                item.value.PositionInLeague = item.i + 1;
+            }
+            return result;
         }
     }
 }
