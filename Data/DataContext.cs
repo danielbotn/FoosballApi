@@ -9,6 +9,7 @@ using FoosballApi.Models.Leagues;
 using FoosballApi.Models.Matches;
 using FoosballApi.Models.Goals;
 using FoosballApi.Models.Other;
+using FoosballApi.Models.SingleLeagueGoals;
 
 namespace FoosballApi.Data
 {
@@ -27,39 +28,43 @@ namespace FoosballApi.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.UseSerialColumns();
             FixSnakeCaseNames(modelBuilder);
-            PopulateSingleLeagueMatchesQuery(modelBuilder);
+            
+            // Comment out this function during migration
+            // PopulateSingleLeagueMatchesQuery(modelBuilder);
         }
 
         // Query for fromRawSql() function
+        // We do not want to generate new tables with these models
+        // When running EF Core migrations
         private void PopulateSingleLeagueMatchesQuery(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SingleLeagueMatchesQuery>(e =>
             {
-                e.HasNoKey();
+                e.HasNoKey().ToView(null);
             });
 
             modelBuilder.Entity<SingleLeagueStandingsMatchesWonAsPlayerOne>(e =>
             {
-                e.HasNoKey();
+                e.HasNoKey().ToView(null);
             });
 
             modelBuilder.Entity<SingleLeagueStandingsMatchesWonAsPlayerTwo>(e =>
             {
-                e.HasNoKey();
+                e.HasNoKey().ToView(null);
             });
             modelBuilder.Entity<SingleLeagueStandingsMatchesLostAsPlayerOne>(e =>
             {
-                e.HasNoKey();
+                e.HasNoKey().ToView(null);
             });
             modelBuilder.Entity<SingleLeagueStandingsMatchesLostAsPlayerTwo>(e =>
             {
-                e.HasNoKey();
+                e.HasNoKey().ToView(null);
             });
         }
 
         // When running EF Core migrations comment out this line
         // Used for making querying database wiht fromsqlraw easier
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
 
         private void FixSnakeCaseNames(ModelBuilder modelBuilder)
         {
@@ -148,5 +153,7 @@ namespace FoosballApi.Data
         public DbSet<FreehandDoubleGoalModel> FreehandDoubleGoals { get; set; }
 
         public DbSet<SingleLeagueMatchModel> SingleLeagueMatches { get; set; }
+
+        public DbSet<SingleLeagueGoalModel> SingleLeagueGoals { get; set; }
     }
 }
