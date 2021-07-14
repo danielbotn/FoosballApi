@@ -163,7 +163,7 @@ namespace FoosballApi.Controllers
 
             if (!permission)
                 return Forbid();
-            
+
             var standings = _singleLeagueMatchService.GetSigleLeagueStandings(leagueId);
 
             return Ok(_mapper.Map<IEnumerable<SingleLeagueStandingsReadDto>>(standings));

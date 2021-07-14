@@ -3,10 +3,10 @@ namespace FoosballApi.Models.Other
     public class SingleLeagueStandingsQuery
     {
         public SingleLeagueStandingsQuery(
-            int userId, 
-            int leagueId, 
-            int totalMatchesWon, 
-            int totalMatchesLost, 
+            int userId,
+            int leagueId,
+            int totalMatchesWon,
+            int totalMatchesLost,
             int totalGoalsScored,
             int totalGoalsRecieved,
             int positionInLeague,

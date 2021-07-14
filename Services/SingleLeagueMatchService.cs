@@ -77,10 +77,10 @@ namespace FoosballApi.Services
 
         public IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId)
         {
-            List<int> userIds =  GetAllUsersOfLeague(leagueId);
+            List<int> userIds = GetAllUsersOfLeague(leagueId);
             List<SingleLeagueStandingsQuery> standings = new();
 
-            foreach(int element in userIds)
+            foreach (int element in userIds)
             {
                 var matchesWonAsPlayerOne = _context.Set<SingleLeagueStandingsMatchesWonAsPlayerOne>().FromSqlRaw(
                     "select count(*) as matches_won_as_player_one from " +
@@ -108,30 +108,30 @@ namespace FoosballApi.Services
 
                 var userInfo = _context.Users.Where(x => x.Id == element);
 
-                int totalMatchesWon = matchesWonAsPlayerOne.FirstOrDefault().MatchesWonAsPlayerOne + 
+                int totalMatchesWon = matchesWonAsPlayerOne.FirstOrDefault().MatchesWonAsPlayerOne +
                 matchesWonAsPlayerTwo.FirstOrDefault().MatchesWonAsPlayerTwo;
 
-                int totalMatchesLost = matchesLostAsPlayerOne.FirstOrDefault().MatchesLostAsPlayerOne + 
+                int totalMatchesLost = matchesLostAsPlayerOne.FirstOrDefault().MatchesLostAsPlayerOne +
                 matchesLostAsPlayerTwo.FirstOrDefault().MatchesLostAsPlayerTwo;
 
                 standings.Add(
                     new SingleLeagueStandingsQuery(
-                        element, 
-                        leagueId, 
-                        totalMatchesWon, 
-                        totalMatchesLost, 
+                        element,
+                        leagueId,
+                        totalMatchesWon,
+                        totalMatchesLost,
                         0,
                         0,
-                        0, 
+                        0,
                         (totalMatchesLost + totalMatchesWon),
                         totalMatchesWon * 3,
-                        userInfo.FirstOrDefault().FirstName, 
-                        userInfo.FirstOrDefault().LastName, 
+                        userInfo.FirstOrDefault().FirstName,
+                        userInfo.FirstOrDefault().LastName,
                         userInfo.FirstOrDefault().Email
                     )
                 );
             }
-            
+
             var sortedLeague = ReturnSortedLeague(standings);
             var sortedLeagueWithPositions = AddPositionInLeagueToList(sortedLeague);
 
@@ -159,11 +159,11 @@ namespace FoosballApi.Services
             var allPlayersInLeague = _context.LeaguePlayers
                 .Where(x => x.LeagueId == leagueId)
                 .Select(s => new SingleLeagueStandingsAllPlayersQuery
-                    {
-                        Id = s.Id,
-                        UserId = s.UserId
-                    }).ToList();
-            
+                {
+                    Id = s.Id,
+                    UserId = s.UserId
+                }).ToList();
+
             foreach (SingleLeagueStandingsAllPlayersQuery element in allPlayersInLeague)
             {
                 userIds.Add(element.UserId);
@@ -173,7 +173,7 @@ namespace FoosballApi.Services
 
         private List<SingleLeagueStandingsQuery> ReturnSortedLeague(List<SingleLeagueStandingsQuery> singleLeagueStandings)
         {
-           return singleLeagueStandings.OrderByDescending(x => x.Points).ToList();
+            return singleLeagueStandings.OrderByDescending(x => x.Points).ToList();
         }
 
         private List<SingleLeagueStandingsQuery> AddPositionInLeagueToList(List<SingleLeagueStandingsQuery> standings)

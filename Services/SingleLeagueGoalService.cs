@@ -7,7 +7,7 @@ namespace FoosballApi.Services
 {
     public interface ISingleLeagueGoalService
     {
-        IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByLeagueId(int matchId);
+        IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByMatchId(int matchId);
     }
     public class SingleLeagueGoalService : ISingleLeagueGoalService
     {
@@ -18,21 +18,21 @@ namespace FoosballApi.Services
             _context = context;
         }
 
-        public IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByLeagueId(int matchId)
+        public IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByMatchId(int matchId)
         {
             var query = _context.SingleLeagueGoals
                 .Where(x => x.MatchId == matchId)
                 .Select(slgm => new SingleLeagueGoalModel
-                    {
-                        Id = slgm.Id,
-                        TimeOfGoal = slgm.TimeOfGoal,
-                        MatchId = slgm.MatchId,
-                        ScoredByUserId = slgm.ScoredByUserId,
-                        OpponentId = slgm.OpponentId,
-                        ScorerScore = slgm.ScorerScore,
-                        OpponentScore = slgm.OpponentScore,
-                        WinnerGoal = slgm.WinnerGoal
-                    });
+                {
+                    Id = slgm.Id,
+                    TimeOfGoal = slgm.TimeOfGoal,
+                    MatchId = slgm.MatchId,
+                    ScoredByUserId = slgm.ScoredByUserId,
+                    OpponentId = slgm.OpponentId,
+                    ScorerScore = slgm.ScorerScore,
+                    OpponentScore = slgm.OpponentScore,
+                    WinnerGoal = slgm.WinnerGoal
+                });
 
             return query;
         }

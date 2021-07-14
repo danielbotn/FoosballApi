@@ -13,7 +13,7 @@ namespace FoosballApi.Controllers
     public class SingleLeagueGoalsController : ControllerBase
     {
         private readonly ISingleLeagueGoalService _singleLeagueGoalService;
-         private readonly ISingleLeagueMatchService _singleLeagueMatchService;
+        private readonly ISingleLeagueMatchService _singleLeagueMatchService;
         private readonly IMapper _mapper;
 
         public SingleLeagueGoalsController(ISingleLeagueGoalService singleLeagueGoalService, ISingleLeagueMatchService singleLeagueMatchService, IMapper mapper)
@@ -24,19 +24,18 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet()]
-        public ActionResult<IEnumerable<SingleLeagueGoalReadDto>> GetAllSingleLeagueGoalsByLeagueId(int leagueId, int matchId)
+        public ActionResult<IEnumerable<SingleLeagueGoalReadDto>> GetAllSingleLeagueGoalsByMatchId(int leagueId, int matchId)
         {
             string userId = User.Identity.Name;
-            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
 
             bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
 
             if (!permission)
                 return Forbid();
 
-            var allGoals = _singleLeagueGoalService.GetAllSingleLeagueGoalsByLeagueId(matchId);
+            var allGoals = _singleLeagueGoalService.GetAllSingleLeagueGoalsByMatchId(matchId);
 
-            return Ok(allGoals);
+            return Ok(_mapper.Map<IEnumerable<SingleLeagueGoalReadDto>>(allGoals));
         }
     }
 }

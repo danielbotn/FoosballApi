@@ -28,7 +28,7 @@ namespace FoosballApi.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.UseSerialColumns();
             FixSnakeCaseNames(modelBuilder);
-            
+
             // Comment out this function during migration
             PopulateSingleLeagueMatchesQuery(modelBuilder);
         }

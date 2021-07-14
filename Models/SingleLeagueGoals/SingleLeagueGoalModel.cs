@@ -10,13 +10,13 @@ namespace FoosballApi.Models.SingleLeagueGoals
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
+
         [Required]
         public DateTime TimeOfGoal { get; set; }
 
         [Required]
         public int MatchId { get; set; }
-        
+
         [ForeignKey("MatchId")]
         public virtual SingleLeagueMatchModel SingleLeagueMatchId { get; set; }
 
@@ -37,7 +37,7 @@ namespace FoosballApi.Models.SingleLeagueGoals
 
         [Required]
         public int OpponentScore { get; set; }
-        
+
         [Required]
         public bool WinnerGoal { get; set; }
 
