@@ -37,5 +37,21 @@ namespace FoosballApi.Controllers
 
             return Ok(_mapper.Map<IEnumerable<SingleLeagueGoalReadDto>>(allGoals));
         }
+
+        [HttpGet("{goalId}")]
+        public ActionResult<SingleLeagueGoalReadDto> GetSingleLeagueGoalById(int goalId)
+        {
+            string userId = User.Identity.Name;
+            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+            bool permission = _singleLeagueGoalService.CheckSingleLeagueGoalPermission(int.Parse(userId), goalId, int.Parse(currentOrganisationId));
+
+            if (!permission)
+                return Forbid();
+
+            var goal = _singleLeagueGoalService.GetSingleLeagueGoalById(goalId);
+
+            return Ok(_mapper.Map<SingleLeagueGoalReadDto>(goal));
+        }
     }
 }
