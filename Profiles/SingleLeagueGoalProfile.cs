@@ -10,6 +10,8 @@ namespace FoosballApi.Profiles
         {
             CreateMap<SingleLeagueGoalModel, SingleLeagueGoalReadDto>();
             CreateMap<SingleLeagueGoalReadDto, SingleLeagueGoalModel>();
+            CreateMap<SingleLeagueGoalReadDto, SingleLeagueCreateModel>();
+            CreateMap<SingleLeagueCreateModel, SingleLeagueGoalReadDto>();
         }
     }
 }

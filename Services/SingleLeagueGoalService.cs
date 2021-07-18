@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FoosballApi.Data;
+using FoosballApi.Dtos.SingleLeagueGoals;
 using FoosballApi.Models.SingleLeagueGoals;
 
 namespace FoosballApi.Services
@@ -15,6 +16,8 @@ namespace FoosballApi.Services
         SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId);
 
         void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel);
+
+        SingleLeagueGoalModel CreateSingleLeagueGoal(SingleLeagueCreateModel singleLeagueCreateMode);
     }
     public class SingleLeagueGoalService : ISingleLeagueGoalService
     {
@@ -49,6 +52,29 @@ namespace FoosballApi.Services
             }
 
             return result;
+        }
+
+        public SingleLeagueGoalModel CreateSingleLeagueGoal(SingleLeagueCreateModel singleLeagueCreateMode)
+        {
+            DateTime now = DateTime.Now;
+            if (singleLeagueCreateMode == null)
+            {
+                throw new ArgumentNullException(nameof(singleLeagueCreateMode));
+            }
+
+            SingleLeagueGoalModel newGoal = new();
+            newGoal.TimeOfGoal = now;
+            newGoal.MatchId = singleLeagueCreateMode.MatchId;
+            newGoal.ScoredByUserId = singleLeagueCreateMode.ScoredByUserId;
+            newGoal.OpponentId = singleLeagueCreateMode.OpponentId;
+            newGoal.ScorerScore = singleLeagueCreateMode.ScorerScore;
+            newGoal.OpponentScore = singleLeagueCreateMode.OpponentScore;
+            newGoal.WinnerGoal = singleLeagueCreateMode.WinnerGoal;
+            
+            _context.SingleLeagueGoals.Add(newGoal);
+            _context.SaveChanges();
+
+            return newGoal;
         }
 
         public void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel)

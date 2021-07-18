@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.SingleLeagueGoals;
+using FoosballApi.Models.SingleLeagueGoals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -39,20 +41,26 @@ namespace FoosballApi.Controllers
             return Ok(_mapper.Map<IEnumerable<SingleLeagueGoalReadDto>>(allGoals));
         }
 
-        [HttpGet("{goalId}")]
+        [HttpGet("{goalId}", Name="getSingleLeagueById")]
         public ActionResult<SingleLeagueGoalReadDto> GetSingleLeagueGoalById(int goalId)
         {
-            string userId = User.Identity.Name;
-            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+            try {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
 
-            bool permission = _singleLeagueGoalService.CheckSingleLeagueGoalPermission(int.Parse(userId), goalId, int.Parse(currentOrganisationId));
+                bool permission = _singleLeagueGoalService.CheckSingleLeagueGoalPermission(int.Parse(userId), goalId, int.Parse(currentOrganisationId));
 
-            if (!permission)
-                return Forbid();
+                if (!permission)
+                    return Forbid();
 
-            var goal = _singleLeagueGoalService.GetSingleLeagueGoalById(goalId);
+                var goal = _singleLeagueGoalService.GetSingleLeagueGoalById(goalId);
 
-            return Ok(_mapper.Map<SingleLeagueGoalReadDto>(goal));
+                return Ok(_mapper.Map<SingleLeagueGoalReadDto>(goal));
+            }
+            catch(Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpDelete()]
@@ -72,6 +80,18 @@ namespace FoosballApi.Controllers
             _singleLeagueGoalService.DeleteSingleLeagueGoal(goalItem);
 
             return NoContent();
+        }
+
+        [HttpPost("")]
+        public ActionResult CreateSingleLeagueGoal([FromBody] SingleLeagueCreateModel singleLeagueCreateModel)
+        {
+            string userId = User.Identity.Name;
+
+            var newGoal = _singleLeagueGoalService.CreateSingleLeagueGoal(singleLeagueCreateModel);
+
+            var singleLeagueGoalReadDto = _mapper.Map<SingleLeagueGoalReadDto>(singleLeagueCreateModel);
+
+            return CreatedAtRoute("getSingleLeagueById", new { goalId = newGoal.Id }, singleLeagueGoalReadDto);
         }
     }
 }
