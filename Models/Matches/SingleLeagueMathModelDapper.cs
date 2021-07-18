@@ -22,6 +22,6 @@ namespace FoosballApi.Models.Matches
         public bool MatchEnded { get; set; }
 
         public bool MatchPaused { get; set; }
-        
+
     }
 }

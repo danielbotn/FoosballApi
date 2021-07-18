@@ -211,7 +211,7 @@ namespace FoosballApi.Services
             {
                 throw new ArgumentNullException(nameof(singleLeagueMatchModel));
             }
-        
+
             var allGoals = _context.SingleLeagueGoals.Where(x => x.MatchId == matchId).ToList();
 
             var tx = await _context.Database.BeginTransactionAsync(ct);
@@ -219,9 +219,8 @@ namespace FoosballApi.Services
             string sqlString = $"DELETE FROM single_league_goals WHERE match_id = {matchId}";
 
             await _context.ExecuteAsync(ct, sqlString);
-            
-            await tx.CommitAsync(ct);
 
+            await tx.CommitAsync(ct);
 
             singleLeagueMatchModel.StartTime = null;
             singleLeagueMatchModel.EndTime = null;

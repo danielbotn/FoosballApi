@@ -39,7 +39,7 @@ namespace FoosballApi.Services
 
             var leaguePlayersQuery = _context.LeaguePlayers.Where(x => x.UserId == userId && x.LeagueId == leaguId).ToList();
 
-            foreach(var lp in leaguePlayersQuery)
+            foreach (var lp in leaguePlayersQuery)
             {
                 if (lp.UserId == userId)
                 {
