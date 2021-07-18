@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using FoosballApi.Models.Matches;
 using FoosballApi.Models.Other;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FoosballApi.Services
 {
@@ -23,6 +25,8 @@ namespace FoosballApi.Services
         bool SaveChanges();
 
         IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId);
+
+        Task<IEnumerable<SingleLeagueMathModelDapper>> TestDapper(CancellationToken ct);
     }
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
@@ -184,6 +188,17 @@ namespace FoosballApi.Services
                 item.value.PositionInLeague = item.i + 1;
             }
             return result;
+        }
+
+        public async Task<IEnumerable<SingleLeagueMathModelDapper>> TestDapper(CancellationToken ct)
+        {
+            var tx = await _context.Database.BeginTransactionAsync();
+
+            var gaur = await _context.QueryAsync<SingleLeagueMathModelDapper>(ct, @"
+                SELECT slm.id, slm.player_one, slm.player_two, slm.match_started, slm.match_ended, slm.league_id 
+                FROM single_league_matches slm");
+
+            return gaur;
         }
     }
 }

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Services;
@@ -55,6 +57,16 @@ namespace FoosballApi.Controllers
 
             return Ok(_mapper.Map<SingleLeagueMatchReadDto>(match));
         }
+        
+        // TO DO Remove this code. To use dapper see how this endpoints works
+        // [HttpGet("test-dapper")]
+        // public async Task<ActionResult> TestDapper()
+        // {
+        //     CancellationToken ct = new();
+        //     var gaur = await _singleLeagueMatchService.TestDapper(ct);
+
+        //     return Ok(gaur);
+        // }
 
         [HttpPatch("")]
         public ActionResult UpdateSingleLeagueMatch(int matchId, JsonPatchDocument<SingleLeagueMatchUpdateDto> patchDoc)

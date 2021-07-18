@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FoosballApi.Data;
@@ -12,6 +13,8 @@ namespace FoosballApi.Services
         bool CheckSingleLeagueGoalPermission(int userId, int goalId, int organisationId);
 
         SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId);
+
+        void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel);
     }
     public class SingleLeagueGoalService : ISingleLeagueGoalService
     {
@@ -48,6 +51,16 @@ namespace FoosballApi.Services
             return result;
         }
 
+        public void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel)
+        {
+             if (singleLeagueGoalModel == null)
+            {
+                throw new ArgumentNullException(nameof(singleLeagueGoalModel));
+            }
+            _context.SingleLeagueGoals.Remove(singleLeagueGoalModel);
+            _context.SaveChanges();
+        }
+
         public IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByMatchId(int matchId)
         {
             var query = _context.SingleLeagueGoals
@@ -70,6 +83,11 @@ namespace FoosballApi.Services
         public SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId)
         {
             return _context.SingleLeagueGoals.FirstOrDefault(x => x.Id == goaldId);
+        }
+
+        public bool SaveChanges()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

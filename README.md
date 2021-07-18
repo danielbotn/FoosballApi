@@ -96,6 +96,156 @@ when doing patch requests. Have the body something like this:
 ]
 ```
 
+## Triggers
+A couple of Postgres triggers are used in the system. Here are the complete up to date list of all the triggers.
+
+## add_single_league_goal()
+This function updates the single_league_matches table after on insert on the single_league_goals table
+
+```sql
+CREATE OR REPLACE FUNCTION add_single_league_goal()
+RETURNS trigger AS
+$$
+DECLARE
+  player_one_select integer := null;
+  player_two_select integer := null;
+BEGIN
+	SELECT player_one into player_one_select FROM single_league_matches where id = new.match_id and player_one = new.scored_by_user_id;
+	SELECT player_two into player_two_select FROM single_league_matches where id = new.match_id and player_two = new.scored_by_user_id;
+	
+	if (player_one_select is not NULL) then
+		update single_league_matches
+		SET player_one_score = new.scorer_score
+		where id = new.match_id;
+	end if;
+	
+	if (player_two_select is not NULL) then
+		update single_league_matches
+		SET player_two_score = new.scorer_score
+		where id = new.match_id;
+	end if;
+	
+	if (new.winner_goal = true) then
+		update single_league_matches
+		SET match_ended = true
+		where id = new.match_id;
+	end if;
+	
+	RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER add_single_league_goal
+AFTER INSERT
+ON single_league_goals
+FOR EACH ROW
+EXECUTE PROCEDURE add_single_league_goal();
+```
+
+## create_single_league_matches
+This function runs after the single_league table is updated
+
+```sql
+CREATE OR REPLACE FUNCTION create_single_league_matches()
+RETURNS trigger AS
+$$
+DECLARE
+  user_ids integer[] := null;
+  i integer;
+  iterator integer := 0;
+  array_length integer;
+  counter integer := 0;
+  counterMax integer := 2;
+BEGIN
+	if (NEW.has_league_started = true and OLD.has_league_started = false and old.type_of_league = 'single_league') then
+		SELECT INTO user_ids array_agg(user_id) FROM league_players WHERE league_id = OLD.id;
+		SELECT INTO array_length count(id) FROM league_players WHERE league_id = OLD.id;
+		SELECT INTO counterMax how_many_rounds FROM leagues WHERE id = OLD.id;
+		if (counterMax is NULL) then
+			counterMax := 2;
+		end if;
+		LOOP
+			exit when counter = counterMax; 
+			counter := counter + 1 ;
+			iterator := 0;
+			FOREACH i IN ARRAY user_ids
+			LOOP
+			iterator := iterator + 1;
+			   FOR j in iterator .. array_length
+			   LOOP
+					IF (i != user_ids[j]) THEN
+						INSERT INTO single_league_matches(player_one, player_two, league_id, start_time, end_time, player_one_score, player_two_score, match_ended, match_paused, match_started)
+						VALUES(i, user_ids[j], OLD.id, null, null, 0, 0, false, false, false);
+					END IF;
+			   END LOOP;
+			END LOOP;
+		END LOOP;
+	end if;
+	RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER create_single_league_matches
+AFTER UPDATE
+ON leagues
+FOR EACH ROW
+EXECUTE PROCEDURE create_single_league_matches();
+```
+
+## end_single_league_match()
+When the match is ended the database updates the current timestamp to the end_time field
+
+```sql
+CREATE OR REPLACE FUNCTION end_single_league_match()
+RETURNS trigger AS
+$$
+BEGIN
+	if (NEW.match_ended = true and OLD.match_ended = false) then
+		update single_league_matches
+		SET end_time = CURRENT_TIMESTAMP
+		where id = old.id;
+	end if;
+	RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER end_single_league_match
+AFTER UPDATE
+ON single_league_matches
+FOR EACH ROW
+EXECUTE PROCEDURE end_single_league_match();
+```
+
+## start_single_league_match
+When a match is started the database updates the current timestamp to the start_time field
+
+```sql
+CREATE OR REPLACE FUNCTION start_single_league_match()
+RETURNS trigger AS
+$$
+BEGIN
+	if (NEW.match_started = true and OLD.match_started = false and old.player_one_score = 0 and old.player_two_score = 0) then
+		update single_league_matches
+		SET start_time = CURRENT_TIMESTAMP
+		where id = old.id;
+	end if;
+	RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER end_single_league_match
+AFTER UPDATE
+ON single_league_matches
+FOR EACH ROW
+EXECUTE PROCEDURE end_single_league_match();
+```
+
+
+
 ## Thanks
 
 **Foosball** © 2021+, Mossfellsbær City. Released under the [MIT License].<br>
