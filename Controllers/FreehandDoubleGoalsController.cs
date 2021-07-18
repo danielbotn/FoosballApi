@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.DoubleGoals;
@@ -27,110 +28,143 @@ namespace FoosballApi.Controllers
         [HttpGet("goals/{matchId}")]
         public ActionResult<IEnumerable<FreehandDoubleGoalsJoinDto>> GetFreehandDoubleGoalsByMatchId()
         {
-            string matchId = RouteData.Values["matchId"].ToString();
-            string userId = User.Identity.Name;
+            try {
+                string matchId = RouteData.Values["matchId"].ToString();
+                string userId = User.Identity.Name;
 
-            bool access = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), int.Parse(matchId));
+                bool access = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), int.Parse(matchId));
 
-            if (!access)
-                return Forbid();
+                if (!access)
+                    return Forbid();
 
-            var allGoals = _doubleFreehandGoalservice.GetAllFreehandGoals(int.Parse(matchId), int.Parse(userId));
+                var allGoals = _doubleFreehandGoalservice.GetAllFreehandGoals(int.Parse(matchId), int.Parse(userId));
 
-            if (allGoals == null)
-                return NotFound();
+                if (allGoals == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<IEnumerable<FreehandDoubleGoalsJoinDto>>(allGoals));
-
+                return Ok(_mapper.Map<IEnumerable<FreehandDoubleGoalsJoinDto>>(allGoals));
+            }
+            catch(Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpGet("{goalId}", Name = "GetFreehandDoubleGoalById")]
         public ActionResult<FreehandDoubleGoalReadDto> GetFreehandDoubleGoalById(int goalId, int matchId)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            bool matchAccess = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+                bool matchAccess = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
-            if (!matchAccess)
-                return Forbid();
+                if (!matchAccess)
+                    return Forbid();
 
-            bool goalAccess = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
+                bool goalAccess = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
 
-            if (!goalAccess)
-                return Forbid();
+                if (!goalAccess)
+                    return Forbid();
 
-            var freehandDoubleGoal = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
+                var freehandDoubleGoal = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
 
-            return Ok(_mapper.Map<FreehandDoubleGoalReadDto>(freehandDoubleGoal));
+                return Ok(_mapper.Map<FreehandDoubleGoalReadDto>(freehandDoubleGoal));
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost("")]
         public ActionResult CreateFreehandDoubleGoal([FromBody] FreehandDoubleGoalCreateDto freehandGoalCreateDto)
         {
-            int matchId = freehandGoalCreateDto.DoubleMatchId;
-            string userId = User.Identity.Name;
+            try
+            {
+                int matchId = freehandGoalCreateDto.DoubleMatchId;
+                string userId = User.Identity.Name;
 
-            bool matchAccess = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+                bool matchAccess = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
-            if (!matchAccess)
-                return Forbid();
+                if (!matchAccess)
+                    return Forbid();
 
-            var newGoal = _doubleFreehandGoalservice.CreateDoubleFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
+                var newGoal = _doubleFreehandGoalservice.CreateDoubleFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
 
-            var freehandGoalReadDto = _mapper.Map<FreehandDoubleGoalReadDto>(newGoal);
+                var freehandGoalReadDto = _mapper.Map<FreehandDoubleGoalReadDto>(newGoal);
 
-            return CreatedAtRoute("GetFreehandDoubleGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
+                return CreatedAtRoute("GetFreehandDoubleGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpDelete("{goalId}")]
         public ActionResult DeleteDoubleFreehandGoal(int goalId, int matchId)
         {
-            string userId = User.Identity.Name;
-            var goalItem = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
-            if (goalItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var goalItem = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
+                if (goalItem == null)
+                    return NotFound();
 
-            bool hasPermission = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+                bool hasPermission = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            _doubleFreehandGoalservice.DeleteFreehandGoal(goalItem);
+                _doubleFreehandGoalservice.DeleteFreehandGoal(goalItem);
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPatch()]
         public ActionResult UpdateFreehandDoubleGoal(int goalId, int matchId, JsonPatchDocument<FreehandDoubleGoalUpdateDto> patchDoc)
         {
-            string userId = User.Identity.Name;
-            var goalItem = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
-            if (goalItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var goalItem = _doubleFreehandGoalservice.GetFreehandDoubleGoal(goalId);
+                if (goalItem == null)
+                    return NotFound();
 
-            bool matchPermission = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+                bool matchPermission = _doubleFreehandMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
-            if (!matchPermission)
-                return Forbid();
+                if (!matchPermission)
+                    return Forbid();
 
-            bool goalPermission = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
+                bool goalPermission = _doubleFreehandGoalservice.CheckGoalPermission(int.Parse(userId), matchId, goalId);
 
-            if (!goalPermission)
-                return Forbid();
+                if (!goalPermission)
+                    return Forbid();
 
-            var freehandGoalToPatch = _mapper.Map<FreehandDoubleGoalUpdateDto>(goalItem);
-            patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
+                var freehandGoalToPatch = _mapper.Map<FreehandDoubleGoalUpdateDto>(goalItem);
+                patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
 
-            if (!TryValidateModel(freehandGoalToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(freehandGoalToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(freehandGoalToPatch, goalItem);
+                _mapper.Map(freehandGoalToPatch, goalItem);
 
-            _doubleFreehandGoalservice.UpdateFreehanDoubledGoal(goalItem);
+                _doubleFreehandGoalservice.UpdateFreehanDoubledGoal(goalItem);
 
-            _doubleFreehandGoalservice.SaveChanges();
+                _doubleFreehandGoalservice.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
     }
 }

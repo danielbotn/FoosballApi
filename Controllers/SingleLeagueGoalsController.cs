@@ -29,16 +29,24 @@ namespace FoosballApi.Controllers
         [HttpGet()]
         public ActionResult<IEnumerable<SingleLeagueGoalReadDto>> GetAllSingleLeagueGoalsByMatchId(int leagueId, int matchId)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
+                bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
 
-            if (!permission)
-                return Forbid();
+                if (!permission)
+                    return Forbid();
 
-            var allGoals = _singleLeagueGoalService.GetAllSingleLeagueGoalsByMatchId(matchId);
+                var allGoals = _singleLeagueGoalService.GetAllSingleLeagueGoalsByMatchId(matchId);
 
-            return Ok(_mapper.Map<IEnumerable<SingleLeagueGoalReadDto>>(allGoals));
+                return Ok(_mapper.Map<IEnumerable<SingleLeagueGoalReadDto>>(allGoals));
+            }
+            catch (Exception e)
+            {
+
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpGet("{goalId}", Name="getSingleLeagueById")]
@@ -66,32 +74,51 @@ namespace FoosballApi.Controllers
         [HttpDelete()]
         public ActionResult DeleteSingleLeagueGoalById(int goalId)
         {
-            string userId = User.Identity.Name;
-            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
-            var goalItem = _singleLeagueGoalService.GetSingleLeagueGoalById(goalId);
-            if (goalItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+                var goalItem = _singleLeagueGoalService.GetSingleLeagueGoalById(goalId);
+                if (goalItem == null)
+                    return NotFound();
 
-            bool hasPermission = _singleLeagueGoalService.CheckSingleLeagueGoalPermission(int.Parse(userId), goalId, int.Parse(currentOrganisationId));
+                bool hasPermission = _singleLeagueGoalService.CheckSingleLeagueGoalPermission(int.Parse(userId), goalId, int.Parse(currentOrganisationId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            _singleLeagueGoalService.DeleteSingleLeagueGoal(goalItem);
+                _singleLeagueGoalService.DeleteSingleLeagueGoal(goalItem);
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost("")]
         public ActionResult CreateSingleLeagueGoal([FromBody] SingleLeagueCreateModel singleLeagueCreateModel)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            var newGoal = _singleLeagueGoalService.CreateSingleLeagueGoal(singleLeagueCreateModel);
+                bool permission = _singleLeagueGoalService.CheckCreatePermission(int.Parse(userId), singleLeagueCreateModel);
 
-            var singleLeagueGoalReadDto = _mapper.Map<SingleLeagueGoalReadDto>(singleLeagueCreateModel);
+                if (!permission)
+                    return Forbid();
 
-            return CreatedAtRoute("getSingleLeagueById", new { goalId = newGoal.Id }, singleLeagueGoalReadDto);
+                var newGoal = _singleLeagueGoalService.CreateSingleLeagueGoal(singleLeagueCreateModel);
+
+                var singleLeagueGoalReadDto = _mapper.Map<SingleLeagueGoalReadDto>(singleLeagueCreateModel);
+
+                return CreatedAtRoute("getSingleLeagueById", new { goalId = newGoal.Id }, singleLeagueGoalReadDto);
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
     }
 }

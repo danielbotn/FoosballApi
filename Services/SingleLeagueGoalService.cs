@@ -13,6 +13,8 @@ namespace FoosballApi.Services
 
         bool CheckSingleLeagueGoalPermission(int userId, int goalId, int organisationId);
 
+        bool CheckCreatePermission(int userId, SingleLeagueCreateModel singleLeagueCreateModel);
+
         SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId);
 
         void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel);
@@ -26,6 +28,16 @@ namespace FoosballApi.Services
         public SingleLeagueGoalService(DataContext context)
         {
             _context = context;
+        }
+
+        public bool CheckCreatePermission(int userId, SingleLeagueCreateModel singleLeagueCreateModel)
+        {
+            bool result = false;
+
+            if (userId == singleLeagueCreateModel.ScoredByUserId || userId == singleLeagueCreateModel.OpponentId)
+                result = true;
+            
+            return result;
         }
 
         public bool CheckSingleLeagueGoalPermission(int userId, int goalId, int organisationId)
@@ -109,11 +121,6 @@ namespace FoosballApi.Services
         public SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId)
         {
             return _context.SingleLeagueGoals.FirstOrDefault(x => x.Id == goaldId);
-        }
-
-        public bool SaveChanges()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.DoubleMatches;
@@ -25,33 +26,47 @@ namespace FoosballApi.Controllers
         [HttpGet("")]
         public ActionResult<IEnumerable<FreehandDoubleMatchReadDto>> GetAllFreehandDoubleMatchesByUser()
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            var allMatches = _doubleMatchService.GetAllFreehandDoubleMatches(int.Parse(userId));
+                var allMatches = _doubleMatchService.GetAllFreehandDoubleMatches(int.Parse(userId));
 
-            if (allMatches == null)
-                return NotFound();
+                if (allMatches == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<IEnumerable<FreehandDoubleMatchReadDto>>(allMatches));
+                return Ok(_mapper.Map<IEnumerable<FreehandDoubleMatchReadDto>>(allMatches));
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpGet("{matchId}", Name = "GetFreehandDoubleMatchByMatchId")]
         public ActionResult<FreehandDoubleMatchReadDto> GetFreehandDoubleMatchByMatchId()
         {
-            string matchId = RouteData.Values["matchId"].ToString();
-            string userId = User.Identity.Name;
+            try
+            {
+                string matchId = RouteData.Values["matchId"].ToString();
+                string userId = User.Identity.Name;
 
-            bool access = _doubleMatchService.CheckMatchPermission(int.Parse(userId), int.Parse(matchId));
+                bool access = _doubleMatchService.CheckMatchPermission(int.Parse(userId), int.Parse(matchId));
 
-            if (!access)
-                return Forbid();
+                if (!access)
+                    return Forbid();
 
-            var match = _doubleMatchService.GetFreehandDoubleMatchById(int.Parse(matchId));
+                var match = _doubleMatchService.GetFreehandDoubleMatchById(int.Parse(matchId));
 
-            if (match == null)
-                return NotFound();
+                if (match == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<FreehandDoubleMatchReadDto>(match));
+                return Ok(_mapper.Map<FreehandDoubleMatchReadDto>(match));
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost()]
@@ -69,50 +84,64 @@ namespace FoosballApi.Controllers
         [HttpPatch()]
         public ActionResult UpdateDoubleFreehandMatch(int matchId, JsonPatchDocument<FreehandDoubleMatchUpdateDto> patchDoc)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            var matchItem = _doubleMatchService.GetFreehandDoubleMatchById(matchId);
-            if (matchItem == null)
-                return NotFound();
+                var matchItem = _doubleMatchService.GetFreehandDoubleMatchById(matchId);
+                if (matchItem == null)
+                    return NotFound();
 
-            bool hasPermission = _doubleMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+                bool hasPermission = _doubleMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            var freehandMatchToPatch = _mapper.Map<FreehandDoubleMatchUpdateDto>(matchItem);
-            patchDoc.ApplyTo(freehandMatchToPatch, ModelState);
+                var freehandMatchToPatch = _mapper.Map<FreehandDoubleMatchUpdateDto>(matchItem);
+                patchDoc.ApplyTo(freehandMatchToPatch, ModelState);
 
-            if (!TryValidateModel(freehandMatchToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(freehandMatchToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(freehandMatchToPatch, matchItem);
+                _mapper.Map(freehandMatchToPatch, matchItem);
 
-            _doubleMatchService.UpdateFreehandMatch(matchItem);
+                _doubleMatchService.UpdateFreehandMatch(matchItem);
 
-            _doubleMatchService.SaveChanges();
+                _doubleMatchService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpDelete()]
         public ActionResult DeleteDoubleFreehandMatch(int matchId)
         {
-            string userId = User.Identity.Name;
-            var matchItem = _doubleMatchService.GetFreehandDoubleMatchById(matchId);
-            if (matchItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var matchItem = _doubleMatchService.GetFreehandDoubleMatchById(matchId);
+                if (matchItem == null)
+                    return NotFound();
 
-            bool hasPermission = _doubleMatchService.CheckMatchPermission(int.Parse(userId), matchId);
+                bool hasPermission = _doubleMatchService.CheckMatchPermission(int.Parse(userId), matchId);
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            _doubleMatchService.DeleteFreehandMatch(matchItem);
+                _doubleMatchService.DeleteFreehandMatch(matchItem);
 
-            _doubleMatchService.SaveChanges();
+                _doubleMatchService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
     }
 }

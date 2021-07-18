@@ -35,66 +35,99 @@ namespace FoosballApi.Controllers
         [HttpPost("login")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-            var user = _authService.Authenticate(model.Username, model.Password);
-
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
-            string tokenString = _authService.CreateToken(user);
-
-            return Ok(new
+            try
             {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Token = tokenString
-            });
+                var user = _authService.Authenticate(model.Username, model.Password);
+
+                if (user == null)
+                    return BadRequest(new { message = "Username or password is incorrect" });
+
+                string tokenString = _authService.CreateToken(user);
+
+                return Ok(new
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Token = tokenString
+                });
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost("register")]
         public ActionResult<UserReadDto> CreateUser(UserCreateDto userCreateDto)
         {
-            var userModel = _mapper.Map<User>(userCreateDto);
-            var user = _userService.GetUserByEmail(userCreateDto.Email);
-
-            if (user != null)
+            try
             {
-                return Conflict();
+                var userModel = _mapper.Map<User>(userCreateDto);
+                var user = _userService.GetUserByEmail(userCreateDto.Email);
+
+                if (user != null)
+                    return Conflict();
+
+                _authService.CreateUser(userModel);
+                var tmpUser = _userService.GetUserByEmail(userCreateDto.Email);
+                var vModel = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
+
+                var userReadDto = _mapper.Map<UserReadDto>(userModel);
+
+                _emailService.SendVerificationEmail(vModel, tmpUser, Request.Headers["origin"]);
+
+                return CreatedAtRoute(nameof(UsersController.GetUserById), new { Id = userReadDto.Id }, userReadDto);
             }
-
-            _authService.CreateUser(userModel);
-            var tmpUser = _userService.GetUserByEmail(userCreateDto.Email);
-            var vModel = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
-
-            var userReadDto = _mapper.Map<UserReadDto>(userModel);
-
-            _emailService.SendVerificationEmail(vModel, tmpUser, Request.Headers["origin"]);
-
-            return CreatedAtRoute(nameof(UsersController.GetUserById), new { Id = userReadDto.Id }, userReadDto);
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost("verify-email")]
         public IActionResult VerifyEmail(VerifyEmailRequest model)
         {
-            _authService.VerifyEmail(model.Token);
-            return Ok(new { message = "Verification successful, you can now login" });
+            try
+            {
+                _authService.VerifyEmail(model.Token);
+                return Ok(new { message = "Verification successful, you can now login" });
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost("forgot-password")]
         public IActionResult ForgotPassword(ForgotPasswordRequest model)
         {
-            var verification = _authService.ForgotPassword(model, Request.Headers["origin"]);
-            var user = _userService.GetUserByEmail(model.Email);
-            _emailService.SendPasswordResetEmail(verification, user, Request.Headers["origin"]);
-            return Ok(new { message = "Please check your email for password reset instructions" });
+            try
+            {
+                var verification = _authService.ForgotPassword(model, Request.Headers["origin"]);
+                var user = _userService.GetUserByEmail(model.Email);
+                _emailService.SendPasswordResetEmail(verification, user, Request.Headers["origin"]);
+                return Ok(new { message = "Please check your email for password reset instructions" });
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpPost("reset-password")]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
-            _authService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
+            try
+            {
+                _authService.ResetPassword(model);
+                return Ok(new { message = "Password reset successful, you can now login" });
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
     }
 }
