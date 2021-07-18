@@ -53,7 +53,7 @@ namespace FoosballApi.Services
 
         public void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel)
         {
-             if (singleLeagueGoalModel == null)
+            if (singleLeagueGoalModel == null)
             {
                 throw new ArgumentNullException(nameof(singleLeagueGoalModel));
             }

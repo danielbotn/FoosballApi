@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FoosballApi.Dtos.SingleLeagueMatches;
+using FoosballApi.Models.Matches;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -57,16 +58,6 @@ namespace FoosballApi.Controllers
 
             return Ok(_mapper.Map<SingleLeagueMatchReadDto>(match));
         }
-        
-        // TO DO Remove this code. To use dapper see how this endpoints works
-        // [HttpGet("test-dapper")]
-        // public async Task<ActionResult> TestDapper()
-        // {
-        //     CancellationToken ct = new();
-        //     var gaur = await _singleLeagueMatchService.TestDapper(ct);
-
-        //     return Ok(gaur);
-        // }
 
         [HttpPatch("")]
         public ActionResult UpdateSingleLeagueMatch(int matchId, JsonPatchDocument<SingleLeagueMatchUpdateDto> patchDoc)
@@ -93,6 +84,25 @@ namespace FoosballApi.Controllers
             _singleLeagueMatchService.UpdateSingleLeagueMatch(match);
 
             _singleLeagueMatchService.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpPut("reset-match")]
+        public async Task<ActionResult> DeleteSingleLeagueMatchById(int matchId)
+        {
+            string userId = User.Identity.Name;
+            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+            var matchItem = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+            if (matchItem == null)
+                return NotFound();
+
+            bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
+
+            if (!hasPermission)
+                return Forbid();
+
+            var gaur = await _singleLeagueMatchService.ResetMatch(matchItem, matchId);
 
             return NoContent();
         }

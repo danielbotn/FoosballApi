@@ -246,6 +246,8 @@ EXECUTE PROCEDURE end_single_league_match();
 
 ## delete_single_league_goal
 When a single league goal is deleted we want to update the score in the single_league_matches table
+OBS!! This trigger was removed. Was making a mess. See if it is possible to have this trigger used
+with AFTER DELETE instead of BEFORE DELETE
 
 ```sql
 CREATE OR REPLACE FUNCTION delete_single_league_goal()

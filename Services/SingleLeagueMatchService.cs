@@ -7,6 +7,7 @@ using FoosballApi.Models.Matches;
 using FoosballApi.Models.Other;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace FoosballApi.Services
 {
@@ -27,6 +28,8 @@ namespace FoosballApi.Services
         IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId);
 
         Task<IEnumerable<SingleLeagueMathModelDapper>> TestDapper(CancellationToken ct);
+
+        Task<SingleLeagueMatchModel> ResetMatch(SingleLeagueMatchModel singleLeagueMatchModel, int matchId);
     }
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
@@ -194,11 +197,44 @@ namespace FoosballApi.Services
         {
             var tx = await _context.Database.BeginTransactionAsync();
 
-            var gaur = await _context.QueryAsync<SingleLeagueMathModelDapper>(ct, @"
+            var dapperReadData = await _context.QueryAsync<SingleLeagueMathModelDapper>(ct, @"
                 SELECT slm.id, slm.player_one, slm.player_two, slm.match_started, slm.match_ended, slm.league_id 
                 FROM single_league_matches slm");
 
-            return gaur;
+            return dapperReadData;
+        }
+
+        public async Task<SingleLeagueMatchModel> ResetMatch(SingleLeagueMatchModel singleLeagueMatchModel, int matchId)
+        {
+            CancellationToken ct = new();
+            if (singleLeagueMatchModel == null)
+            {
+                throw new ArgumentNullException(nameof(singleLeagueMatchModel));
+            }
+        
+            var allGoals = _context.SingleLeagueGoals.Where(x => x.MatchId == matchId).ToList();
+
+            var tx = await _context.Database.BeginTransactionAsync(ct);
+
+            string sqlString = $"DELETE FROM single_league_goals WHERE match_id = {matchId}";
+
+            await _context.ExecuteAsync(ct, sqlString);
+            
+            await tx.CommitAsync(ct);
+
+
+            singleLeagueMatchModel.StartTime = null;
+            singleLeagueMatchModel.EndTime = null;
+            singleLeagueMatchModel.PlayerOneScore = 0;
+            singleLeagueMatchModel.PlayerTwoScore = 0;
+            singleLeagueMatchModel.MatchStarted = false;
+            singleLeagueMatchModel.MatchEnded = false;
+            singleLeagueMatchModel.MatchPaused = false;
+
+            _context.SingleLeagueMatches.Update(singleLeagueMatchModel);
+            _context.SaveChanges();
+
+            return singleLeagueMatchModel;
         }
     }
 }
