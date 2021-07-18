@@ -244,6 +244,50 @@ FOR EACH ROW
 EXECUTE PROCEDURE end_single_league_match();
 ```
 
+## delete_single_league_goal
+When a single league goal is deleted we want to update the score in the single_league_matches table
+
+```sql
+CREATE OR REPLACE FUNCTION delete_single_league_goal()
+RETURNS trigger AS
+$$
+DECLARE
+  user_who_scored integer := null;
+  the_match_id integer := null;
+  player_one_id integer := null;
+  player_two_id integer := null;
+BEGIN
+    SELECT scored_by_user_id into user_who_scored FROM single_league_goals where id = OLD.id;
+	SELECT match_id into the_match_id FROM single_league_goals where id = OLD.id;
+	
+	if (user_who_scored is not NULL) then
+	    SELECT player_one into player_one_id FROM single_league_matches where id = the_match_id;
+		SELECT player_two into player_two_id FROM single_league_matches where id = the_match_id;
+		
+		if (player_one_id = user_who_scored) then
+			update single_league_matches
+			SET player_one_score = player_one_score - 1
+			where id = the_match_id;
+		end if;
+		
+		if (player_two_id = user_who_scored) then
+			update single_league_matches
+			SET player_two_score = player_two_score - 1
+			where id = the_match_id;
+		end if;
+		
+	end if;
+RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER delete_single_league_goal
+BEFORE DELETE
+ON single_league_goals
+FOR EACH ROW
+EXECUTE PROCEDURE delete_single_league_goal();
+```
 
 
 ## Thanks
