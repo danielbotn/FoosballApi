@@ -10,6 +10,20 @@ namespace FoosballApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "double_league_teams",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    name = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_double_league_teams", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "organisations",
                 columns: table => new
                 {
@@ -71,6 +85,73 @@ namespace FoosballApi.Migrations
                         principalTable: "organisations",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "double_league_matches",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    team_one_id = table.Column<int>(type: "integer", nullable: false),
+                    team_two_id = table.Column<int>(type: "integer", nullable: false),
+                    league_id = table.Column<int>(type: "integer", nullable: false),
+                    start_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    end_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    double_goal_id = table.Column<int>(type: "integer", nullable: false),
+                    team_one_score = table.Column<int>(type: "integer", nullable: true),
+                    team_two_score = table.Column<int>(type: "integer", nullable: true),
+                    match_started = table.Column<bool>(type: "boolean", nullable: true),
+                    match_ended = table.Column<bool>(type: "boolean", nullable: true),
+                    match_paused = table.Column<bool>(type: "boolean", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_double_league_matches", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_double_league_matches_double_league_teams_team_one_id",
+                        column: x => x.team_one_id,
+                        principalTable: "double_league_teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_double_league_matches_double_league_teams_team_two_id",
+                        column: x => x.team_two_id,
+                        principalTable: "double_league_teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_double_league_matches_leagues_league_id",
+                        column: x => x.league_id,
+                        principalTable: "leagues",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "double_league_players",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    user_id = table.Column<int>(type: "integer", nullable: false),
+                    double_league_team_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_double_league_players", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_double_league_players_double_league_teams_double_league_team_",
+                        column: x => x.double_league_team_id,
+                        principalTable: "double_league_teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_double_league_players_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -286,6 +367,43 @@ namespace FoosballApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "double_league_goals",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    time_of_goal = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    match_id = table.Column<int>(type: "integer", nullable: false),
+                    scored_by_team_id = table.Column<int>(type: "integer", nullable: false),
+                    opponent_team_id = table.Column<int>(type: "integer", nullable: false),
+                    scorer_team_score = table.Column<int>(type: "integer", nullable: false),
+                    opponent_team_score = table.Column<int>(type: "integer", nullable: false),
+                    winner_goal = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_double_league_goals", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_double_league_goals_double_league_matches_match_id",
+                        column: x => x.match_id,
+                        principalTable: "double_league_matches",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_double_league_goals_double_league_teams_opponent_team_id",
+                        column: x => x.opponent_team_id,
+                        principalTable: "double_league_teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_double_league_goals_double_league_teams_scored_by_team_id",
+                        column: x => x.scored_by_team_id,
+                        principalTable: "double_league_teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "freehand_double_goals",
                 columns: table => new
                 {
@@ -388,6 +506,46 @@ namespace FoosballApi.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_goals_match_id",
+                table: "double_league_goals",
+                column: "match_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_goals_opponent_team_id",
+                table: "double_league_goals",
+                column: "opponent_team_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_goals_scored_by_team_id",
+                table: "double_league_goals",
+                column: "scored_by_team_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_matches_league_id",
+                table: "double_league_matches",
+                column: "league_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_matches_team_one_id",
+                table: "double_league_matches",
+                column: "team_one_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_matches_team_two_id",
+                table: "double_league_matches",
+                column: "team_two_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_players_double_league_team_id",
+                table: "double_league_players",
+                column: "double_league_team_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_double_league_players_user_id",
+                table: "double_league_players",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_freehand_double_goals_double_match_id",
@@ -523,6 +681,12 @@ namespace FoosballApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "double_league_goals");
+
+            migrationBuilder.DropTable(
+                name: "double_league_players");
+
+            migrationBuilder.DropTable(
                 name: "freehand_double_goals");
 
             migrationBuilder.DropTable(
@@ -541,6 +705,9 @@ namespace FoosballApi.Migrations
                 name: "verifications");
 
             migrationBuilder.DropTable(
+                name: "double_league_matches");
+
+            migrationBuilder.DropTable(
                 name: "freehand_double_matches");
 
             migrationBuilder.DropTable(
@@ -548,6 +715,9 @@ namespace FoosballApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "single_league_matches");
+
+            migrationBuilder.DropTable(
+                name: "double_league_teams");
 
             migrationBuilder.DropTable(
                 name: "leagues");
