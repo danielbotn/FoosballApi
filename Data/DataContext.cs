@@ -108,6 +108,9 @@ namespace FoosballApi.Data
 
                     break;
                 case IMutableProperty property:
+                    // StoreObjectIdentifier soi = new();
+                    // property.SetColumnName(ConvertGeneralToSnake(mapper, soi.Name));
+                    // Svona var þetta.
                     property.SetColumnName(ConvertGeneralToSnake(mapper, property.GetColumnName()));
                     break;
                 case IMutableKey primaryKey:
@@ -117,7 +120,7 @@ namespace FoosballApi.Data
                     foreignKey.SetConstraintName(ConvertKeyToSnake(mapper, foreignKey.GetConstraintName()));
                     break;
                 case IMutableIndex indexKey:
-                    indexKey.SetName(ConvertKeyToSnake(mapper, indexKey.GetName()));
+                    indexKey.SetDatabaseName(ConvertKeyToSnake(mapper, indexKey.GetDatabaseName()));
                     break;
                 default:
                     throw new NotImplementedException("Unexpected type was provided to snake case converter");

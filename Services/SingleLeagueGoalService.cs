@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FoosballApi.Data;
 using FoosballApi.Dtos.SingleLeagueGoals;
+using FoosballApi.Models.Matches;
 using FoosballApi.Models.SingleLeagueGoals;
 
 namespace FoosballApi.Services
@@ -95,7 +96,11 @@ namespace FoosballApi.Services
             {
                 throw new ArgumentNullException(nameof(singleLeagueGoalModel));
             }
+
+            var matchToChange = _context.SingleLeagueMatches.Where(x => x.Id == singleLeagueGoalModel.MatchId).FirstOrDefault();
+
             _context.SingleLeagueGoals.Remove(singleLeagueGoalModel);
+            UpdateSingleLeagueMatchScore(matchToChange, singleLeagueGoalModel);
             _context.SaveChanges();
         }
 
@@ -121,6 +126,21 @@ namespace FoosballApi.Services
         public SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId)
         {
             return _context.SingleLeagueGoals.FirstOrDefault(x => x.Id == goaldId);
+        }
+
+        private void UpdateSingleLeagueMatchScore(SingleLeagueMatchModel matchToChange, SingleLeagueGoalModel singleLeagueGoalModel)
+        {
+            if (matchToChange.PlayerOne == singleLeagueGoalModel.ScoredByUserId)
+            {
+                if (matchToChange.PlayerOneScore > 0)
+                    matchToChange.PlayerOneScore -= 1;
+            }
+            if (matchToChange.PlayerTwo == singleLeagueGoalModel.ScoredByUserId)
+            {
+                if (matchToChange.PlayerTwoScore > 0)
+                    matchToChange.PlayerTwoScore -= 1;
+            }
+            _context.SingleLeagueMatches.Update(matchToChange);
         }
     }
 }
