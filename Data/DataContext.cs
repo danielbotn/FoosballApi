@@ -34,7 +34,7 @@ namespace FoosballApi.Data
             FixSnakeCaseNames(modelBuilder);
 
             // Comment out this function during migration
-            PopulateSingleLeagueMatchesQuery(modelBuilder);
+            // PopulateSingleLeagueMatchesQuery(modelBuilder);
         }
 
         // Query for fromRawSql() function
@@ -68,7 +68,7 @@ namespace FoosballApi.Data
 
         // When running EF Core migrations comment out this line
         // Used for making querying database wiht fromsqlraw easier
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
 
         private void FixSnakeCaseNames(ModelBuilder modelBuilder)
         {

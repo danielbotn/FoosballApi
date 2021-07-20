@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FoosballApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210719232353_InitialMigration")]
+    [Migration("20210720191756_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,10 +80,6 @@ namespace FoosballApi.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
-
-                    b.Property<int>("DoubleGoalId")
-                        .HasColumnType("integer")
-                        .HasColumnName("double_goal_id");
 
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp without time zone")
@@ -180,12 +176,26 @@ namespace FoosballApi.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("integer")
+                        .HasColumnName("league_id");
+
                     b.Property<string>("Name")
                         .HasColumnType("text")
                         .HasColumnName("name");
 
+                    b.Property<int>("OrganisationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("organisation_id");
+
                     b.HasKey("Id")
                         .HasName("pk_double_league_teams");
+
+                    b.HasIndex("LeagueId")
+                        .HasDatabaseName("ix_double_league_teams_league_id");
+
+                    b.HasIndex("OrganisationId")
+                        .HasDatabaseName("ix_double_league_teams_organisation_id");
 
                     b.ToTable("double_league_teams");
                 });
@@ -842,6 +852,27 @@ namespace FoosballApi.Migrations
                     b.Navigation("DoubleLeagueTeamModelFk");
 
                     b.Navigation("UserIdFk");
+                });
+
+            modelBuilder.Entity("FoosballApi.Models.DoubleLeagueTeams.DoubleLeagueTeamModel", b =>
+                {
+                    b.HasOne("FoosballApi.Models.Leagues.LeagueModel", "LeagueModelFk")
+                        .WithMany()
+                        .HasForeignKey("LeagueId")
+                        .HasConstraintName("fk_double_league_teams_leagues_league_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoosballApi.OrganisationModel", "OrganisationModelFk")
+                        .WithMany()
+                        .HasForeignKey("OrganisationId")
+                        .HasConstraintName("fk_double_league_teams_organisations_organisation_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LeagueModelFk");
+
+                    b.Navigation("OrganisationModelFk");
                 });
 
             modelBuilder.Entity("FoosballApi.Models.Goals.FreehandDoubleGoalModel", b =>

@@ -34,13 +34,14 @@ namespace FoosballApi.Models.DoubleLeagueMatches
 
         public DateTime? EndTime { get; set; }
 
-        [Required]
-        public int DoubleGoalId { get; set; }
-
         public int? TeamOneScore { get; set; }
+
         public int? TeamTwoScore { get; set; }
+
         public bool? MatchStarted { get; set; }
+
         public bool? MatchEnded { get; set; }
+        
         public bool? MatchPaused { get; set; }
     }
 }
