@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FoosballApi.Data;
@@ -10,6 +11,12 @@ namespace FoosballApi.Services
         IEnumerable<DoubleLeagueTeamModel> GetDoubleLeagueTeamsByLeagueId(int leagueId);
 
         bool CheckLeaguePermission(int leagueId, int userId);
+
+        DoubleLeagueTeamModel CreateDoubleLeagueTeam(int leagueId, int currentOrganisationId, string name);
+
+        bool CheckDoubleLeagueTeamPermission(int teamId, int userId, int currentOrganisationId);
+
+        DoubleLeagueTeamModel GetDoubleLeagueTeamById(int teamId);
     }
 
     public class DoubleLeagueTeamService : IDoubleLeagueTeamService
@@ -21,10 +28,22 @@ namespace FoosballApi.Services
             _context = context;
         }
 
-        /* 
-        select dlp.id, dlp.user_id, dlp.double_league_team_id, dlt.league_id from double_league_players dlp
-        join double_league_teams dlt on dlp.double_league_team_id = dlt.id
-        */
+        public bool CheckDoubleLeagueTeamPermission(int teamId, int userId, int currentOrganisationId)
+        {
+            var query = _context.DoubleLeagueTeams.FirstOrDefault(x => x.Id == teamId);
+
+            if (query.OrganisationId != currentOrganisationId)
+                return false;
+
+            var query2 = _context.OrganisationList.Where(x => x.OrganisationId == query.OrganisationId && x.UserId == userId).FirstOrDefault();
+
+            if (query2.OrganisationId == currentOrganisationId && query2.UserId == userId)
+                return true;
+
+            
+            return false;
+        }
+
         public bool CheckLeaguePermission(int leagueId, int userId)
         {
             bool result = false;
@@ -52,6 +71,26 @@ namespace FoosballApi.Services
             }
             
             return result;
+        }
+
+        public DoubleLeagueTeamModel CreateDoubleLeagueTeam(int leagueId, int currentOrganisationId, string name)
+        {
+            DateTime now = DateTime.Now;
+            DoubleLeagueTeamModel newTeam = new();
+            newTeam.Name = name;
+            newTeam.CreatedAt = now;
+            newTeam.OrganisationId = currentOrganisationId;
+            newTeam.LeagueId = leagueId;
+
+            _context.DoubleLeagueTeams.Add(newTeam);
+            _context.SaveChanges();
+
+            return newTeam;
+        }
+
+        public DoubleLeagueTeamModel GetDoubleLeagueTeamById(int teamId)
+        {
+            return _context.DoubleLeagueTeams.FirstOrDefault(x => x.Id == teamId);
         }
 
         public IEnumerable<DoubleLeagueTeamModel> GetDoubleLeagueTeamsByLeagueId(int leagueId)
