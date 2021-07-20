@@ -55,7 +55,7 @@ namespace FoosballApi.Controllers
             }
             catch (Exception e)
             {
-                return UnprocessableEntity(e);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -82,7 +82,7 @@ namespace FoosballApi.Controllers
             }
             catch (Exception e)
             {
-                return UnprocessableEntity(e);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -96,7 +96,7 @@ namespace FoosballApi.Controllers
             }
             catch (Exception e)
             {
-                return UnprocessableEntity(e);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -112,7 +112,7 @@ namespace FoosballApi.Controllers
             }
             catch (Exception e)
             {
-                return UnprocessableEntity(e);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -126,7 +126,7 @@ namespace FoosballApi.Controllers
             }
             catch (Exception e)
             {
-                return UnprocessableEntity(e);
+                return StatusCode(500, e.Message);
             }
         }
     }
