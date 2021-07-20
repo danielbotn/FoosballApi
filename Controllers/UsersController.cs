@@ -5,6 +5,7 @@ using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 
@@ -27,67 +28,96 @@ namespace FoosballApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
-            var commandItems = _userService.GetAllUsers();
+            try
+            {
+                var allUsers = _userService.GetAllUsers();
 
-            return Ok(_mapper.Map<IEnumerable<UserReadDto>>(commandItems));
+                return Ok(_mapper.Map<IEnumerable<UserReadDto>>(allUsers));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("{id}", Name = "GetUserById")]
         public ActionResult<UserReadDto> GetUserById(int id)
         {
-            var userItem = _userService.GetUserById(id);
+            try
+            {
+                var userItem = _userService.GetUserById(id);
 
-            if (userItem == null)
-                return NotFound();
+                if (userItem == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<UserReadDto>(userItem));
+                return Ok(_mapper.Map<UserReadDto>(userItem));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPatch("{id}")]
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<UserUpdateDto> patchDoc)
         {
-            var userModelFromRepo = _userService.GetUserById(id);
-            if (userModelFromRepo == null)
-                return NotFound();
+            try
+            {
+                var userModelFromRepo = _userService.GetUserById(id);
 
-            string userId = User.Identity.Name;
+                if (userModelFromRepo == null)
+                    return NotFound();
 
-            if (int.Parse(userId) != id)
-                return Forbid();
+                string userId = User.Identity.Name;
 
-            var userToPatch = _mapper.Map<UserUpdateDto>(userModelFromRepo);
-            patchDoc.ApplyTo(userToPatch, ModelState);
+                if (int.Parse(userId) != id)
+                    return Forbid();
 
-            if (!TryValidateModel(userToPatch))
-                return ValidationProblem(ModelState);
+                var userToPatch = _mapper.Map<UserUpdateDto>(userModelFromRepo);
+                patchDoc.ApplyTo(userToPatch, ModelState);
 
-            _mapper.Map(userToPatch, userModelFromRepo);
+                if (!TryValidateModel(userToPatch))
+                    return ValidationProblem(ModelState);
 
-            _userService.UpdateUser(userModelFromRepo);
+                _mapper.Map(userToPatch, userModelFromRepo);
 
-            _userService.SaveChanges();
+                _userService.UpdateUser(userModelFromRepo);
 
-            return NoContent();
+                _userService.SaveChanges();
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteUser(int id)
         {
-            var userModelFromRepo = _userService.GetUserById(id);
+            try
+            {
+                var userModelFromRepo = _userService.GetUserById(id);
 
-            if (userModelFromRepo == null)
-                return NotFound();
+                if (userModelFromRepo == null)
+                    return NotFound();
 
-            string userId = User.Identity.Name;
+                string userId = User.Identity.Name;
 
-            if (int.Parse(userId) != id)
-                return Forbid();
+                if (int.Parse(userId) != id)
+                    return Forbid();
 
-            _userService.DeleteUser(userModelFromRepo);
+                _userService.DeleteUser(userModelFromRepo);
 
-            _userService.SaveChanges();
+                _userService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

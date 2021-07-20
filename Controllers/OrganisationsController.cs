@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Organisations;
@@ -28,83 +29,125 @@ namespace FoosballApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<OrganisationReadDto>> GetAllOrganisations()
         {
-            var orgItems = _organisationService.GettAllOrganisations();
+            try
+            {
+                var orgItems = _organisationService.GettAllOrganisations();
 
-            return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(orgItems));
+                return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(orgItems));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPost]
         public ActionResult CreateOrganisation([FromBody] OrganisationModelCreate organisationModel)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            int organisationId = _organisationService.CreateOrganisation(organisationModel, int.Parse(userId));
+                int organisationId = _organisationService.CreateOrganisation(organisationModel, int.Parse(userId));
 
-            var organisationReadDto = _mapper.Map<OrganisationReadDto>(organisationModel);
+                var organisationReadDto = _mapper.Map<OrganisationReadDto>(organisationModel);
 
-            return CreatedAtRoute("getOrganisationById", new { Id = organisationId }, organisationReadDto);
+                return CreatedAtRoute("getOrganisationById", new { Id = organisationId }, organisationReadDto);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("{id}", Name = "getOrganisationById")]
         public ActionResult<OrganisationReadDto> GetOrganisationById(int id)
         {
-            var userItem = _organisationService.GetOrganisationById(id);
+            try
+            {
+                var userItem = _organisationService.GetOrganisationById(id);
 
-            if (userItem == null)
-                return NotFound();
+                if (userItem == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<OrganisationReadDto>(userItem));
+                return Ok(_mapper.Map<OrganisationReadDto>(userItem));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPatch("{id}")]
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
         {
-            var orgItem = _organisationService.GetOrganisationById(id);
+            try
+            {
+                var orgItem = _organisationService.GetOrganisationById(id);
 
-            if (orgItem == null)
-                return NotFound();
+                if (orgItem == null)
+                    return NotFound();
 
-            string userId = User.Identity.Name;
+                string userId = User.Identity.Name;
 
-            if (int.Parse(userId) != id)
-                return Forbid();
+                if (int.Parse(userId) != id)
+                    return Forbid();
 
-            var organisationToPatch = _mapper.Map<OrganisationUpdateDto>(orgItem);
-            patchDoc.ApplyTo(organisationToPatch, ModelState);
+                var organisationToPatch = _mapper.Map<OrganisationUpdateDto>(orgItem);
+                patchDoc.ApplyTo(organisationToPatch, ModelState);
 
-            if (!TryValidateModel(organisationToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(organisationToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(organisationToPatch, orgItem);
+                _mapper.Map(organisationToPatch, orgItem);
 
-            _organisationService.UpdateOrganisation(orgItem);
+                _organisationService.UpdateOrganisation(orgItem);
 
-            _organisationService.SaveChanges();
+                _organisationService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("user")]
         public ActionResult<OrganisationReadDto> GetOrganisationsByUser(int id)
         {
-            var userItem = _organisationService.GetOrganisationsByUser(id);
+            try
+            {
+                var userItem = _organisationService.GetOrganisationsByUser(id);
 
-            return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(userItem));
+                return Ok(_mapper.Map<IEnumerable<OrganisationReadDto>>(userItem));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteOrganisation(int id)
         {
-            var organisation = _organisationService.GetOrganisationById(id);
+            try
+            {
+                var organisation = _organisationService.GetOrganisationById(id);
 
-            if (organisation == null)
-                return NotFound();
+                if (organisation == null)
+                    return NotFound();
 
-            _organisationService.DeleteOrganisation(organisation);
+                _organisationService.DeleteOrganisation(organisation);
 
-            _organisationService.SaveChanges();
+                _organisationService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

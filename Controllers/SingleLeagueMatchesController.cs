@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,83 +29,111 @@ namespace FoosballApi.Controllers
         [HttpGet()]
         public ActionResult<IEnumerable<SingleLeagueMatchReadDto>> GetAllSingleLeaguesMatchesByOrganisationId(int leagueId)
         {
-            string userId = User.Identity.Name;
-            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+            try
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
 
-            bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
+                bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
 
-            if (!permission)
-                return Forbid();
+                if (!permission)
+                    return Forbid();
 
-            var allMatches = _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
+                var allMatches = _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
 
-            return Ok(allMatches);
+                return Ok(allMatches);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("{matchId}", Name = "GetSingleLeagueMatchById")]
         public ActionResult<SingleLeagueMatchReadDto> GetSingleLeagueMatchById(int matchId)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
+                bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+                var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
 
-            if (match == null)
-                return NotFound();
+                if (match == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<SingleLeagueMatchReadDto>(match));
+                return Ok(_mapper.Map<SingleLeagueMatchReadDto>(match));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPatch("")]
         public ActionResult UpdateSingleLeagueMatch(int matchId, JsonPatchDocument<SingleLeagueMatchUpdateDto> patchDoc)
         {
-            var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+            try
+            {
+                var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
 
-            if (match == null)
-                return NotFound();
+                if (match == null)
+                    return NotFound();
 
-            string userId = User.Identity.Name;
-            bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
+                string userId = User.Identity.Name;
+                bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            var matchToPatch = _mapper.Map<SingleLeagueMatchUpdateDto>(match);
-            patchDoc.ApplyTo(matchToPatch, ModelState);
+                var matchToPatch = _mapper.Map<SingleLeagueMatchUpdateDto>(match);
+                patchDoc.ApplyTo(matchToPatch, ModelState);
 
-            if (!TryValidateModel(matchToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(matchToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(matchToPatch, match);
+                _mapper.Map(matchToPatch, match);
 
-            _singleLeagueMatchService.UpdateSingleLeagueMatch(match);
+                _singleLeagueMatchService.UpdateSingleLeagueMatch(match);
 
-            _singleLeagueMatchService.SaveChanges();
+                _singleLeagueMatchService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPut("reset-match")]
         public async Task<ActionResult> DeleteSingleLeagueMatchById(int matchId)
         {
-            string userId = User.Identity.Name;
-            string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
-            var matchItem = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
-            if (matchItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
 
-            bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
+                var matchItem = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+                if (matchItem == null)
+                    return NotFound();
 
-            if (!hasPermission)
-                return Forbid();
+                bool hasPermission = _singleLeagueMatchService.CheckMatchPermission(matchId, int.Parse(userId));
 
-            var gaur = await _singleLeagueMatchService.ResetMatch(matchItem, matchId);
+                if (!hasPermission)
+                    return Forbid();
 
-            return NoContent();
+                await _singleLeagueMatchService.ResetMatch(matchItem, matchId);
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

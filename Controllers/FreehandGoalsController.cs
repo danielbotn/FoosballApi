@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Goals;
@@ -27,19 +28,26 @@ namespace FoosballApi.Controllers
         [HttpGet("goals/{matchId}")]
         public ActionResult<IEnumerable<FreehandGoalReadDto>> GetFreehandGoalsByMatchId()
         {
-            string matchId = RouteData.Values["matchId"].ToString();
-            string userId = User.Identity.Name;
-            bool access = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
+            try
+            {
+                string matchId = RouteData.Values["matchId"].ToString();
+                string userId = User.Identity.Name;
+                bool access = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
 
-            if (!access)
-                return Forbid();
+                if (!access)
+                    return Forbid();
 
-            var allGoals = _goalService.GetFreehandGoalsByMatchId(int.Parse(matchId), int.Parse(userId));
+                var allGoals = _goalService.GetFreehandGoalsByMatchId(int.Parse(matchId), int.Parse(userId));
 
-            if (allGoals != null)
-                return Ok(_mapper.Map<IEnumerable<FreehandGoalReadDto>>(allGoals));
+                if (allGoals != null)
+                    return Ok(_mapper.Map<IEnumerable<FreehandGoalReadDto>>(allGoals));
 
-            return NotFound();
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("{goalId}", Name = "GetFreehandGoalById")]
@@ -69,65 +77,86 @@ namespace FoosballApi.Controllers
         [HttpPost("")]
         public ActionResult CreateFreehandGoal([FromBody] FreehandGoalCreateDto freehandGoalCreateDto)
         {
-            int matchId = freehandGoalCreateDto.MatchId;
-            string userId = User.Identity.Name;
+            try
+            {
+                int matchId = freehandGoalCreateDto.MatchId;
+                string userId = User.Identity.Name;
 
-            bool access = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+                bool access = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
-            if (!access)
-                return Forbid();
+                if (!access)
+                    return Forbid();
 
-            var newGoal = _goalService.CreateFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
+                var newGoal = _goalService.CreateFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
 
-            var freehandGoalReadDto = _mapper.Map<FreehandGoalReadDto>(newGoal);
+                var freehandGoalReadDto = _mapper.Map<FreehandGoalReadDto>(newGoal);
 
-            return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
+                return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e);
+            }
         }
 
         [HttpDelete("{goalId}")]
         public ActionResult DeleteFeehandGoal(int goalID, int matchId)
         {
-            string userId = User.Identity.Name;
-            var goalItem = _goalService.GetFreehandGoalById(goalID);
-            if (goalItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var goalItem = _goalService.GetFreehandGoalById(goalID);
+                if (goalItem == null)
+                    return NotFound();
 
-            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+                bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            _goalService.DeleteFreehandGoal(goalItem);
+                _goalService.DeleteFreehandGoal(goalItem);
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPatch]
         public ActionResult UpdateFreehandGoal(int goalID, int matchID, JsonPatchDocument<FreehandGoalUpdateDto> patchDoc)
         {
-            string userId = User.Identity.Name;
-            var goalItem = _goalService.GetFreehandGoalById(goalID);
-            if (goalItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var goalItem = _goalService.GetFreehandGoalById(goalID);
+                if (goalItem == null)
+                    return NotFound();
 
-            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchID, int.Parse(userId));
+                bool hasPermission = _matchService.CheckFreehandMatchPermission(matchID, int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            var freehandGoalToPatch = _mapper.Map<FreehandGoalUpdateDto>(goalItem);
-            patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
+                var freehandGoalToPatch = _mapper.Map<FreehandGoalUpdateDto>(goalItem);
+                patchDoc.ApplyTo(freehandGoalToPatch, ModelState);
 
-            if (!TryValidateModel(freehandGoalToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(freehandGoalToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(freehandGoalToPatch, goalItem);
+                _mapper.Map(freehandGoalToPatch, goalItem);
 
-            _goalService.UpdateFreehandGoal(goalItem);
+                _goalService.UpdateFreehandGoal(goalItem);
 
-            _goalService.SaveChanges();
+                _goalService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

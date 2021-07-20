@@ -30,143 +30,192 @@ namespace FoosballApi.Controllers
         [HttpGet("organisation")]
         public ActionResult<IEnumerable<LeagueReadDto>> GetLeaguesByOrganisation(int organisationId)
         {
-            string userId = User.Identity.Name;
-            var leagues = _leagueService.GetLeaguesByOrganisation(organisationId);
+            try
+            {
+                string userId = User.Identity.Name;
+                var leagues = _leagueService.GetLeaguesByOrganisation(organisationId);
 
-            bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
+                bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
 
-            if (!hasAccess)
-                return Forbid();
+                if (!hasAccess)
+                    return Forbid();
 
-            if (leagues == null)
-                return NotFound();
+                if (leagues == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<IEnumerable<LeagueReadDto>>(leagues));
+                return Ok(_mapper.Map<IEnumerable<LeagueReadDto>>(leagues));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("{id}")]
         public ActionResult<LeagueReadDto> GetLeagueById()
         {
-            string leagueId = RouteData.Values["id"].ToString();
-            string userId = User.Identity.Name;
+            try
+            {
+                string leagueId = RouteData.Values["id"].ToString();
+                string userId = User.Identity.Name;
 
-            int organisationId = _leagueService.GetOrganisationId(int.Parse(leagueId));
+                int organisationId = _leagueService.GetOrganisationId(int.Parse(leagueId));
 
-            bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
+                bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
 
-            if (!hasAccess)
-                return Forbid();
+                if (!hasAccess)
+                    return Forbid();
 
-            LeagueModel leagueModel = _leagueService.GetLeagueById(int.Parse(leagueId));
+                LeagueModel leagueModel = _leagueService.GetLeagueById(int.Parse(leagueId));
 
-            if (leagueModel == null)
-                return NotFound();
+                if (leagueModel == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<LeagueReadDto>(leagueModel));
+                return Ok(_mapper.Map<LeagueReadDto>(leagueModel));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPatch("{id}")]
         public ActionResult PartialLeagueUpdate(int id, JsonPatchDocument<LeagueUpdateDto> patchDoc)
         {
-            var leagueItem = _leagueService.GetLeagueById(id);
+            try
+            {
+                var leagueItem = _leagueService.GetLeagueById(id);
 
-            if (leagueItem == null)
-                return NotFound();
+                if (leagueItem == null)
+                    return NotFound();
 
-            string userId = User.Identity.Name;
+                string userId = User.Identity.Name;
 
-            if (int.Parse(userId) != id)
-                return Forbid();
+                if (int.Parse(userId) != id)
+                    return Forbid();
 
-            var leagueToPatch = _mapper.Map<LeagueUpdateDto>(leagueItem);
-            patchDoc.ApplyTo(leagueToPatch, ModelState);
+                var leagueToPatch = _mapper.Map<LeagueUpdateDto>(leagueItem);
+                patchDoc.ApplyTo(leagueToPatch, ModelState);
 
-            if (!TryValidateModel(leagueToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(leagueToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(leagueToPatch, leagueItem);
+                _mapper.Map(leagueToPatch, leagueItem);
 
-            _leagueService.UpdateLeague(leagueItem);
+                _leagueService.UpdateLeague(leagueItem);
 
-            _leagueService.SaveChanges();
+                _leagueService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("league-players")]
         public ActionResult<IEnumerable<LeaguePlayersReadDto>> GetLeaguePlayers(int leagueId)
         {
-            string userId = User.Identity.Name;
-            var leaguePlayers = _leagueService.GetLeaguesPlayers(leagueId);
+            try
+            {
+                string userId = User.Identity.Name;
+                var leaguePlayers = _leagueService.GetLeaguesPlayers(leagueId);
 
-            int organisationId = _leagueService.GetOrganisationId(leagueId);
+                int organisationId = _leagueService.GetOrganisationId(leagueId);
 
-            bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
+                bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), organisationId);
 
-            if (!hasAccess)
-                return Forbid();
+                if (!hasAccess)
+                    return Forbid();
 
-            if (leaguePlayers == null)
-                return NotFound();
+                if (leaguePlayers == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<IEnumerable<LeaguePlayersReadDto>>(leaguePlayers));
+                return Ok(_mapper.Map<IEnumerable<LeaguePlayersReadDto>>(leaguePlayers));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPost()]
         public IActionResult CreateLeague([FromBody] LeagueModelCreate leagueModelCreate)
         {
-            DateTime now = DateTime.Now;
-            LeagueModel leagueModel = new LeagueModel();
-            leagueModel.Name = leagueModelCreate.Name;
-            leagueModel.OrganisationId = leagueModelCreate.OrganisationId;
-            leagueModel.TypeOfLeague = leagueModelCreate.TypeOfLeague;
-            leagueModel.UpTo = leagueModelCreate.UpTo;
-            leagueModel.Created_at = now;
+            try
+            {
+                DateTime now = DateTime.Now;
+                LeagueModel leagueModel = new LeagueModel();
+                leagueModel.Name = leagueModelCreate.Name;
+                leagueModel.OrganisationId = leagueModelCreate.OrganisationId;
+                leagueModel.TypeOfLeague = leagueModelCreate.TypeOfLeague;
+                leagueModel.UpTo = leagueModelCreate.UpTo;
+                leagueModel.Created_at = now;
 
-            int userId = int.Parse(User.Identity.Name);
-            bool hasAccess = _leagueService.CheckLeagueAccess(userId, leagueModelCreate.OrganisationId);
+                int userId = int.Parse(User.Identity.Name);
+                bool hasAccess = _leagueService.CheckLeagueAccess(userId, leagueModelCreate.OrganisationId);
 
-            if (!hasAccess)
-                return Forbid();
+                if (!hasAccess)
+                    return Forbid();
 
-            _leagueService.CreateLeague(leagueModel);
+                _leagueService.CreateLeague(leagueModel);
 
-            // TODO CreatedAtRoute
-            return Ok();
+                // TODO CreatedAtRoute
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpDelete("")]
         public ActionResult DeleteLeagueById(int leagueId)
         {
-            string userId = User.Identity.Name;
-            LeagueModel league = _leagueService.GetLeagueById(leagueId);
-            if (league == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                LeagueModel league = _leagueService.GetLeagueById(leagueId);
+                if (league == null)
+                    return NotFound();
 
-            bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), league.OrganisationId);
+                bool hasAccess = _leagueService.CheckLeagueAccess(int.Parse(userId), league.OrganisationId);
 
-            if (!hasAccess)
-                return Forbid();
+                if (!hasAccess)
+                    return Forbid();
 
-            _leagueService.DeleteLeague(league);
+                _leagueService.DeleteLeague(league);
 
-            _leagueService.SaveChanges();
+                _leagueService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpGet("single-league/standings")]
         public ActionResult<IEnumerable<SingleLeagueStandingsReadDto>> GetLeagueStandings(int leagueId)
         {
-            string userId = User.Identity.Name;
-            bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
+            try
+            {
+                string userId = User.Identity.Name;
+                bool permission = _singleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
 
-            if (!permission)
-                return Forbid();
+                if (!permission)
+                    return Forbid();
 
-            var standings = _singleLeagueMatchService.GetSigleLeagueStandings(leagueId);
+                var standings = _singleLeagueMatchService.GetSigleLeagueStandings(leagueId);
 
-            return Ok(_mapper.Map<IEnumerable<SingleLeagueStandingsReadDto>>(standings));
+                return Ok(_mapper.Map<IEnumerable<SingleLeagueStandingsReadDto>>(standings));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Matches;
@@ -25,95 +26,129 @@ namespace FoosballApi.Controllers
         [HttpGet("")]
         public ActionResult<IEnumerable<FreehandMatchesReadDto>> GetAllFreehandMatchesByUser()
         {
-            string userId = User.Identity.Name;
-
-            var allMatches = _matchService.GetAllFreehandMatches(int.Parse(userId));
-
-            if (allMatches != null)
+            try
             {
+                string userId = User.Identity.Name;
+
+                var allMatches = _matchService.GetAllFreehandMatches(int.Parse(userId));
+
+                if (allMatches == null)
+                    return NotFound();
+
                 return Ok(_mapper.Map<IEnumerable<FreehandMatchesReadDto>>(allMatches));
             }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
 
-            return NotFound();
         }
 
         [HttpGet("{matchId}", Name = "GetFreehandMatchById")]
         public ActionResult<FreehandMatchesReadDto> GetFreehandMatchById()
         {
-            string matchId = RouteData.Values["matchId"].ToString();
-            string userId = User.Identity.Name;
+            try
+            {
+                string matchId = RouteData.Values["matchId"].ToString();
+                string userId = User.Identity.Name;
 
-            bool hasPermission = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
+                bool hasPermission = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            var allMatches = _matchService.GetFreehandMatchById(int.Parse(matchId));
+                var allMatches = _matchService.GetFreehandMatchById(int.Parse(matchId));
 
-            if (allMatches != null)
+                if (allMatches == null)
+                    return NotFound();
+
                 return Ok(_mapper.Map<FreehandMatchesReadDto>(allMatches));
-
-            return NotFound();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPost()]
         public ActionResult CreateFreehandMatch([FromBody] FreehandMatchCreateDto freehandMatchCreateDto)
         {
-            string userId = User.Identity.Name;
+            try
+            {
+                string userId = User.Identity.Name;
 
-            var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), freehandMatchCreateDto);
+                var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), freehandMatchCreateDto);
 
-            var freehandMatchesReadDto = _mapper.Map<FreehandMatchesReadDto>(newMatch);
+                var freehandMatchesReadDto = _mapper.Map<FreehandMatchesReadDto>(newMatch);
 
-            return CreatedAtRoute("GetFreehandMatchById", new { matchId = newMatch.Id }, freehandMatchesReadDto);
+                return CreatedAtRoute("GetFreehandMatchById", new { matchId = newMatch.Id }, freehandMatchesReadDto);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPatch()]
         public ActionResult UpdateFreehandMatch(int matchId, JsonPatchDocument<FreehandMatchUpdateDto> patchDoc)
         {
-            string userId = User.Identity.Name;
-            var matchItem = _matchService.GetFreehandMatchById(matchId);
-            if (matchItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var matchItem = _matchService.GetFreehandMatchById(matchId);
+                if (matchItem == null)
+                    return NotFound();
 
-            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+                bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            var freehandMatchToPatch = _mapper.Map<FreehandMatchUpdateDto>(matchItem);
-            patchDoc.ApplyTo(freehandMatchToPatch, ModelState);
+                var freehandMatchToPatch = _mapper.Map<FreehandMatchUpdateDto>(matchItem);
+                patchDoc.ApplyTo(freehandMatchToPatch, ModelState);
 
-            if (!TryValidateModel(freehandMatchToPatch))
-                return ValidationProblem(ModelState);
+                if (!TryValidateModel(freehandMatchToPatch))
+                    return ValidationProblem(ModelState);
 
-            _mapper.Map(freehandMatchToPatch, matchItem);
+                _mapper.Map(freehandMatchToPatch, matchItem);
 
-            _matchService.UpdateFreehandMatch(matchItem);
+                _matchService.UpdateFreehandMatch(matchItem);
 
-            _matchService.SaveChanges();
+                _matchService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpDelete()]
         public ActionResult DeleteFreehandMatchById(int matchId)
         {
-            string userId = User.Identity.Name;
-            var matchItem = _matchService.GetFreehandMatchById(matchId);
-            if (matchItem == null)
-                return NotFound();
+            try
+            {
+                string userId = User.Identity.Name;
+                var matchItem = _matchService.GetFreehandMatchById(matchId);
+                if (matchItem == null)
+                    return NotFound();
 
-            bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+                bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
-            if (!hasPermission)
-                return Forbid();
+                if (!hasPermission)
+                    return Forbid();
 
-            _matchService.DeleteFreehandMatch(matchItem);
+                _matchService.DeleteFreehandMatch(matchItem);
 
-            _matchService.SaveChanges();
+                _matchService.SaveChanges();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }
