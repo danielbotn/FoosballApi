@@ -53,25 +53,32 @@ namespace FoosballApi.Controllers
         [HttpGet("{goalId}", Name = "GetFreehandGoalById")]
         public ActionResult<FreehandGoalReadDto> GetFreehandGoalById(int matchId)
         {
-            string goalId = RouteData.Values["goalId"].ToString();
-            string userId = User.Identity.Name;
+            try
+            {
+                string goalId = RouteData.Values["goalId"].ToString();
+                string userId = User.Identity.Name;
 
-            bool matchPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+                bool matchPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
 
-            if (!matchPermission)
-                return Forbid();
+                if (!matchPermission)
+                    return Forbid();
 
-            bool goalPermission = _goalService.CheckGoalPermission(int.Parse(userId), matchId, int.Parse(goalId));
+                bool goalPermission = _goalService.CheckGoalPermission(int.Parse(userId), matchId, int.Parse(goalId));
 
-            if (!goalPermission)
-                return Forbid();
+                if (!goalPermission)
+                    return Forbid();
 
-            var allMatches = _goalService.GetFreehandGoalById(int.Parse(goalId));
+                var allMatches = _goalService.GetFreehandGoalById(int.Parse(goalId));
 
-            if (allMatches == null)
-                return NotFound();
+                if (allMatches == null)
+                    return NotFound();
 
-            return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
+                return Ok(_mapper.Map<FreehandGoalReadDto>(allMatches));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPost("")]
