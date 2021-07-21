@@ -94,5 +94,28 @@ namespace FoosballApi.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpDelete()]
+        public ActionResult DeleteDoubleLeagueTeam(int teamId, int leagueId)
+        {
+            try
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+                bool permission = _doubleLeagueTeamService.CheckLeaguePermission(leagueId, int.Parse(userId));
+
+                if (!permission)
+                    return Forbid();
+                
+                _doubleLeagueTeamService.DeleteDoubleLeagueTeam(teamId);
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

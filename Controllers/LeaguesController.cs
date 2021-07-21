@@ -145,21 +145,13 @@ namespace FoosballApi.Controllers
         {
             try
             {
-                DateTime now = DateTime.Now;
-                LeagueModel leagueModel = new LeagueModel();
-                leagueModel.Name = leagueModelCreate.Name;
-                leagueModel.OrganisationId = leagueModelCreate.OrganisationId;
-                leagueModel.TypeOfLeague = leagueModelCreate.TypeOfLeague;
-                leagueModel.UpTo = leagueModelCreate.UpTo;
-                leagueModel.Created_at = now;
-
                 int userId = int.Parse(User.Identity.Name);
                 bool hasAccess = _leagueService.CheckLeagueAccess(userId, leagueModelCreate.OrganisationId);
 
                 if (!hasAccess)
                     return Forbid();
 
-                _leagueService.CreateLeague(leagueModel);
+                _leagueService.CreateLeague(leagueModelCreate);
 
                 // TODO CreatedAtRoute
                 return Ok();

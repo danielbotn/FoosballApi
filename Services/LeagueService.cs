@@ -16,7 +16,7 @@ namespace FoosballApi.Services
 
         IEnumerable<LeaguePlayersJoinModel> GetLeaguesPlayers(int leagueId);
 
-        void CreateLeague(LeagueModel leagueModel);
+        void CreateLeague(LeagueModelCreate leagueModelCreate);
 
         LeagueModel GetLeagueById(int id);
         bool SaveChanges();
@@ -46,12 +46,29 @@ namespace FoosballApi.Services
             return true;
         }
 
-        public void CreateLeague(LeagueModel leagueModel)
+        public void CreateLeague(LeagueModelCreate leagueModelCreate)
         {
-            if (leagueModel == null)
+            if (leagueModelCreate == null)
             {
-                throw new ArgumentNullException(nameof(leagueModel));
+                throw new ArgumentNullException(nameof(leagueModelCreate));
             }
+
+            DateTime now = DateTime.Now;
+            LeagueModel leagueModel = new LeagueModel();
+            leagueModel.Name = leagueModelCreate.Name;
+            leagueModel.OrganisationId = leagueModelCreate.OrganisationId;
+            leagueModel.TypeOfLeague = leagueModelCreate.TypeOfLeague;
+            leagueModel.UpTo = leagueModelCreate.UpTo;
+            leagueModel.Created_at = now;
+
+            if (leagueModelCreate.HowManyRounds != null)
+            {
+                leagueModel.HowManyRounds = leagueModelCreate.HowManyRounds;
+            }
+            else {
+                leagueModel.HowManyRounds = 2;
+            }
+           
             _context.Leagues.Add(leagueModel);
             _context.SaveChanges();
         }

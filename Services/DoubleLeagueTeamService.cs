@@ -17,6 +17,8 @@ namespace FoosballApi.Services
         bool CheckDoubleLeagueTeamPermission(int teamId, int userId, int currentOrganisationId);
 
         DoubleLeagueTeamModel GetDoubleLeagueTeamById(int teamId);
+        
+        void DeleteDoubleLeagueTeam(int teamId);
     }
 
     public class DoubleLeagueTeamService : IDoubleLeagueTeamService
@@ -86,6 +88,19 @@ namespace FoosballApi.Services
             _context.SaveChanges();
 
             return newTeam;
+        }
+
+        public void DeleteDoubleLeagueTeam(int teamId)
+        {
+            var itemToDelete = _context.DoubleLeagueTeams.FirstOrDefault(x => x.Id == teamId);
+
+            if (itemToDelete == null)
+            {
+                throw new ArgumentNullException(nameof(itemToDelete));
+            }
+
+            _context.DoubleLeagueTeams.Remove(itemToDelete);
+            _context.SaveChanges();
         }
 
         public DoubleLeagueTeamModel GetDoubleLeagueTeamById(int teamId)
