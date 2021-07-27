@@ -11,6 +11,10 @@ namespace FoosballApi.Services
         bool CheckLeaguePermission(int leagueId, int userId);
 
         IEnumerable<AllMatchesModel> GetAllMatchesByOrganisationId(int currentOrganisationId, int leagueId);
+
+        bool CheckMatchAccess(int matchId, int userId, int currentOrganisationId);
+
+        AllMatchesModel GetDoubleLeagueMatchById(int matchId);
     }
 
     public class DoubleLeaugeMatchService : IDoubleLeaugeMatchService
@@ -39,6 +43,25 @@ namespace FoosballApi.Services
             foreach (var item in data)
             {
                 if (item.LeagueId == leagueId && item.UserId == userId)
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        public bool CheckMatchAccess(int matchId, int userId, int currentOrganisationId)
+        {
+            bool result = false;
+            var query = _context.DoubleLeagueMatches.SingleOrDefault(x => x.Id == matchId);
+
+            var query2 = _context.DoubleLeagueTeams.Where(x => x.Id == query.TeamOneId || x.Id == query.TeamTwoId).ToList();
+
+            foreach (var item in query2)
+            {
+                if (item.OrganisationId == currentOrganisationId)
                 {
                     result = true;
                     break;
@@ -101,6 +124,55 @@ namespace FoosballApi.Services
 
            }
             return result;
+        }
+
+        public AllMatchesModel GetDoubleLeagueMatchById(int matchId)
+        {
+           var query = _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == matchId);
+
+           var subquery = from dlp in _context.DoubleLeaguePlayers
+                    where dlp.DoubleLeagueTeamId == query.TeamOneId
+                    join u in _context.Users on dlp.UserId equals u.Id
+                    select new TeamModel
+                    {
+                        Id = dlp.Id,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email
+                    };
+            
+            var teamOne = subquery.ToArray();
+
+            var subquery2 = from dlp in _context.DoubleLeaguePlayers
+                    where dlp.DoubleLeagueTeamId == query.TeamTwoId
+                    join u in _context.Users on dlp.UserId equals u.Id
+                    select new TeamModel
+                    {
+                        Id = dlp.Id,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email
+                    };
+            
+            var teamTwo = subquery2.ToArray();
+
+            var allTeams = new AllMatchesModel {
+                Id = query.Id,
+                TeamOneId = query.TeamOneId,
+                TeamTwoId = query.TeamTwoId,
+                LeagueId = query.LeagueId,
+                StartTime = query.StartTime,
+                EndTime = query.EndTime,
+                TeamOneScore = (int)query.TeamOneScore,
+                TeamTwoScore = (int)query.TeamTwoScore,
+                MatchStarted = (bool)query.MatchStarted,
+                MatchEnded = (bool)query.MatchEnded,
+                MatchPaused = (bool)query.MatchPaused,
+                TeamOne = teamOne,
+                TeamTwo = teamTwo
+            };
+
+            return allTeams;
         }
     }
 }

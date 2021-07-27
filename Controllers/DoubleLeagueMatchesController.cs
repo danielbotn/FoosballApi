@@ -23,8 +23,8 @@ namespace FoosballApi.Controllers
             _doubleLeaugeMatchService = doubleLeaugeMatchService;
         }
 
-        [HttpGet("leagueId")]
-        public ActionResult<IEnumerable<AllMatchesModel>> GetAllDoubleLeaguesMatchesByLeagueId(int leagueId)
+        [HttpGet("")]
+        public ActionResult<IEnumerable<AllMatchesModelReadDto>> GetAllDoubleLeaguesMatchesByLeagueId(int leagueId)
         {
             try
             {
@@ -38,9 +38,32 @@ namespace FoosballApi.Controllers
 
                 var allMatches = _doubleLeaugeMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
 
-                return Ok(allMatches);
+                return Ok(_mapper.Map<IEnumerable<AllMatchesModelReadDto>>(allMatches));
             }
             catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("matchId")]
+        public ActionResult<AllMatchesModelReadDto> GetDoubleLeagueMatchById(int matchId)
+        {
+            try 
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+                bool permission = _doubleLeaugeMatchService.CheckMatchAccess(matchId, int.Parse(userId), int.Parse(currentOrganisationId));
+
+                if (!permission)
+                    return Forbid();
+                
+                var matchData = _doubleLeaugeMatchService.GetDoubleLeagueMatchById(matchId);
+
+                return Ok(_mapper.Map<AllMatchesModelReadDto>(matchData));
+            }
+            catch(Exception e)
             {
                 return StatusCode(500, e.Message);
             }
