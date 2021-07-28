@@ -70,7 +70,6 @@ namespace FoosballApi.Controllers
             }
         }
 
-        // Adding test comment
         [HttpPatch("")]
         public ActionResult UpdateDoubleLeagueMatch(int matchId, JsonPatchDocument<DoubleLeagueMatchUpdateDto> patchDoc)
         {
