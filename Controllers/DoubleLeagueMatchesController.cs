@@ -5,6 +5,7 @@ using FoosballApi.Dtos.DoubleLeagueMatches;
 using FoosballApi.Models.DoubleLeagueMatches;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -64,6 +65,43 @@ namespace FoosballApi.Controllers
                 return Ok(_mapper.Map<AllMatchesModelReadDto>(matchData));
             }
             catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPatch("")]
+        public ActionResult UpdateDoubleLeagueMatch(int matchId, JsonPatchDocument<DoubleLeagueMatchUpdateDto> patchDoc)
+        {
+            try
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+                var match = _doubleLeaugeMatchService.GetDoubleLeagueMatchByIdSimple(matchId);
+
+                if (match == null)
+                    return NotFound();
+
+                bool hasPermission = _doubleLeaugeMatchService.CheckMatchAccess(matchId, int.Parse(userId), int.Parse(currentOrganisationId));
+
+                if (!hasPermission)
+                    return Forbid();
+
+                var matchToPatch = _mapper.Map<DoubleLeagueMatchUpdateDto>(match);
+                patchDoc.ApplyTo(matchToPatch, ModelState);
+
+                if (!TryValidateModel(matchToPatch))
+                    return ValidationProblem(ModelState);
+
+                _mapper.Map(matchToPatch, match);
+
+                _doubleLeaugeMatchService.UpdateDoubleLeagueMatch(match);
+
+                _doubleLeaugeMatchService.SaveChanges();
+
+                return NoContent();
+            }
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }

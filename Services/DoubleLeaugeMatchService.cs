@@ -15,6 +15,12 @@ namespace FoosballApi.Services
         bool CheckMatchAccess(int matchId, int userId, int currentOrganisationId);
 
         AllMatchesModel GetDoubleLeagueMatchById(int matchId);
+
+        DoubleLeagueMatchModel GetDoubleLeagueMatchByIdSimple(int matchId); 
+
+        void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match);
+
+        bool SaveChanges();
     }
 
     public class DoubleLeaugeMatchService : IDoubleLeaugeMatchService
@@ -173,6 +179,21 @@ namespace FoosballApi.Services
             };
 
             return allTeams;
+        }
+
+        public DoubleLeagueMatchModel GetDoubleLeagueMatchByIdSimple(int matchId)
+        {
+            return _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == matchId);
+        }
+
+        public bool SaveChanges()
+        {
+            return (_context.SaveChanges() >= 0);
+        }
+
+        public void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match)
+        {
+            // Do nothing
         }
     }
 }
