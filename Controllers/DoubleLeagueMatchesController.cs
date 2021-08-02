@@ -107,5 +107,31 @@ namespace FoosballApi.Controllers
             }
         }
         
+        [HttpPut("reset-match")]
+        public ActionResult ResetDoubleLeagueMatchById(int matchId)
+        {
+            try
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+                var matchItem = _doubleLeaugeMatchService.GetDoubleLeagueMatchByIdSimple(matchId);
+                if (matchItem == null)
+                    return NotFound();
+
+                bool hasPermission = _doubleLeaugeMatchService.CheckMatchAccess(matchId, int.Parse(userId), int.Parse(currentOrganisationId));
+
+                if (!hasPermission)
+                    return Forbid();
+
+                _doubleLeaugeMatchService.ResetMatch(matchItem, matchId);
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

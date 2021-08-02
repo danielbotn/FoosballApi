@@ -21,6 +21,8 @@ namespace FoosballApi.Services
         void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match);
 
         bool SaveChanges();
+
+        DoubleLeagueMatchModel ResetMatch(DoubleLeagueMatchModel doubleLeagueMatchModel, int matchId);
     }
 
     public class DoubleLeaugeMatchService : IDoubleLeaugeMatchService
@@ -186,6 +188,16 @@ namespace FoosballApi.Services
             return _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == matchId);
         }
 
+        public DoubleLeagueMatchModel ResetMatch(DoubleLeagueMatchModel doubleLeagueMatchModel, int matchId)
+        {
+            if (doubleLeagueMatchModel == null)
+                throw new ArgumentNullException(nameof(doubleLeagueMatchModel));
+            
+            DeleteAllGoals(matchId);
+
+            return ResetDoubleLeagueMatch(doubleLeagueMatchModel);
+        }
+
         public bool SaveChanges()
         {
             return (_context.SaveChanges() >= 0);
@@ -194,6 +206,30 @@ namespace FoosballApi.Services
         public void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match)
         {
             // Do nothing
+        }
+
+        private void DeleteAllGoals(int matchId)
+        {
+            var allGoals = _context.DoubleLeagueGoals.Where(x => x.MatchId == matchId).ToList();
+
+            _context.DoubleLeagueGoals.RemoveRange(allGoals);
+            _context.SaveChanges();
+        }
+
+        private DoubleLeagueMatchModel ResetDoubleLeagueMatch(DoubleLeagueMatchModel doubleLeagueMatchModel)
+        {
+            doubleLeagueMatchModel.StartTime = null;
+            doubleLeagueMatchModel.EndTime = null;
+            doubleLeagueMatchModel.TeamOneScore = 0;
+            doubleLeagueMatchModel.TeamTwoScore = 0;
+            doubleLeagueMatchModel.MatchStarted = false;
+            doubleLeagueMatchModel.MatchEnded = false;
+            doubleLeagueMatchModel.MatchPaused = false;
+
+            _context.DoubleLeagueMatches.Update(doubleLeagueMatchModel);
+            _context.SaveChanges();
+
+            return doubleLeagueMatchModel;
         }
     }
 }

@@ -208,9 +208,7 @@ namespace FoosballApi.Services
         {
             CancellationToken ct = new();
             if (singleLeagueMatchModel == null)
-            {
                 throw new ArgumentNullException(nameof(singleLeagueMatchModel));
-            }
 
             var allGoals = _context.SingleLeagueGoals.Where(x => x.MatchId == matchId).ToList();
 

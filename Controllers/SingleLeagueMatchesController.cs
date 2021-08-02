@@ -111,7 +111,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPut("reset-match")]
-        public async Task<ActionResult> DeleteSingleLeagueMatchById(int matchId)
+        public async Task<ActionResult> ResetSingleLeagueMatchById(int matchId)
         {
             try
             {
