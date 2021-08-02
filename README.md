@@ -291,6 +291,59 @@ FOR EACH ROW
 EXECUTE PROCEDURE delete_single_league_goal();
 ```
 
+## create_double_league_matches
+
+This function creates double_league_matches after update on the leagues table
+
+```sql
+CREATE OR REPLACE FUNCTION create_double_league_matches()
+RETURNS trigger AS
+$$
+DECLARE
+	team_ids integer[] := null;
+	array_length integer;
+    counterMax integer := 2;
+	counter integer := 0;
+	i integer;
+    iterator integer := 0;
+BEGIN
+   if (NEW.has_league_started = true and OLD.has_league_started = false and old.type_of_league = 'double_league') then
+   		SELECT INTO team_ids array_agg(dlt.id) FROM double_league_teams dlt WHERE dlt.league_id = OLD.id;
+		SELECT INTO array_length count(dlt.id) FROM double_league_teams dlt WHERE dlt.league_id = OLD.id;
+		SELECT INTO counterMax how_many_rounds FROM leagues WHERE id = OLD.id;
+		if (counterMax is NULL) then
+			counterMax := 2;
+		end if;
+			counterMax := counterMax * 2;
+			LOOP
+				exit when counter = counterMax; 
+				counter := counter + 1 ;
+				iterator := 0;
+				FOREACH i IN ARRAY team_ids
+				LOOP
+				iterator := iterator + 1;
+				   FOR j in iterator .. array_length
+				   LOOP
+						IF (i != team_ids[j]) THEN
+							INSERT INTO double_league_matches(team_one_id, team_two_id, league_id, start_time, end_time, team_one_score, team_two_score, match_started, match_ended, match_paused)
+							VALUES(i, team_ids[j], OLD.id, null, null, 0, 0, false, false, false);
+						END IF;
+				   END LOOP;
+				END LOOP;
+			END LOOP;
+   end if;
+RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER create_double_league_matches
+AFTER UPDATE
+ON leagues
+FOR EACH ROW
+EXECUTE PROCEDURE create_double_league_matches();
+
+```
 
 ## Thanks
 
