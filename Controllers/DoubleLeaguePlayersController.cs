@@ -26,7 +26,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{leagueId}")]
-        public async Task<ActionResult> GetDoubleLeaguePlayersyLeagueId(int leagueId)
+        public async Task<ActionResult> GetDoubleLeaguePlayersByLeagueId(int leagueId)
         {
             try
             {
@@ -45,6 +45,29 @@ namespace FoosballApi.Controllers
                 return Ok(_mapper.Map<IEnumerable<DoubleLeaguePlayerReadDto>>(allPlayers));
             }
             catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("player/{id}", Name="GetDoubleLeaguePlayerById")]
+        public async Task<ActionResult> GetDoubleLeaguePlayerById(int id)
+        {
+            try 
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+                bool permission =  _doubleLeagueTeamService.CheckDoubleLeagueTeamPermission(id, int.Parse(userId), int.Parse(currentOrganisationId));
+
+                if (!permission)
+                    return Forbid();
+                
+                var playerData = await _doubleLeaugePlayerService.GetDoubleLeaguePlayerById(id);
+
+                return Ok(_mapper.Map<DoubleLeaguePlayerReadDto>(playerData));
+            }
+            catch(Exception e)
             {
                 return StatusCode(500, e.Message);
             }
