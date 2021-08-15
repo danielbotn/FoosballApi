@@ -345,6 +345,52 @@ EXECUTE PROCEDURE create_double_league_matches();
 
 ```
 
+## add_double_league_goal
+
+This function updates the double_league_matches table after update on double_league_goals table
+
+```sql
+CREATE OR REPLACE FUNCTION add_double_league_goal()
+RETURNS trigger AS
+$$
+DECLARE
+  team_one_select integer := null;
+  team_two_select integer := null;
+BEGIN
+	SELECT team_one_id into team_one_select FROM double_league_matches where id = new.match_id and team_one_id = new.scored_by_team_id;
+	SELECT team_two_id into team_two_select FROM double_league_matches where id = new.match_id and team_two_id = new.scored_by_team_id;
+	
+	if (team_one_select is not NULL) then
+		update double_league_matches
+		SET team_one_score = new.scorer_team_score
+		where id = new.match_id;
+	end if;
+	
+	if (team_two_select is not NULL) then
+		update double_league_matches
+		SET team_two_score = new.scorer_team_score
+		where id = new.match_id;
+	end if;
+	
+	if (new.winner_goal = true) then
+		update double_league_matches
+		SET match_ended = true, end_time = CURRENT_TIMESTAMP
+		where id = new.match_id;
+	end if;
+	
+	RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER add_double_league_goal
+AFTER INSERT
+ON double_league_goals
+FOR EACH ROW
+EXECUTE PROCEDURE add_double_league_goal();
+
+```
+
 ## Thanks
 
 **Foosball** © 2021+, Mossfellsbær City. Released under the [MIT License].<br>

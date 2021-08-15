@@ -41,5 +41,11 @@ namespace FoosballApi.Models.DoubleLeagueGoals
 
         [Required]
         public bool WinnerGoal { get; set; }
+
+        [Required]
+        public int UserScorerId { get; set; }
+
+        [ForeignKey("UserScorerId")]
+        public virtual User UserScorerIdFk { get; set; }
     }
 }

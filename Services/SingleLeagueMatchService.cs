@@ -84,6 +84,8 @@ namespace FoosballApi.Services
 
         public IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId)
         {
+            const int Points = 3;
+            const int Zero = 0;
             List<int> userIds = GetAllUsersOfLeague(leagueId);
             List<SingleLeagueStandingsQuery> standings = new();
 
@@ -127,11 +129,11 @@ namespace FoosballApi.Services
                         leagueId,
                         totalMatchesWon,
                         totalMatchesLost,
-                        0,
-                        0,
-                        0,
+                        Zero,
+                        Zero,
+                        Zero,
                         (totalMatchesLost + totalMatchesWon),
-                        totalMatchesWon * 3,
+                        totalMatchesWon * Points,
                         userInfo.FirstOrDefault().FirstName,
                         userInfo.FirstOrDefault().LastName,
                         userInfo.FirstOrDefault().Email

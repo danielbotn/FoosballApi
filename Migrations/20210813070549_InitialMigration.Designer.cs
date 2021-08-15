@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FoosballApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210720191756_InitialMigration")]
+    [Migration("20210813070549_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,10 @@ namespace FoosballApi.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("time_of_goal");
 
+                    b.Property<int>("UserScorerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_scorer_id");
+
                     b.Property<bool>("WinnerGoal")
                         .HasColumnType("boolean")
                         .HasColumnName("winner_goal");
@@ -69,6 +73,9 @@ namespace FoosballApi.Migrations
 
                     b.HasIndex("ScoredByTeamId")
                         .HasDatabaseName("ix_double_league_goals_scored_by_team_id");
+
+                    b.HasIndex("UserScorerId")
+                        .HasDatabaseName("ix_double_league_goals_user_scorer_id");
 
                     b.ToTable("double_league_goals");
                 });
@@ -796,11 +803,20 @@ namespace FoosballApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FoosballApi.Models.User", "UserScorerIdFk")
+                        .WithMany()
+                        .HasForeignKey("UserScorerId")
+                        .HasConstraintName("fk_double_league_goals_users_user_scorer_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("DoubleLeagueMatchModelFk");
 
                     b.Navigation("DoubleLeagueTeamModelOpponentFk");
 
                     b.Navigation("DoubleLeagueTeamModelScoredByFk");
+
+                    b.Navigation("UserScorerIdFk");
                 });
 
             modelBuilder.Entity("FoosballApi.Models.DoubleLeagueMatches.DoubleLeagueMatchModel", b =>
