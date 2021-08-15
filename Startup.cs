@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using FoosballApi.Data;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +14,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoosballApi.Services;
-using System.Data.SqlClient;
 
 namespace FoosballApi
 {
@@ -75,6 +69,7 @@ namespace FoosballApi
             services.AddScoped<IDoubleLeagueTeamService, DoubleLeagueTeamService>();
             services.AddScoped<IDoubleLeaugeMatchService, DoubleLeaugeMatchService>();
             services.AddScoped<IDoubleLeaguePlayerService, DoubleLeaguePlayerService>();
+            services.AddScoped<IDoubleLeagueGoalService, DoubleLeagueGoalService>();
             services.AddDbContext<DataContext>(p => p.UseNpgsql(builder.ConnectionString));
             services.AddSwaggerGen(c =>
             {
