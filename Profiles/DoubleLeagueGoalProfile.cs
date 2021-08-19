@@ -8,8 +8,10 @@ namespace FoosballApi.Profiles
     {
         public DoubleLeagueGoalProfile()
         {
-            CreateMap<DoubleLeagueGoalsReadDto, DoubleLeagueGoalsDapper>();
-            CreateMap<DoubleLeagueGoalsDapper, DoubleLeagueGoalsReadDto>();
+            CreateMap<DoubleLeagueGoalReadDto, DoubleLeagueGoalDapper>();
+            CreateMap<DoubleLeagueGoalDapper, DoubleLeagueGoalReadDto>();
+            CreateMap<DoubleLeagueGoalReadDto, DoubleLeagueGoalModel>();
+            CreateMap<DoubleLeagueGoalModel, DoubleLeagueGoalReadDto>();
         }
     }
 }

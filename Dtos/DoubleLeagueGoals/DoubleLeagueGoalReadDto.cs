@@ -2,7 +2,7 @@ using System;
 
 namespace FoosballApi.Dtos.DoubleLeagueGoals
 {
-    public class DoubleLeagueGoalsReadDto
+    public class DoubleLeagueGoalReadDto
     {
         public int Id { get; set; }
         public DateTime TimeOfGoal { get; set; }

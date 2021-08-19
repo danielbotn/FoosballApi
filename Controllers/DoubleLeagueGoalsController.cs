@@ -4,10 +4,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FoosballApi.Dtos.DoubleLeagueGoals;
 using FoosballApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class DoubleLeagueGoalsController : ControllerBase
     {
         private readonly IDoubleLeagueGoalService _goalService;
@@ -21,7 +25,7 @@ namespace FoosballApi.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{matchId}")]
+        [HttpGet("")]
         public async Task<ActionResult> GetAllDoubleLeaguesMatchesByLeagueId(int matchId)
         {
             try
@@ -36,7 +40,7 @@ namespace FoosballApi.Controllers
 
                 var allGoals = await _goalService.GetAllDoubleLeagueGoalsByMatchId(matchId);
 
-                return Ok(_mapper.Map<IEnumerable<DoubleLeagueGoalsReadDto>>(allGoals));
+                return Ok(_mapper.Map<IEnumerable<DoubleLeagueGoalReadDto>>(allGoals));
             }
             catch (Exception e)
             {
@@ -44,5 +48,27 @@ namespace FoosballApi.Controllers
             }
         }
 
+        [HttpGet("{goalId}")]
+        public async Task<ActionResult> GetDoubleLeagueMatchById(int goalId)
+        {
+            try 
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+                bool permission = _goalService.CheckPermissionByGoalId(goalId, int.Parse(userId));
+
+                if (!permission)
+                    return Forbid();
+                
+                var goaldData = await _goalService.GetDoubleLeagueGoalById(goalId);
+
+                return Ok(_mapper.Map<DoubleLeagueGoalReadDto>(goaldData));
+            }
+            catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

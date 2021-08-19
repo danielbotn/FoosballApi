@@ -2,7 +2,7 @@ using System;
 
 namespace FoosballApi.Models.DoubleLeagueGoals
 {
-    public class DoubleLeagueGoalsDapper
+    public class DoubleLeagueGoalDapper
     {
         public int Id { get; set; }
         public DateTime TimeOfGoal { get; set; }
