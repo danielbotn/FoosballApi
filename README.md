@@ -350,31 +350,48 @@ EXECUTE PROCEDURE create_double_league_matches();
 This function updates the double_league_matches table after update on double_league_goals table
 
 ```sql
+CREATE TRIGGER add_double_league_goal
+AFTER INSERT
+ON double_league_goals
+FOR EACH ROW
+EXECUTE PROCEDURE add_double_league_goal();
+
+
+
+
 CREATE OR REPLACE FUNCTION add_double_league_goal()
 RETURNS trigger AS
 $$
 DECLARE
   team_one_select integer := null;
   team_two_select integer := null;
+  start_time_first timestamp := null;
 BEGIN
 	SELECT team_one_id into team_one_select FROM double_league_matches where id = new.match_id and team_one_id = new.scored_by_team_id;
 	SELECT team_two_id into team_two_select FROM double_league_matches where id = new.match_id and team_two_id = new.scored_by_team_id;
+	SELECT start_time into start_time_first FROM double_league_matches where id = new.match_id;
 	
 	if (team_one_select is not NULL) then
 		update double_league_matches
-		SET team_one_score = new.scorer_team_score
+		SET team_one_score = new.scorer_team_score, match_started = true
 		where id = new.match_id;
 	end if;
 	
 	if (team_two_select is not NULL) then
 		update double_league_matches
-		SET team_two_score = new.scorer_team_score
+		SET team_two_score = new.scorer_team_score, match_started = true
 		where id = new.match_id;
 	end if;
 	
 	if (new.winner_goal = true) then
 		update double_league_matches
 		SET match_ended = true, end_time = CURRENT_TIMESTAMP
+		where id = new.match_id;
+	end if;
+
+	if (start_time_first is null) then
+		update double_league_matches
+		set start_time = CURRENT_TIMESTAMP
 		where id = new.match_id;
 	end if;
 	

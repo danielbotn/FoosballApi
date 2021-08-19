@@ -48,7 +48,7 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpGet("{goalId}")]
+        [HttpGet("{goalId}", Name="GetDoubleLeagueGoalById")]
         public async Task<ActionResult> GetDoubleLeagueMatchById(int goalId)
         {
             try 
@@ -64,6 +64,31 @@ namespace FoosballApi.Controllers
                 var goaldData = await _goalService.GetDoubleLeagueGoalById(goalId);
 
                 return Ok(_mapper.Map<DoubleLeagueGoalReadDto>(goaldData));
+            }
+            catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("")]
+        public ActionResult CreateDoubleLeagueGoal([FromBody] DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto)
+        {
+            try 
+            {
+                string userId = User.Identity.Name;
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+
+                bool hasPermission = _doubleLeaugeMatchService.CheckMatchAccess(doubleLeagueGoalCreateDto.MatchId, int.Parse(userId), int.Parse(currentOrganisationId));
+
+                if (!hasPermission)
+                    return Forbid();
+                
+                var newGoal = _goalService.CreateDoubleLeagueGoal(doubleLeagueGoalCreateDto);
+
+                var doubleLeagueGoalReadDto = _mapper.Map<DoubleLeagueGoalReadDto>(newGoal);
+                
+                return CreatedAtRoute("GetDoubleLeagueGoalById", new { goalId = newGoal.Id }, doubleLeagueGoalReadDto);
             }
             catch(Exception e)
             {

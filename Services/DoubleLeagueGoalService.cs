@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FoosballApi.Data;
+using FoosballApi.Dtos.DoubleLeagueGoals;
 using FoosballApi.Models.DoubleLeagueGoals;
 
 namespace FoosballApi.Services
@@ -12,7 +14,9 @@ namespace FoosballApi.Services
         Task<IEnumerable<DoubleLeagueGoalDapper>> GetAllDoubleLeagueGoalsByMatchId(int matchId);
         Task<DoubleLeagueGoalDapper> GetDoubleLeagueGoalById(int goalId);
         bool CheckPermissionByGoalId(int goalId, int userId);
+        DoubleLeagueGoalModel CreateDoubleLeagueGoal(DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto);
     }
+    
     public class DoubleLeagueGoalService : IDoubleLeagueGoalService
     {
         private readonly DataContext _context;
@@ -50,6 +54,28 @@ namespace FoosballApi.Services
             }
             
             return result;
+        }
+
+        public DoubleLeagueGoalModel CreateDoubleLeagueGoal(DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto)
+        {
+            DateTime now = DateTime.Now;
+            DoubleLeagueGoalModel newGoal = new();
+            newGoal.TimeOfGoal = now;
+            newGoal.MatchId = doubleLeagueGoalCreateDto.MatchId;
+            newGoal.ScoredByTeamId = doubleLeagueGoalCreateDto.ScoredByTeamId;
+            newGoal.OpponentTeamId = doubleLeagueGoalCreateDto.OpponentTeamId;
+            newGoal.ScorerTeamScore = doubleLeagueGoalCreateDto.ScorerTeamScore;
+            newGoal.OpponentTeamScore = doubleLeagueGoalCreateDto.OpponentTeamScore;
+
+            if (doubleLeagueGoalCreateDto.WinnerGoal != null)
+                newGoal.WinnerGoal = (bool)doubleLeagueGoalCreateDto.WinnerGoal;
+            
+            newGoal.UserScorerId = doubleLeagueGoalCreateDto.UserScorerId;
+
+            _context.DoubleLeagueGoals.Add(newGoal);
+            _context.SaveChanges();
+
+            return newGoal;
         }
 
         public async Task<IEnumerable<DoubleLeagueGoalDapper>> GetAllDoubleLeagueGoalsByMatchId(int matchId)
