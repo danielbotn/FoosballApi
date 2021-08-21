@@ -15,8 +15,9 @@ namespace FoosballApi.Services
         Task<DoubleLeagueGoalDapper> GetDoubleLeagueGoalById(int goalId);
         bool CheckPermissionByGoalId(int goalId, int userId);
         DoubleLeagueGoalModel CreateDoubleLeagueGoal(DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto);
+        void DeleteDoubleLeagueGoal(int goalId);
     }
-    
+
     public class DoubleLeagueGoalService : IDoubleLeagueGoalService
     {
         private readonly DataContext _context;
@@ -76,6 +77,30 @@ namespace FoosballApi.Services
             _context.SaveChanges();
 
             return newGoal;
+        }
+
+
+        public void DeleteDoubleLeagueGoal(int goalId)
+        {
+            var goalToDelete = _context.DoubleLeagueGoals.FirstOrDefault(x => x.Id == goalId);
+            int scoredByTeamId = goalToDelete.ScoredByTeamId;
+
+            var doubleLeagueMatch = _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == goalToDelete.MatchId);
+
+            if (doubleLeagueMatch.TeamOneId == scoredByTeamId)
+            {
+                if (doubleLeagueMatch.TeamOneScore > 0)
+                    doubleLeagueMatch.TeamOneScore -= 1;
+            }
+
+            if (doubleLeagueMatch.TeamTwoId == scoredByTeamId)
+            {
+                if (doubleLeagueMatch.TeamTwoScore > 0)
+                    doubleLeagueMatch.TeamTwoScore -= 1;
+            }
+
+            _context.DoubleLeagueGoals.Remove(goalToDelete);
+            _context.SaveChanges();
         }
 
         public async Task<IEnumerable<DoubleLeagueGoalDapper>> GetAllDoubleLeagueGoalsByMatchId(int matchId)
