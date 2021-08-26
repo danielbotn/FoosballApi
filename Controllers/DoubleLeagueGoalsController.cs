@@ -48,7 +48,9 @@ namespace FoosballApi.Controllers
             }
         }
 
+        
         [HttpGet("{goalId}", Name="GetDoubleLeagueGoalById")]
+        [ProducesResponseType(typeof(DoubleLeagueGoalReadDto), 200)]
         public async Task<ActionResult> GetDoubleLeagueMatchById(int goalId)
         {
             try 
@@ -96,7 +98,7 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpDelete()]
+        [HttpDelete("{goalId}")]
         public ActionResult DeleteDoubleLeagueGoal(int goalId)
         {
             try
