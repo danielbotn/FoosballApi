@@ -135,7 +135,7 @@ BEGIN
 
 	if (start_time_first is null) then
 		update single_league_matches
-		set start_time = CURRENT_TIMESTAMP
+		set start_time = CURRENT_TIMESTAMP, match_started = true
 		where id = new.match_id;
 	end if;
 	

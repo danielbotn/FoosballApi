@@ -93,27 +93,27 @@ namespace FoosballApi.Services
             List<int> userIds = GetAllUsersOfLeague(leagueId);
             List<SingleLeagueStandingsQuery> standings = new();
 
-            foreach (int element in userIds)
+            foreach (int userId in userIds)
             {
-                var matchesWonAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == element && x.MatchEnded == true && x.PlayerOneScore > x.PlayerTwoScore);
-                var matchesWonAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == element && x.MatchEnded == true && x.PlayerTwoScore > x.PlayerOneScore);
+                var matchesWonAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == userId && x.MatchEnded == true && x.PlayerOneScore > x.PlayerTwoScore);
+                var matchesWonAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == userId && x.MatchEnded == true && x.PlayerTwoScore > x.PlayerOneScore);
     
-                var matchesLostAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == element && x.MatchEnded == true && x.PlayerOneScore < x.PlayerTwoScore);
-                var matchesLostAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == element && x.MatchEnded == true && x.PlayerTwoScore < x.PlayerOneScore);
+                var matchesLostAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == userId && x.MatchEnded == true && x.PlayerOneScore < x.PlayerTwoScore);
+                var matchesLostAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == userId && x.MatchEnded == true && x.PlayerTwoScore < x.PlayerOneScore);
 
-                var userInfo = _context.Users.Where(x => x.Id == element);
+                var userInfo = _context.Users.Where(x => x.Id == userId);
 
                 int totalMatchesWon = matchesWonAsPlayerOne.Count() + matchesWonAsPlayerTwo.Count();
                 int totalMatchesLost = matchesLostAsPlayerOne.Count() + matchesLostAsPlayerTwo.Count();
 
                 standings.Add(
                     new SingleLeagueStandingsQuery(
-                        element,
+                        userId,
                         leagueId,
                         totalMatchesWon,
                         totalMatchesLost,
-                        Zero,
-                        Zero,
+                        GetTotalGoalsScored(userId, leagueId),
+                        GetTotalGoalsRecieved(userId, leagueId),
                         Zero,
                         (totalMatchesLost + totalMatchesWon),
                         totalMatchesWon * Points,
@@ -143,6 +143,34 @@ namespace FoosballApi.Services
         public void UpdateSingleLeagueMatch(SingleLeagueMatchModel match)
         {
             // Do nothing
+        }
+
+        private int GetTotalGoalsScored(int userId, int leagueId)
+        {
+
+            var query = from slg in _context.SingleLeagueGoals
+                        join slm in _context.SingleLeagueMatches on slg.MatchId equals slm.Id
+                        where slg.ScoredByUserId == userId && slm.LeagueId == leagueId
+                        select new
+                        {
+                            Id = slg.Id,
+                        };
+            
+            return query.ToList().Count();
+        }
+
+        private int GetTotalGoalsRecieved(int userId, int leagueId)
+        {
+
+            var query = from slg in _context.SingleLeagueGoals
+                        join slm in _context.SingleLeagueMatches on slg.MatchId equals slm.Id
+                        where slg.OpponentId == userId && slm.LeagueId == leagueId
+                        select new
+                        {
+                            Id = slg.Id,
+                        };
+            
+            return query.ToList().Count();
         }
 
         private List<int> GetAllUsersOfLeague(int leagueId)
