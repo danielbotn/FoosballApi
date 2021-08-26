@@ -42,11 +42,6 @@ namespace FoosballApi.Data
         // When running EF Core migrations
         private void PopulateSingleLeagueMatchesQuery(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SingleLeagueMatchesQuery>(e =>
-            {
-                e.HasNoKey().ToView(null);
-            });
-
             modelBuilder.Entity<SingleLeagueStandingsMatchesWonAsPlayerOne>(e =>
             {
                 e.HasNoKey().ToView(null);

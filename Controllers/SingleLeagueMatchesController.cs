@@ -27,7 +27,8 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet()]
-        public ActionResult<IEnumerable<SingleLeagueMatchReadDto>> GetAllSingleLeaguesMatchesByOrganisationId(int leagueId)
+        [ProducesResponseType(typeof(IEnumerable<SingleLeagueMatchReadDto>), 200)]
+        public async Task<ActionResult> GetAllSingleLeaguesMatchesByOrganisationId(int leagueId)
         {
             try
             {
@@ -39,7 +40,7 @@ namespace FoosballApi.Controllers
                 if (!permission)
                     return Forbid();
 
-                var allMatches = _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
+                var allMatches = await _singleLeagueMatchService.GetAllMatchesByOrganisationId(int.Parse(currentOrganisationId), leagueId);
 
                 return Ok(allMatches);
             }
