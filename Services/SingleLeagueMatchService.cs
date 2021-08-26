@@ -95,37 +95,16 @@ namespace FoosballApi.Services
 
             foreach (int element in userIds)
             {
-                var matchesWonAsPlayerOne = _context.Set<SingleLeagueStandingsMatchesWonAsPlayerOne>().FromSqlRaw(
-                    "select count(*) as matches_won_as_player_one from " +
-                    "(select slm.id from single_league_matches slm " +
-                    $"where slm.player_one = {element} and slm.match_ended = true and slm.player_one_score > slm.player_two_score) t"
-                );
-
-                var matchesWonAsPlayerTwo = _context.Set<SingleLeagueStandingsMatchesWonAsPlayerTwo>().FromSqlRaw(
-                    "select count(*) as matches_won_as_player_two from " +
-                    "(select slm.id from single_league_matches slm " +
-                    $"where slm.player_two = {element} and slm.match_ended = true and slm.player_two_score > slm.player_one_score) t"
-                );
-
-                var matchesLostAsPlayerOne = _context.Set<SingleLeagueStandingsMatchesLostAsPlayerOne>().FromSqlRaw(
-                    "select count(*) as matches_lost_as_player_one from " +
-                    "(select slm.id from single_league_matches slm " +
-                    $"where slm.player_one = {element} and slm.match_ended = true and slm.player_one_score < slm.player_two_score) t"
-                );
-
-                var matchesLostAsPlayerTwo = _context.Set<SingleLeagueStandingsMatchesLostAsPlayerTwo>().FromSqlRaw(
-                    "select count(*) as matches_lost_as_player_two from " +
-                    "(select slm.id from single_league_matches slm " +
-                    $"where slm.player_two = {element} and slm.match_ended = true and slm.player_two_score < slm.player_one_score) t"
-                );
+                var matchesWonAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == element && x.MatchEnded == true && x.PlayerOneScore > x.PlayerTwoScore);
+                var matchesWonAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == element && x.MatchEnded == true && x.PlayerTwoScore > x.PlayerOneScore);
+    
+                var matchesLostAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == element && x.MatchEnded == true && x.PlayerOneScore < x.PlayerTwoScore);
+                var matchesLostAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == element && x.MatchEnded == true && x.PlayerTwoScore < x.PlayerOneScore);
 
                 var userInfo = _context.Users.Where(x => x.Id == element);
 
-                int totalMatchesWon = matchesWonAsPlayerOne.FirstOrDefault().MatchesWonAsPlayerOne +
-                matchesWonAsPlayerTwo.FirstOrDefault().MatchesWonAsPlayerTwo;
-
-                int totalMatchesLost = matchesLostAsPlayerOne.FirstOrDefault().MatchesLostAsPlayerOne +
-                matchesLostAsPlayerTwo.FirstOrDefault().MatchesLostAsPlayerTwo;
+                int totalMatchesWon = matchesWonAsPlayerOne.Count() + matchesWonAsPlayerTwo.Count();
+                int totalMatchesLost = matchesLostAsPlayerOne.Count() + matchesLostAsPlayerTwo.Count();
 
                 standings.Add(
                     new SingleLeagueStandingsQuery(
