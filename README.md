@@ -109,9 +109,11 @@ $$
 DECLARE
   player_one_select integer := null;
   player_two_select integer := null;
+  start_time_first timestamp := null;
 BEGIN
 	SELECT player_one into player_one_select FROM single_league_matches where id = new.match_id and player_one = new.scored_by_user_id;
 	SELECT player_two into player_two_select FROM single_league_matches where id = new.match_id and player_two = new.scored_by_user_id;
+	SELECT start_time into start_time_first FROM single_league_matches where id = new.match_id;
 	
 	if (player_one_select is not NULL) then
 		update single_league_matches
@@ -128,6 +130,12 @@ BEGIN
 	if (new.winner_goal = true) then
 		update single_league_matches
 		SET match_ended = true
+		where id = new.match_id;
+	end if;
+
+	if (start_time_first is null) then
+		update single_league_matches
+		set start_time = CURRENT_TIMESTAMP
 		where id = new.match_id;
 	end if;
 	

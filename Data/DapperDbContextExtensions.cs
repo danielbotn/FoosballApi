@@ -37,6 +37,31 @@ namespace FoosballApi.Data
             return await connection.QueryAsync<T>(command.Definition);
         }
 
+        // Dont know if this works
+         public static async Task<T> FirstOrDefaultAsync<T>(
+            this DbContext context,
+            CancellationToken ct,
+            string text,
+            object parameters = null,
+            int? timeout = null,
+            CommandType? type = null
+        )
+        {
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+            var command = new DapperEFCoreCommand(
+                context,
+                text,
+                parameters,
+                timeout,
+                type,
+                ct
+            );
+
+            var connection = context.Database.GetDbConnection();
+            return await connection.QueryFirstOrDefaultAsync<T>(command.Definition);
+        }
+
         public static async Task<int> ExecuteAsync(
             this DbContext context,
             CancellationToken ct,
