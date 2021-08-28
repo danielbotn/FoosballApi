@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
+using FoosballApi.Dtos.DoubleLeagueMatches;
 using FoosballApi.Dtos.Leagues;
 using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Models.Leagues;
@@ -18,12 +19,18 @@ namespace FoosballApi.Controllers
     {
         private readonly ILeagueService _leagueService;
         private readonly ISingleLeagueMatchService _singleLeagueMatchService;
+        private readonly IDoubleLeaugeMatchService _doubleLeagueMatchService;
         private readonly IMapper _mapper;
 
-        public LeaguesController(ILeagueService leagueService, ISingleLeagueMatchService singleLeagueMatchService, IMapper mapper)
+        public LeaguesController(
+            ILeagueService leagueService, 
+            ISingleLeagueMatchService singleLeagueMatchService, 
+            IMapper mapper,
+            IDoubleLeaugeMatchService doubleLeagueMatchService)
         {
             _leagueService = leagueService;
             _singleLeagueMatchService = singleLeagueMatchService;
+            _doubleLeagueMatchService = doubleLeagueMatchService;
             _mapper = mapper;
         }
 
@@ -190,7 +197,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("single-league/standings")]
-        public ActionResult<IEnumerable<SingleLeagueStandingsReadDto>> GetLeagueStandings(int leagueId)
+        public ActionResult<IEnumerable<SingleLeagueStandingsReadDto>> GetSingleLeagueStandings(int leagueId)
         {
             try
             {
@@ -203,6 +210,27 @@ namespace FoosballApi.Controllers
                 var standings = _singleLeagueMatchService.GetSigleLeagueStandings(leagueId);
 
                 return Ok(_mapper.Map<IEnumerable<SingleLeagueStandingsReadDto>>(standings));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("double-league/standings")]
+        public ActionResult<IEnumerable<DoubleLeagueStandingsReadDto>> GetDoubleLeagueStandings(int leagueId)
+        {
+            try
+            {
+                string userId = User.Identity.Name;
+                bool permission = _doubleLeagueMatchService.CheckLeaguePermission(leagueId, int.Parse(userId));
+
+                if (!permission)
+                    return Forbid();
+
+                var standings = _doubleLeagueMatchService.GetDoubleLeagueStandings(leagueId);
+
+                return Ok(_mapper.Map<IEnumerable<DoubleLeagueStandingsReadDto>>(standings));
             }
             catch (Exception e)
             {

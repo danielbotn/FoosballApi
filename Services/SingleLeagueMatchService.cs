@@ -88,10 +88,10 @@ namespace FoosballApi.Services
 
         public IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId)
         {
+            List<SingleLeagueStandingsQuery> standings = new();
             const int Points = 3;
             const int Zero = 0;
             List<int> userIds = GetAllUsersOfLeague(leagueId);
-            List<SingleLeagueStandingsQuery> standings = new();
 
             foreach (int userId in userIds)
             {

@@ -1,6 +1,7 @@
 using AutoMapper;
 using FoosballApi.Dtos.DoubleLeagueMatches;
 using FoosballApi.Models.DoubleLeagueMatches;
+using FoosballApi.Models.Other;
 
 namespace FoosballApi.Profiles
 {
@@ -10,6 +11,9 @@ namespace FoosballApi.Profiles
         {
             CreateMap<AllMatchesModelReadDto, AllMatchesModel>();
             CreateMap<AllMatchesModel, AllMatchesModelReadDto>();
+
+            CreateMap<DoubleLeagueStandingsReadDto, DoubleLeagueStandingsQuery>();
+            CreateMap<DoubleLeagueStandingsQuery, DoubleLeagueStandingsReadDto>();
         }
     }
 }
