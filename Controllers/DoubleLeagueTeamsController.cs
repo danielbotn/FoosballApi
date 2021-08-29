@@ -95,8 +95,8 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpDelete()]
-        public ActionResult DeleteDoubleLeagueTeam(int teamId, int leagueId)
+        [HttpDelete("{leagueId}/{teamId}")]
+        public ActionResult DeleteDoubleLeagueTeam(int leagueId, int teamId)
         {
             try
             {

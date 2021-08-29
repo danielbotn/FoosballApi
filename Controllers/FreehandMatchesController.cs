@@ -124,7 +124,7 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpDelete()]
+        [HttpDelete("{matchId}")]
         public ActionResult DeleteFreehandMatchById(int matchId)
         {
             try

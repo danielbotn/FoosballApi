@@ -70,7 +70,7 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpDelete()]
+        [HttpDelete("{goalId}")]
         public ActionResult DeleteSingleLeagueGoalById(int goalId)
         {
             try

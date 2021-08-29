@@ -169,7 +169,7 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpDelete("")]
+        [HttpDelete("{leagueId}")]
         public ActionResult DeleteLeagueById(int leagueId)
         {
             try
