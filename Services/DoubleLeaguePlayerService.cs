@@ -10,9 +10,9 @@ namespace FoosballApi.Services
     public interface IDoubleLeaguePlayerService
     {
         Task<IEnumerable<DoubleLeaguePlayerModelDapper>> GetDoubleLeaguePlayersyLeagueId(int leagueId);
-
         Task<DoubleLeaguePlayerModelDapper> GetDoubleLeaguePlayerById(int playerId);
     }
+
     public class DoubleLeaguePlayerService : IDoubleLeaguePlayerService
     {
         private readonly DataContext _context;

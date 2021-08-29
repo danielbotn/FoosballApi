@@ -11,17 +11,13 @@ namespace FoosballApi.Services
     public interface ISingleLeagueGoalService
     {
         IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByMatchId(int matchId);
-
         bool CheckSingleLeagueGoalPermission(int userId, int goalId, int organisationId);
-
         bool CheckCreatePermission(int userId, SingleLeagueCreateModel singleLeagueCreateModel);
-
         SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId);
-
         void DeleteSingleLeagueGoal(SingleLeagueGoalModel singleLeagueGoalModel);
-
         SingleLeagueGoalModel CreateSingleLeagueGoal(SingleLeagueCreateModel singleLeagueCreateMode);
     }
+
     public class SingleLeagueGoalService : ISingleLeagueGoalService
     {
         private readonly DataContext _context;

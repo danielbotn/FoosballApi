@@ -13,20 +13,14 @@ namespace FoosballApi.Services
     public interface IFreehandDoubleMatchService
     {
         IEnumerable<FreehandDoubleMatchModel> GetAllFreehandDoubleMatches(int userId);
-
         FreehandDoubleMatchModel GetFreehandDoubleMatchById(int matchId);
-
         bool CheckMatchPermission(int userId, int matchId);
-
         FreehandDoubleMatchModel CreateFreehandDoubleMatch(int userId, FreehandDoubleMatchCreateDto freehandDoubleMatchCreateDto);
-
         void UpdateFreehandMatch(FreehandDoubleMatchModel freehandMatchModel);
-
         bool SaveChanges();
-
         void DeleteFreehandMatch(FreehandDoubleMatchModel freehandDoubleMatchModel);
-
     }
+
     public class FreehandDoubleMatchService : IFreehandDoubleMatchService
     {
         private readonly DataContext _context;

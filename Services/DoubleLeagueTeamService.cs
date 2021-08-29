@@ -9,15 +9,10 @@ namespace FoosballApi.Services
     public interface IDoubleLeagueTeamService
     {
         IEnumerable<DoubleLeagueTeamModel> GetDoubleLeagueTeamsByLeagueId(int leagueId);
-
         bool CheckLeaguePermission(int leagueId, int userId);
-
         DoubleLeagueTeamModel CreateDoubleLeagueTeam(int leagueId, int currentOrganisationId, string name);
-
         bool CheckDoubleLeagueTeamPermission(int teamId, int userId, int currentOrganisationId);
-
         DoubleLeagueTeamModel GetDoubleLeagueTeamById(int teamId);
-        
         void DeleteDoubleLeagueTeam(int teamId);
     }
 

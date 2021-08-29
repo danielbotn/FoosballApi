@@ -10,11 +10,10 @@ namespace FoosballApi
     public interface IEmailService
     {
         void Send(string to, string subject, string html, string from = null);
-
         void SendVerificationEmail(VerificationModel vModel, User user, string origin);
-
         void SendPasswordResetEmail(VerificationModel vModel, User user, string origin);
     }
+
     public class EmailService : IEmailService
     {
         private readonly Secrets _secrets;

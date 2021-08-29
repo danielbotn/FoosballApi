@@ -12,21 +12,13 @@ namespace FoosballApi.Services
     public interface IDoubleLeaugeMatchService
     {
         bool CheckLeaguePermission(int leagueId, int userId);
-
         IEnumerable<AllMatchesModel> GetAllMatchesByOrganisationId(int currentOrganisationId, int leagueId);
-
         bool CheckMatchAccess(int matchId, int userId, int currentOrganisationId);
-
         AllMatchesModel GetDoubleLeagueMatchById(int matchId);
-
         DoubleLeagueMatchModel GetDoubleLeagueMatchByIdSimple(int matchId); 
-
         void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match);
-
         bool SaveChanges();
-
         DoubleLeagueMatchModel ResetMatch(DoubleLeagueMatchModel doubleLeagueMatchModel, int matchId);
-
         IEnumerable<DoubleLeagueStandingsQuery> GetDoubleLeagueStandings(int leagueId);
     }
 

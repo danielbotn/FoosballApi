@@ -14,23 +14,15 @@ namespace FoosballApi.Services
     public interface ISingleLeagueMatchService
     {
         Task<IEnumerable<SingleLeagueMatchesQuery>> GetAllMatchesByOrganisationId(int organisationId, int leagueId);
-
         bool CheckLeaguePermission(int leagueId, int userId);
-
         bool CheckMatchPermission(int matchId, int userId);
-
         SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId);
-
         void UpdateSingleLeagueMatch(SingleLeagueMatchModel match);
-
         bool SaveChanges();
-
         IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId);
-
-        Task<IEnumerable<SingleLeagueMathModelDapper>> TestDapper(CancellationToken ct);
-
         Task<SingleLeagueMatchModel> ResetMatch(SingleLeagueMatchModel singleLeagueMatchModel, int matchId);
     }
+    
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
         private readonly DataContext _context;
@@ -204,17 +196,6 @@ namespace FoosballApi.Services
                 item.value.PositionInLeague = item.i + 1;
             }
             return result;
-        }
-
-        public async Task<IEnumerable<SingleLeagueMathModelDapper>> TestDapper(CancellationToken ct)
-        {
-            var tx = await _context.Database.BeginTransactionAsync();
-
-            var dapperReadData = await _context.QueryAsync<SingleLeagueMathModelDapper>(ct, @"
-                SELECT slm.id, slm.player_one, slm.player_two, slm.match_started, slm.match_ended, slm.league_id 
-                FROM single_league_matches slm");
-
-            return dapperReadData;
         }
 
         public async Task<SingleLeagueMatchModel> ResetMatch(SingleLeagueMatchModel singleLeagueMatchModel, int matchId)

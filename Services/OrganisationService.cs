@@ -10,19 +10,14 @@ namespace FoosballApi.Services
     public interface IOrganisationService
     {
         IEnumerable<OrganisationModel> GettAllOrganisations();
-
         OrganisationModel GetOrganisationById(int id);
-
         IEnumerable<OrganisationModel> GetOrganisationsByUser(int id);
-
         void UpdateOrganisation(OrganisationModel organisation);
-
         void DeleteOrganisation(OrganisationModel organisation);
-
         bool SaveChanges();
-
         int CreateOrganisation(OrganisationModelCreate organisation, int userId);
     }
+
     public class OrganisationService : IOrganisationService
     {
         private readonly DataContext _context;

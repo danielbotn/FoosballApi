@@ -9,21 +9,16 @@ namespace FoosballApi.Services
     public interface ILeagueService
     {
         IEnumerable<LeagueModel> GetLeaguesByOrganisation(int organisationId);
-
         bool CheckLeagueAccess(int userId, int organisationId);
-
         int GetOrganisationId(int leagueId);
-
         IEnumerable<LeaguePlayersJoinModel> GetLeaguesPlayers(int leagueId);
-
         void CreateLeague(LeagueModelCreate leagueModelCreate);
-
         LeagueModel GetLeagueById(int id);
         bool SaveChanges();
         void UpdateLeague(LeagueModel leagueModel);
-
         void DeleteLeague(LeagueModel leagueModel);
     }
+
     public class LeagueService : ILeagueService
     {
         private readonly DataContext _context;
