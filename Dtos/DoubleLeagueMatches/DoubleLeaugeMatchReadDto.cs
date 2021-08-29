@@ -12,7 +12,7 @@ namespace FoosballApi.Dtos.DoubleLeagueMatches
 
         public int LeagueId { get; set; }
 
-        public DateTime StartTime { get;  set; }
+        public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
 
@@ -23,7 +23,7 @@ namespace FoosballApi.Dtos.DoubleLeagueMatches
         public bool MatchStarted { get; set; }
 
         public bool MatchEnded { get; set; }
-        
+
         public bool MatchPaused { get; set; }
     }
 }

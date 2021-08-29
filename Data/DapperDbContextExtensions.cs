@@ -38,14 +38,14 @@ namespace FoosballApi.Data
         }
 
         // Dont know if this works
-         public static async Task<T> FirstOrDefaultAsync<T>(
-            this DbContext context,
-            CancellationToken ct,
-            string text,
-            object parameters = null,
-            int? timeout = null,
-            CommandType? type = null
-        )
+        public static async Task<T> FirstOrDefaultAsync<T>(
+           this DbContext context,
+           CancellationToken ct,
+           string text,
+           object parameters = null,
+           int? timeout = null,
+           CommandType? type = null
+       )
         {
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 

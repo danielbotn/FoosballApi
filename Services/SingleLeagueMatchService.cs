@@ -22,7 +22,7 @@ namespace FoosballApi.Services
         IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId);
         Task<SingleLeagueMatchModel> ResetMatch(SingleLeagueMatchModel singleLeagueMatchModel, int matchId);
     }
-    
+
     public class SingleLeagueMatchService : ISingleLeagueMatchService
     {
         private readonly DataContext _context;
@@ -89,7 +89,7 @@ namespace FoosballApi.Services
             {
                 var matchesWonAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == userId && x.MatchEnded == true && x.PlayerOneScore > x.PlayerTwoScore);
                 var matchesWonAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == userId && x.MatchEnded == true && x.PlayerTwoScore > x.PlayerOneScore);
-    
+
                 var matchesLostAsPlayerOne = _context.SingleLeagueMatches.Where(x => x.PlayerOne == userId && x.MatchEnded == true && x.PlayerOneScore < x.PlayerTwoScore);
                 var matchesLostAsPlayerTwo = _context.SingleLeagueMatches.Where(x => x.PlayerTwo == userId && x.MatchEnded == true && x.PlayerTwoScore < x.PlayerOneScore);
 
@@ -147,7 +147,7 @@ namespace FoosballApi.Services
                         {
                             Id = slg.Id,
                         };
-            
+
             return query.ToList().Count();
         }
 
@@ -161,7 +161,7 @@ namespace FoosballApi.Services
                         {
                             Id = slg.Id,
                         };
-            
+
             return query.ToList().Count();
         }
 

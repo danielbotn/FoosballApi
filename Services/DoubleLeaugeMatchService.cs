@@ -15,7 +15,7 @@ namespace FoosballApi.Services
         IEnumerable<AllMatchesModel> GetAllMatchesByOrganisationId(int currentOrganisationId, int leagueId);
         bool CheckMatchAccess(int matchId, int userId, int currentOrganisationId);
         AllMatchesModel GetDoubleLeagueMatchById(int matchId);
-        DoubleLeagueMatchModel GetDoubleLeagueMatchByIdSimple(int matchId); 
+        DoubleLeagueMatchModel GetDoubleLeagueMatchByIdSimple(int matchId);
         void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match);
         bool SaveChanges();
         DoubleLeagueMatchModel ResetMatch(DoubleLeagueMatchModel doubleLeagueMatchModel, int matchId);
@@ -25,7 +25,7 @@ namespace FoosballApi.Services
     public class DoubleLeaugeMatchService : IDoubleLeaugeMatchService
     {
         private readonly DataContext _context;
-        
+
         public DoubleLeaugeMatchService(DataContext context)
         {
             _context = context;
@@ -37,7 +37,8 @@ namespace FoosballApi.Services
             var query = from dlp in _context.DoubleLeaguePlayers
                         where dlp.UserId == userId
                         join dlt in _context.DoubleLeagueTeams on dlp.DoubleLeagueTeamId equals dlt.Id
-                        select new LeaguePermissionJoinModel{
+                        select new LeaguePermissionJoinModel
+                        {
                             Id = dlp.Id,
                             LeagueId = dlt.LeagueId,
                             UserId = dlp.UserId
@@ -78,39 +79,40 @@ namespace FoosballApi.Services
 
         public IEnumerable<AllMatchesModel> GetAllMatchesByOrganisationId(int currentOrganisationId, int leagueId)
         {
-           var query = _context.DoubleLeagueMatches.Where(x => x.LeagueId == leagueId).ToList();
+            var query = _context.DoubleLeagueMatches.Where(x => x.LeagueId == leagueId).ToList();
 
-           List<AllMatchesModel> result = new List<AllMatchesModel>();
+            List<AllMatchesModel> result = new List<AllMatchesModel>();
 
-           foreach (var item in query)
-           {
+            foreach (var item in query)
+            {
                 var subquery = from dlp in _context.DoubleLeaguePlayers
-                        where dlp.DoubleLeagueTeamId == item.TeamOneId
-                        join u in _context.Users on dlp.UserId equals u.Id
-                        select new TeamModel
-                        {
-                            Id = dlp.Id,
-                            FirstName = u.FirstName,
-                            LastName = u.LastName,
-                            Email = u.Email
-                        };
-                
+                               where dlp.DoubleLeagueTeamId == item.TeamOneId
+                               join u in _context.Users on dlp.UserId equals u.Id
+                               select new TeamModel
+                               {
+                                   Id = dlp.Id,
+                                   FirstName = u.FirstName,
+                                   LastName = u.LastName,
+                                   Email = u.Email
+                               };
+
                 var teamOne = subquery.ToArray();
 
                 var subquery2 = from dlp in _context.DoubleLeaguePlayers
-                        where dlp.DoubleLeagueTeamId == item.TeamTwoId
-                        join u in _context.Users on dlp.UserId equals u.Id
-                        select new TeamModel
-                        {
-                            Id = dlp.Id,
-                            FirstName = u.FirstName,
-                            LastName = u.LastName,
-                            Email = u.Email
-                        };
-                
+                                where dlp.DoubleLeagueTeamId == item.TeamTwoId
+                                join u in _context.Users on dlp.UserId equals u.Id
+                                select new TeamModel
+                                {
+                                    Id = dlp.Id,
+                                    FirstName = u.FirstName,
+                                    LastName = u.LastName,
+                                    Email = u.Email
+                                };
+
                 var teamTwo = subquery2.ToArray();
 
-                var allTeams = new AllMatchesModel {
+                var allTeams = new AllMatchesModel
+                {
                     Id = item.Id,
                     TeamOneId = item.TeamOneId,
                     TeamTwoId = item.TeamTwoId,
@@ -127,41 +129,42 @@ namespace FoosballApi.Services
                 };
                 result.Add(allTeams);
 
-           }
+            }
             return result;
         }
 
         public AllMatchesModel GetDoubleLeagueMatchById(int matchId)
         {
-           var query = _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == matchId);
+            var query = _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == matchId);
 
-           var subquery = from dlp in _context.DoubleLeaguePlayers
-                    where dlp.DoubleLeagueTeamId == query.TeamOneId
-                    join u in _context.Users on dlp.UserId equals u.Id
-                    select new TeamModel
-                    {
-                        Id = dlp.Id,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        Email = u.Email
-                    };
-            
+            var subquery = from dlp in _context.DoubleLeaguePlayers
+                           where dlp.DoubleLeagueTeamId == query.TeamOneId
+                           join u in _context.Users on dlp.UserId equals u.Id
+                           select new TeamModel
+                           {
+                               Id = dlp.Id,
+                               FirstName = u.FirstName,
+                               LastName = u.LastName,
+                               Email = u.Email
+                           };
+
             var teamOne = subquery.ToArray();
 
             var subquery2 = from dlp in _context.DoubleLeaguePlayers
-                    where dlp.DoubleLeagueTeamId == query.TeamTwoId
-                    join u in _context.Users on dlp.UserId equals u.Id
-                    select new TeamModel
-                    {
-                        Id = dlp.Id,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        Email = u.Email
-                    };
-            
+                            where dlp.DoubleLeagueTeamId == query.TeamTwoId
+                            join u in _context.Users on dlp.UserId equals u.Id
+                            select new TeamModel
+                            {
+                                Id = dlp.Id,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                Email = u.Email
+                            };
+
             var teamTwo = subquery2.ToArray();
 
-            var allTeams = new AllMatchesModel {
+            var allTeams = new AllMatchesModel
+            {
                 Id = query.Id,
                 TeamOneId = query.TeamOneId,
                 TeamTwoId = query.TeamTwoId,
@@ -229,7 +232,7 @@ namespace FoosballApi.Services
         {
             if (doubleLeagueMatchModel == null)
                 throw new ArgumentNullException(nameof(doubleLeagueMatchModel));
-            
+
             DeleteAllGoals(matchId);
 
             return ResetDoubleLeagueMatch(doubleLeagueMatchModel);
@@ -287,7 +290,8 @@ namespace FoosballApi.Services
 
             var query = _context.DoubleLeagueMatches
                 .Where(x => x.LeagueId == leagueId)
-                .Select(m => new DoubleLeagueMatchesSelect {
+                .Select(m => new DoubleLeagueMatchesSelect
+                {
                     TeamOneId = m.TeamOneId,
                     TeamTwoId = m.TeamTwoId
                 })
@@ -308,7 +312,7 @@ namespace FoosballApi.Services
 
             var players = _context.DoubleLeaguePlayers
                 .Where(x => x.DoubleLeagueTeamId == teamId)
-                .Select(x => new {UserId = x.UserId})
+                .Select(x => new { UserId = x.UserId })
                 .Distinct()
                 .ToList();
 
@@ -316,14 +320,15 @@ namespace FoosballApi.Services
             {
                 var user = _context.Users
                     .Where(x => x.Id == player.UserId)
-                    .Select(m => new User {
+                    .Select(m => new User
+                    {
                         Id = m.Id,
                         FirstName = m.FirstName,
                         LastName = m.LastName,
                         Email = m.Email
                     })
                     .FirstOrDefault();
-                
+
                 TeamMember teamMember = new TeamMember
                 {
                     Id = user.Id,
@@ -331,10 +336,10 @@ namespace FoosballApi.Services
                     LastName = user.LastName,
                     Email = user.Email
                 };
-                
+
                 teamMembers.Add(teamMember);
             }
-            
+
             return teamMembers;
         }
 

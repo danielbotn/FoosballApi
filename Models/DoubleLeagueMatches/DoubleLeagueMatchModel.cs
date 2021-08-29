@@ -30,7 +30,7 @@ namespace FoosballApi.Models.DoubleLeagueMatches
         [ForeignKey("LeagueId")]
         public virtual LeagueModel LeagueModelFk { get; set; }
 
-        public DateTime? StartTime { get;  set; }
+        public DateTime? StartTime { get; set; }
 
         public DateTime? EndTime { get; set; }
 
@@ -41,7 +41,7 @@ namespace FoosballApi.Models.DoubleLeagueMatches
         public bool? MatchStarted { get; set; }
 
         public bool? MatchEnded { get; set; }
-        
+
         public bool? MatchPaused { get; set; }
     }
 }

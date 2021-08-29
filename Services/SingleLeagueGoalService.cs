@@ -33,7 +33,7 @@ namespace FoosballApi.Services
 
             if (userId == singleLeagueCreateModel.ScoredByUserId || userId == singleLeagueCreateModel.OpponentId)
                 result = true;
-            
+
             return result;
         }
 
@@ -79,7 +79,7 @@ namespace FoosballApi.Services
             newGoal.ScorerScore = singleLeagueCreateMode.ScorerScore;
             newGoal.OpponentScore = singleLeagueCreateMode.OpponentScore;
             newGoal.WinnerGoal = singleLeagueCreateMode.WinnerGoal;
-            
+
             _context.SingleLeagueGoals.Add(newGoal);
             _context.SaveChanges();
 

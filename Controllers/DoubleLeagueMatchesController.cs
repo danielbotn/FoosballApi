@@ -50,7 +50,7 @@ namespace FoosballApi.Controllers
         [HttpGet("matchId")]
         public ActionResult<AllMatchesModelReadDto> GetDoubleLeagueMatchById(int matchId)
         {
-            try 
+            try
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
@@ -59,12 +59,12 @@ namespace FoosballApi.Controllers
 
                 if (!permission)
                     return Forbid();
-                
+
                 var matchData = _doubleLeaugeMatchService.GetDoubleLeagueMatchById(matchId);
 
                 return Ok(_mapper.Map<AllMatchesModelReadDto>(matchData));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -106,7 +106,7 @@ namespace FoosballApi.Controllers
                 return StatusCode(500, e.Message);
             }
         }
-        
+
         [HttpPut("reset-match")]
         public ActionResult ResetDoubleLeagueMatchById(int matchId)
         {

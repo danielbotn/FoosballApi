@@ -48,12 +48,12 @@ namespace FoosballApi.Controllers
             }
         }
 
-        
-        [HttpGet("{goalId}", Name="GetDoubleLeagueGoalById")]
+
+        [HttpGet("{goalId}", Name = "GetDoubleLeagueGoalById")]
         [ProducesResponseType(typeof(DoubleLeagueGoalReadDto), 200)]
         public async Task<ActionResult> GetDoubleLeagueMatchById(int goalId)
         {
-            try 
+            try
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
@@ -62,12 +62,12 @@ namespace FoosballApi.Controllers
 
                 if (!permission)
                     return Forbid();
-                
+
                 var goaldData = await _goalService.GetDoubleLeagueGoalById(goalId);
 
                 return Ok(_mapper.Map<DoubleLeagueGoalReadDto>(goaldData));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -76,7 +76,7 @@ namespace FoosballApi.Controllers
         [HttpPost("")]
         public ActionResult CreateDoubleLeagueGoal([FromBody] DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto)
         {
-            try 
+            try
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
@@ -85,14 +85,14 @@ namespace FoosballApi.Controllers
 
                 if (!hasPermission)
                     return Forbid();
-                
+
                 var newGoal = _goalService.CreateDoubleLeagueGoal(doubleLeagueGoalCreateDto);
 
                 var doubleLeagueGoalReadDto = _mapper.Map<DoubleLeagueGoalReadDto>(newGoal);
-                
+
                 return CreatedAtRoute("GetDoubleLeagueGoalById", new { goalId = newGoal.Id }, doubleLeagueGoalReadDto);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -110,7 +110,7 @@ namespace FoosballApi.Controllers
 
                 if (!permission)
                     return Forbid();
-                
+
                 _goalService.DeleteDoubleLeagueGoal(goalId);
 
                 return NoContent();

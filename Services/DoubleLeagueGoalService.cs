@@ -21,7 +21,7 @@ namespace FoosballApi.Services
     public class DoubleLeagueGoalService : IDoubleLeagueGoalService
     {
         private readonly DataContext _context;
-        
+
         public DoubleLeagueGoalService(DataContext context)
         {
             _context = context;
@@ -49,11 +49,11 @@ namespace FoosballApi.Services
                         result = true;
                         break;
                     }
-                    
+
                 }
 
             }
-            
+
             return result;
         }
 
@@ -70,7 +70,7 @@ namespace FoosballApi.Services
 
             if (doubleLeagueGoalCreateDto.WinnerGoal != null)
                 newGoal.WinnerGoal = (bool)doubleLeagueGoalCreateDto.WinnerGoal;
-            
+
             newGoal.UserScorerId = doubleLeagueGoalCreateDto.UserScorerId;
 
             _context.DoubleLeagueGoals.Add(newGoal);

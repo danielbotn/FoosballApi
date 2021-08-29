@@ -60,10 +60,11 @@ namespace FoosballApi.Services
             {
                 leagueModel.HowManyRounds = leagueModelCreate.HowManyRounds;
             }
-            else {
+            else
+            {
                 leagueModel.HowManyRounds = 2;
             }
-           
+
             _context.Leagues.Add(leagueModel);
             _context.SaveChanges();
         }

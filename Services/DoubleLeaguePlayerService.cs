@@ -16,7 +16,7 @@ namespace FoosballApi.Services
     public class DoubleLeaguePlayerService : IDoubleLeaguePlayerService
     {
         private readonly DataContext _context;
-        
+
         public DoubleLeaguePlayerService(DataContext context)
         {
             _context = context;
@@ -24,7 +24,7 @@ namespace FoosballApi.Services
 
         public async Task<DoubleLeaguePlayerModelDapper> GetDoubleLeaguePlayerById(int playerId)
         {
-           CancellationToken ct = new();
+            CancellationToken ct = new();
 
             var tx = await _context.Database.BeginTransactionAsync();
 

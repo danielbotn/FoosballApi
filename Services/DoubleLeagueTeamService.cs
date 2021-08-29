@@ -19,7 +19,7 @@ namespace FoosballApi.Services
     public class DoubleLeagueTeamService : IDoubleLeagueTeamService
     {
         private readonly DataContext _context;
-        
+
         public DoubleLeagueTeamService(DataContext context)
         {
             _context = context;
@@ -37,7 +37,7 @@ namespace FoosballApi.Services
             if (query2.OrganisationId == currentOrganisationId && query2.UserId == userId)
                 return true;
 
-            
+
             return false;
         }
 
@@ -66,7 +66,7 @@ namespace FoosballApi.Services
                     break;
                 }
             }
-            
+
             return result;
         }
 

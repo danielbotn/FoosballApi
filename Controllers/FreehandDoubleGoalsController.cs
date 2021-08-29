@@ -28,7 +28,8 @@ namespace FoosballApi.Controllers
         [HttpGet("goals/{matchId}")]
         public ActionResult<IEnumerable<FreehandDoubleGoalsJoinDto>> GetFreehandDoubleGoalsByMatchId()
         {
-            try {
+            try
+            {
                 string matchId = RouteData.Values["matchId"].ToString();
                 string userId = User.Identity.Name;
 
@@ -44,7 +45,7 @@ namespace FoosballApi.Controllers
 
                 return Ok(_mapper.Map<IEnumerable<FreehandDoubleGoalsJoinDto>>(allGoals));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }

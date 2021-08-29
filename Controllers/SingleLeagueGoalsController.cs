@@ -48,10 +48,11 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpGet("{goalId}", Name="getSingleLeagueById")]
+        [HttpGet("{goalId}", Name = "getSingleLeagueById")]
         public ActionResult<SingleLeagueGoalReadDto> GetSingleLeagueGoalById(int goalId)
         {
-            try {
+            try
+            {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
 
@@ -64,7 +65,7 @@ namespace FoosballApi.Controllers
 
                 return Ok(_mapper.Map<SingleLeagueGoalReadDto>(goal));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }

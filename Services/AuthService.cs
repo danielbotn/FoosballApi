@@ -23,7 +23,7 @@ namespace FoosballApi.Services
         void ResetPassword(ResetPasswordRequest model);
         string CreateToken(User user);
     }
-    
+
     public class AuthService : IAuthService
     {
         private readonly DataContext _context;

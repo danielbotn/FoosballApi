@@ -23,8 +23,8 @@ namespace FoosballApi.Controllers
         private readonly IMapper _mapper;
 
         public LeaguesController(
-            ILeagueService leagueService, 
-            ISingleLeagueMatchService singleLeagueMatchService, 
+            ILeagueService leagueService,
+            ISingleLeagueMatchService singleLeagueMatchService,
             IMapper mapper,
             IDoubleLeaugeMatchService doubleLeagueMatchService)
         {

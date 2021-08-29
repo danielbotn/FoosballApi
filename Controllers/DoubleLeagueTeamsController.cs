@@ -47,24 +47,24 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpGet("team/{id}", Name="GetDoubleLeagueTeamById")]
+        [HttpGet("team/{id}", Name = "GetDoubleLeagueTeamById")]
         public ActionResult<DoubleLeagueTeamReadDto> GetDoubleLeagueTeamById(int id)
         {
-            try 
+            try
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
 
-                bool permission =  _doubleLeagueTeamService.CheckDoubleLeagueTeamPermission(id, int.Parse(userId), int.Parse(currentOrganisationId));
+                bool permission = _doubleLeagueTeamService.CheckDoubleLeagueTeamPermission(id, int.Parse(userId), int.Parse(currentOrganisationId));
 
                 if (!permission)
                     return Forbid();
-                
+
                 var teamData = _doubleLeagueTeamService.GetDoubleLeagueTeamById(id);
 
                 return Ok(_mapper.Map<DoubleLeagueTeamReadDto>(teamData));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -73,7 +73,7 @@ namespace FoosballApi.Controllers
         [HttpPost()]
         public ActionResult CreateDoubleLeagueTeam(int leagueId, string name)
         {
-            try 
+            try
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
@@ -82,14 +82,14 @@ namespace FoosballApi.Controllers
 
                 if (!permission)
                     return Forbid();
-                
+
                 var newTeam = _doubleLeagueTeamService.CreateDoubleLeagueTeam(leagueId, int.Parse(currentOrganisationId), name);
 
                 var doubleLeagueTeamReadDto = _mapper.Map<DoubleLeagueTeamReadDto>(newTeam);
-                
+
                 return CreatedAtRoute("GetDoubleLeagueTeamById", new { id = newTeam.Id }, doubleLeagueTeamReadDto);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -107,7 +107,7 @@ namespace FoosballApi.Controllers
 
                 if (!permission)
                     return Forbid();
-                
+
                 _doubleLeagueTeamService.DeleteDoubleLeagueTeam(teamId);
 
                 return NoContent();

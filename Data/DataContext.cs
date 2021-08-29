@@ -32,7 +32,7 @@ namespace FoosballApi.Data
             modelBuilder.UseSerialColumns();
             FixSnakeCaseNames(modelBuilder);
         }
-    
+
         // When running EF Core migrations comment out this line
         // Used for making querying database wiht fromsqlraw easier
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
