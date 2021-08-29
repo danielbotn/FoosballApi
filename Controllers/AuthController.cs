@@ -1,17 +1,10 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using AutoMapper;
-using FoosballApi.Data;
 using FoosballApi.Dtos.Users;
-using FoosballApi.Helpers;
 using FoosballApi.Models;
 using FoosballApi.Models.Accounts;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FoosballApi.Controllers
 {

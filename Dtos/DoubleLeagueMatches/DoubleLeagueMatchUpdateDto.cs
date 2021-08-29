@@ -4,7 +4,6 @@ namespace FoosballApi.Dtos.DoubleLeagueMatches
 {
     public class DoubleLeagueMatchUpdateDto
     {
-
         public DateTime? StartTime { get; set; }
 
         public DateTime? EndTime { get; set; }

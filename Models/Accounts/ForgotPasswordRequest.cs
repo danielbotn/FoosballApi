@@ -7,5 +7,6 @@ namespace FoosballApi.Models.Accounts
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        
     }
 }
