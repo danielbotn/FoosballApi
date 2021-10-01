@@ -24,7 +24,7 @@ namespace FoosballApi.Dtos.Users
         public string LastName { get; set; }
 
         [Required]
-        public DateTime Created_at { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public int? CurrentOrganisationId { get; set; }
     }
