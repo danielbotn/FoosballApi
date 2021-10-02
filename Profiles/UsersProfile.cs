@@ -11,6 +11,7 @@ using FoosballApi.Models.Goals;
 using FoosballApi.Models.Leagues;
 using FoosballApi.Models.Matches;
 using FoosballApi.Models.Organisations;
+using FoosballApi.Models.Users;
 
 namespace FoosballApi.Profiles
 {
@@ -24,6 +25,8 @@ namespace FoosballApi.Profiles
             CreateMap<UserUpdateDto, User>();
             CreateMap<User, UserUpdateDto>();
             CreateMap<UserCreateDto, User>();
+            CreateMap<UserStats, UserStatsReadDto>();
+            CreateMap<UserStatsReadDto, UserStats>();
 
             CreateMap<OrganisationModel, OrganisationReadDto>();
             CreateMap<OrganisationUpdateDto, OrganisationModel>();
