@@ -79,7 +79,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch("{id}")]
-        public ActionResult PartialUserUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
+        public ActionResult PartialOrganisationUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
         {
             try
             {

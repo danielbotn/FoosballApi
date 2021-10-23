@@ -29,7 +29,8 @@ namespace FoosballApi.Services
 
         public OrganisationModel GetOrganisationById(int id)
         {
-            return _context.Organisations.FirstOrDefault(p => p.Id == id);
+            var data = _context.Organisations.FirstOrDefault(p => p.Id == id);
+            return data;
         }
 
         public IEnumerable<OrganisationModel> GetOrganisationsByUser(int id)
