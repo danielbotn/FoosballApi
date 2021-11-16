@@ -37,6 +37,7 @@ namespace FoosballApi
             config.SmtpPort = Configuration["SmtpPort"];
             config.SmtpUser = Configuration["SmtpUser"];
             config.SmtpPass = Configuration["SmtpPass"];
+            config.DatoCmsBearer = Configuration["DatoCmsBearer"];
             services.AddSingleton<Secrets>(config);
 
             // Connection string
@@ -70,6 +71,7 @@ namespace FoosballApi
             services.AddScoped<IDoubleLeaugeMatchService, DoubleLeaugeMatchService>();
             services.AddScoped<IDoubleLeaguePlayerService, DoubleLeaguePlayerService>();
             services.AddScoped<IDoubleLeagueGoalService, DoubleLeagueGoalService>();
+             services.AddScoped<ICmsService, CmsService>();
             services.AddDbContext<DataContext>(p => p.UseNpgsql(builder.ConnectionString));
             services.AddSwaggerGen(c =>
             {
