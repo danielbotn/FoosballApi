@@ -13,5 +13,20 @@ namespace FoosballApi.Models.Cms
         public string settings { get; set; }
         public string about { get; set; }
         public string logout { get; set; }
+        public string language { get; set; }
+        public string darkTheme { get; set; }
+        public string lightTheme { get; set; }
+        public string changePassword { get; set; }
+        public string enableNotifications { get; set; }
+        public string common { get; set; }
+        public string security { get; set; }
+        public string selectLanguage { get; set; }
+        public string islenska { get; set; }
+        public string svenska { get; set; }
+        public string won { get; set; }
+        public string lost { get; set; }
+        public string scored { get; set; }
+        public string recieved { get; set; }
+        public string goals { get; set; }
     }
 }

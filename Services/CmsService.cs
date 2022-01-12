@@ -24,7 +24,7 @@ namespace FoosballApi.Services
 
             string query = "{ hardcodedString(locale: "
                 + language
-                + ") {matches newGame quickActions lastTenMatches newGame statistics history leagues pricing settings about logout } }";
+                + ") {matches newGame quickActions lastTenMatches newGame statistics history leagues pricing settings about logout language darkTheme lightTheme changePassword enableNotifications common security selectLanguage english islenska svenska won lost scored recieved goals } }";
 
             var iCmsBody = new ICmsBody
             {
