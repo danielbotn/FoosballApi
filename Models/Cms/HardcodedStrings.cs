@@ -32,5 +32,8 @@ namespace FoosballApi.Models.Cms
         public string username { get; set; }
         public string organisation { get; set; }
         public string personalInformation { get; set; }
+        public string integration { get; set; }
+        public string slack { get; set; }
+        public string discord { get; set; }
     }
 }
