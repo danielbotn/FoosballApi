@@ -28,5 +28,9 @@ namespace FoosballApi.Models.Cms
         public string scored { get; set; }
         public string recieved { get; set; }
         public string goals { get; set; }
+        public string user { get; set; }
+        public string username { get; set; }
+        public string organisation { get; set; }
+        public string personalInformation { get; set; }
     }
 }
