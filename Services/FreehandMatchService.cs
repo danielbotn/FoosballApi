@@ -11,7 +11,7 @@ namespace FoosballApi.Services
     public interface IFreehandMatchService
     {
         IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId);
-        FreehandMatchModel CreateFreehandMatch(int userId, FreehandMatchCreateDto freehandMatchCreateDto);
+        FreehandMatchModel CreateFreehandMatch(int userId, int organisationId, FreehandMatchCreateDto freehandMatchCreateDto);
         FreehandMatchModel GetFreehandMatchById(int matchId);
         bool CheckFreehandMatchPermission(int matchId, int userId);
         void UpdateFreehandMatch(FreehandMatchModel freehandMatchModel);
@@ -82,7 +82,7 @@ namespace FoosballApi.Services
             return false;
         }
 
-        public FreehandMatchModel CreateFreehandMatch(int userId, FreehandMatchCreateDto freehandMatchCreateDto)
+        public FreehandMatchModel CreateFreehandMatch(int userId, int organisationId, FreehandMatchCreateDto freehandMatchCreateDto)
         {
             FreehandMatchModel fmm = new FreehandMatchModel();
             DateTime now = DateTime.Now;
@@ -92,8 +92,9 @@ namespace FoosballApi.Services
             fmm.PlayerTwoScore = freehandMatchCreateDto.PlayerTwoScore;
             fmm.StartTime = now;
             fmm.GameFinished = freehandMatchCreateDto.GameFinished;
-            fmm.GamePaused = freehandMatchCreateDto.GameFinished;
+            fmm.GamePaused = freehandMatchCreateDto.GamePaused;
             fmm.UpTo = freehandMatchCreateDto.UpTo;
+            fmm.OrganisationId = organisationId;
             _context.FreehandMatches.Add(fmm);
             _context.SaveChanges();
 

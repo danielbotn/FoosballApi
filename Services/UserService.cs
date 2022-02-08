@@ -75,6 +75,10 @@ namespace FoosballApi.Services
             {
                 UserId = userId,
                 TotalMatches = GetTotalMatchesByPlayer(userId),
+                TotalFreehandMatches = GetTotalSingleFreehandMatches(userId),
+                TotalDoubleFreehandMatches = GetTotalDoubleFreehandMatches(userId),
+                TotalSingleLeagueMatches = GetTotalSingleLeagueMatches(userId),
+                TotalDoubleLeagueMatches = GetTotalDoubleLeagueMatches(userId),
                 TotalMatchesWon = freehandMatches.Item1 + doubleFreehandMatches.Item1 + singleLeagueMatches.Item1 + doubleLeagueMatches.Item1,
                 TotalMatchesLost = freehandMatches.Item2 + doubleFreehandMatches.Item2 + singleLeagueMatches.Item2 + doubleLeagueMatches.Item2,
                 TotalGoalsScored = freeHandGoals.Item1 + doubleFreehandGoals.Item1 + singleLeagueGoals.Item1 + (int)doubleLeagueGoals.Item1,

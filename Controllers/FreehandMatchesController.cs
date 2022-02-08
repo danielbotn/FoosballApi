@@ -76,8 +76,8 @@ namespace FoosballApi.Controllers
             try
             {
                 string userId = User.Identity.Name;
-
-                var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), freehandMatchCreateDto);
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+                var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), int.Parse(currentOrganisationId), freehandMatchCreateDto);
 
                 var freehandMatchesReadDto = _mapper.Map<FreehandMatchesReadDto>(newMatch);
 

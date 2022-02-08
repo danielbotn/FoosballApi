@@ -64,6 +64,8 @@ namespace FoosballApi.Services
             _context.FreehandGoals.Add(fhg);
             _context.SaveChanges();
 
+            UpdateFreehandMatchScore(userId, freehandGoalCreateDto);
+
             return fhg;
         }
 
@@ -111,6 +113,28 @@ namespace FoosballApi.Services
                 return true;
 
             return false;
+        }
+
+        private void UpdateFreehandMatchScore(int userId, FreehandGoalCreateDto freehandGoalCreateDto)
+        {
+            FreehandMatchModel fmm = _context.FreehandMatches.FirstOrDefault(f => f.Id == freehandGoalCreateDto.MatchId);
+            if (fmm.PlayerOneId == freehandGoalCreateDto.ScoredByUserId)
+            {
+                fmm.PlayerOneScore = freehandGoalCreateDto.ScoredByScore;
+            }
+            else
+            {
+                fmm.PlayerTwoScore = freehandGoalCreateDto.ScoredByScore;
+            }
+
+            // Check if match is finished
+            if (freehandGoalCreateDto.WinnerGoal == true)
+            {
+                fmm.EndTime = DateTime.Now;
+                fmm.GameFinished = true;
+            }
+           
+            _context.SaveChanges();
         }
     }
 }
