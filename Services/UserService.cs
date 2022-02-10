@@ -701,6 +701,16 @@ namespace FoosballApi.Services
                 result.Add(fdm);
             }
 
+            foreach (var slm in singleLeagueMatches)
+            {
+                result.Add(slm);
+            }
+
+            foreach (var dlm in doubleLeagueMatches)
+            {
+                result.Add(dlm);
+            }
+
             return OrderMatchesByDescending(result);
         }
 
