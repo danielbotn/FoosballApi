@@ -29,6 +29,9 @@ namespace FoosballApi.Models
         
         public string OpponentTwoLastName { get; set; }
 
+        public string TeamMateFirstName { get; set; }
+        public string TeamMateLastName { get; set; }
+
         public int UserScore { get; set; }
 
         public int OpponentUserOrTeamScore { get; set; }

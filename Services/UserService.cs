@@ -20,6 +20,7 @@ namespace FoosballApi.Services
         void DeleteUser(User user);
         UserStats GetUserStats(int userId);
         IEnumerable<UserLastTen> GetLastTenMatchesByUserId(int userId);
+        IEnumerable<UserLastTen> GetPagnatedHistory(int userId, int pageNumber, int pageSize);
     }
 
     public class UserService : IUserService
@@ -135,6 +136,11 @@ namespace FoosballApi.Services
             return lastTen.OrderByDescending(x => x.DateOfGame).Take(10);
         }
 
+        private IEnumerable<UserLastTen> OrderMatchesByDescending(IEnumerable<UserLastTen> lastTen)
+        {
+            return lastTen.OrderByDescending(x => x.DateOfGame);
+        }
+
         private IEnumerable<UserLastTen> GetLastTenFreehandMatches(int userId)
         {
             List<UserLastTen> result = new List<UserLastTen>();
@@ -231,7 +237,7 @@ namespace FoosballApi.Services
                     theUserScore = (int)item.TeamAScore;
                     theOpponentScore = (int)item.TeamBScore;
                 }
-                // athuga
+                int? teamMateId = item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId ? item.PlayerOneTeamB != userId ? item.PlayerTwoTeamB : item.PlayerOneTeamB : item.PlayerOneTeamA != userId ? item.PlayerTwoTeamA : item.PlayerOneTeamA;
                 UserLastTen lastTenObject = new UserLastTen
                 {
                     TypeOfMatch = ETypeOfMatch.DoubleFreehandMatch,
@@ -240,7 +246,9 @@ namespace FoosballApi.Services
                     UserId = userId,
                     OpponentId = item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId ? item.PlayerOneTeamB : item.PlayerOneTeamA,
                     OpponentTwoId = item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId ? item.PlayerTwoTeamB : item.PlayerTwoTeamA,
-                    TeamMateId = item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId ? item.PlayerOneTeamB != userId ? item.PlayerTwoTeamB : item.PlayerOneTeamB : item.PlayerOneTeamA != userId ? item.PlayerTwoTeamA : item.PlayerOneTeamA,
+                    TeamMateId = teamMateId,
+                    TeamMateFirstName = teamMateId != null ? _context.Users.Where(x => x.Id == teamMateId).Select(x => x.FirstName).FirstOrDefault().ToString() : null,
+                    TeamMateLastName = teamMateId != null ? _context.Users.Where(x => x.Id == teamMateId).Select(x => x.LastName).FirstOrDefault().ToString() : null,
                     OpponentOneFirstName = opponentOneFirstName,
                     OpponentOneLastName = opponentOneLastName,
                     OpponentTwoFirstName = opponentTwoFirstName,
@@ -477,14 +485,17 @@ namespace FoosballApi.Services
 
         private int GetTotalDoubleLeagueMatches(int userId)
         {
-            var query = from dlm in _context.DoubleLeagueMatches
-                        join dlp in _context.DoubleLeaguePlayers
-                        on new { PropertyName1 = dlm.TeamOneId, PropertyName2 = dlm.TeamTwoId }
-                        equals new { PropertyName1 = dlp.DoubleLeagueTeamId, PropertyName2 = dlp.DoubleLeagueTeamId }
-                        where dlp.UserId == userId
-                        select dlm.Id;
+            var selectOne = from dlm in _context.DoubleLeagueMatches
+                            join dlp in _context.DoubleLeaguePlayers on dlm.TeamOneId equals dlp.DoubleLeagueTeamId
+                            where dlp.UserId == userId
+                            select dlm.Id;
 
-            return query.Count();
+            var selectTwo = from dlm in _context.DoubleLeagueMatches
+                            join dlp in _context.DoubleLeaguePlayers on dlm.TeamTwoId equals dlp.DoubleLeagueTeamId
+                            where dlp.UserId == userId
+                            select dlm.Id;
+
+            return selectOne.Count() + selectTwo.Count();
         }
 
         private int GetTotalMatchesByPlayer(int userId)
@@ -668,6 +679,254 @@ namespace FoosballApi.Services
             result.Item1 = totalGoalsAsTeamOne + totalGoalsAsTeamTwo;
             result.Item2 = totalReceivedGoalsAsTeamOne + totalReceivedGoalsAsTeamTwo;
             return result;
+        }
+
+        // Get Pagnation for FreehandMatches FreehandDoubleMatches, SingleLeagueMatches, DoubleLeagueMatches
+        public IEnumerable<UserLastTen> GetPagnatedHistory(int userId, int pageNumber, int pageSize)
+        {
+            List<UserLastTen> result = new List<UserLastTen>();
+
+            List<UserLastTen> freehandMatches = GetPagnatedFreehandMatches(userId, pageNumber, pageSize);
+            List<UserLastTen> freehandDoubleMatches = GetPagnatedFreehandDoubleMatches(userId, pageNumber, pageSize);
+            List<UserLastTen> singleLeagueMatches = GetPagnatedSingleLeagueMatches(userId, pageNumber, pageSize);
+            List<UserLastTen> doubleLeagueMatches = GetPagnatedDoubleLeagueMatches(userId, pageNumber, pageSize);
+
+            foreach (var fm in freehandMatches)
+            {
+                result.Add(fm);
+            }
+
+            foreach (var fdm in freehandDoubleMatches)
+            {
+                result.Add(fdm);
+            }
+
+            return OrderMatchesByDescending(result);
+        }
+
+        private List<UserLastTen> GetPagnatedFreehandMatches(int userId, int pageNumber, int pageSize)
+        {
+            List<UserLastTen> result = new List<UserLastTen>();
+
+            var freehandMatches = _context.FreehandMatches
+            .Where(x => (x.PlayerOneId == userId || x.PlayerTwoId == userId) && x.GameFinished == true)
+            .OrderByDescending(x => x.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+            foreach (var match in freehandMatches)
+            {
+                UserLastTen userLastTenItem = new UserLastTen();
+                userLastTenItem.TypeOfMatch = ETypeOfMatch.FreehandMatch;
+                userLastTenItem.TypeOfMatchName = ETypeOfMatch.FreehandMatch.ToString();
+                userLastTenItem.UserId = userId;
+                userLastTenItem.TeamMateId = null;
+                userLastTenItem.MatchId = match.Id;
+                userLastTenItem.OpponentId = match.PlayerOneId == userId ? match.PlayerTwoId : match.PlayerOneId;
+                userLastTenItem.OpponentTwoId = null;
+                userLastTenItem.OpponentOneFirstName = match.PlayerOneId == userId ?
+                        _context.Users.Where(x => x.Id == match.PlayerTwoId).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                        _context.Users.Where(x => x.Id == match.PlayerOneId).Select(x => x.FirstName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentOneLastName = match.PlayerOneId == userId ?
+                        _context.Users.Where(x => x.Id == match.PlayerTwoId).Select(x => x.LastName).FirstOrDefault().ToString() :
+                        _context.Users.Where(x => x.Id == match.PlayerOneId).Select(x => x.LastName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentTwoFirstName = null;
+                userLastTenItem.OpponentTwoLastName = null;
+                userLastTenItem.UserScore = match.PlayerOneId == userId ? match.PlayerOneScore : match.PlayerTwoScore;
+                userLastTenItem.OpponentUserOrTeamScore = match.PlayerOneId == userId ? match.PlayerTwoScore : match.PlayerOneScore;
+                userLastTenItem.DateOfGame = (DateTime)match.EndTime;
+
+                result.Add(userLastTenItem);
+            }
+
+            return result;
+        }
+
+        private List<UserLastTen> GetPagnatedFreehandDoubleMatches(int userId, int pageNumber, int pageSize)
+        {
+            List<UserLastTen> result = new List<UserLastTen>();
+
+            var freehandDoubleMatches = _context.FreehandDoubleMatches
+            .Where(x => (x.PlayerOneTeamA == userId || x.PlayerOneTeamB == userId || x.PlayerTwoTeamA == userId || x.PlayerTwoTeamB == userId) && x.GameFinished == true)
+            .OrderByDescending(x => x.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+            foreach (var match in freehandDoubleMatches)
+            {
+                UserLastTen userLastTenItem = new UserLastTen();
+                int opponentId = match.PlayerOneTeamA != userId && match.PlayerTwoTeamA != userId ? match.PlayerOneTeamB : match.PlayerOneTeamA;
+                int? oponentTwoId = match.PlayerOneTeamA != userId && match.PlayerTwoTeamA != userId ? match.PlayerTwoTeamB : match.PlayerTwoTeamA;
+
+                userLastTenItem.TypeOfMatch = ETypeOfMatch.DoubleFreehandMatch;
+                userLastTenItem.TypeOfMatchName = ETypeOfMatch.DoubleFreehandMatch.ToString();
+                userLastTenItem.UserId = userId;
+                userLastTenItem.TeamMateId = userId == match.PlayerOneTeamA ? match.PlayerOneTeamB : userId == match.PlayerOneTeamB ? match.PlayerOneTeamA :
+                                            userId == match.PlayerTwoTeamA ? match.PlayerTwoTeamB : userId == match.PlayerTwoTeamB ? match.PlayerTwoTeamA : null;
+                userLastTenItem.TeamMateFirstName = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.FirstName).FirstOrDefault().ToString() : null;
+                userLastTenItem.TeamMateLastName = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.LastName).FirstOrDefault().ToString() :
+                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.LastName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.LastName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.LastName).FirstOrDefault().ToString() : null;
+                userLastTenItem.MatchId = match.Id;
+                userLastTenItem.OpponentId = opponentId;
+                userLastTenItem.OpponentTwoId = oponentTwoId;
+
+
+                userLastTenItem.OpponentOneFirstName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.FirstName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentOneLastName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.LastName).FirstOrDefault().ToString();
+
+                userLastTenItem.OpponentTwoFirstName = _context.Users.Where(x => x.Id == oponentTwoId).Select(x => x.FirstName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentTwoLastName = _context.Users.Where(x => x.Id == oponentTwoId).Select(x => x.LastName).FirstOrDefault().ToString();
+
+
+                userLastTenItem.UserScore = (int)match.PlayerOneTeamA == userId || (int)match.PlayerTwoTeamA == userId ? (int)match.TeamAScore : (int)match.TeamBScore;
+                userLastTenItem.OpponentUserOrTeamScore = (int)match.PlayerOneTeamA != userId && (int)match.PlayerTwoTeamA != userId ? (int)match.TeamAScore : (int)match.TeamBScore;
+                userLastTenItem.DateOfGame = (DateTime)match.EndTime;
+
+                result.Add(userLastTenItem);
+            }
+
+            return result;
+        }
+
+        private List<UserLastTen> GetPagnatedDoubleLeagueMatches(int userId, int pageNumber, int pageSize)
+        {
+            List<UserLastTen> result = new List<UserLastTen>();
+            List<DoubleLeagueMatchModel> doubleLeagueMatches = new();
+            List<int> teamIds = new();
+
+            List<int> teamIdsData = _context.DoubleLeaguePlayers.
+                Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => x.DoubleLeagueTeamId)
+                .ToList();
+
+            foreach (var item in teamIdsData)
+            {
+                teamIds.Add(item);
+
+                var dlm = _context.DoubleLeagueMatches
+                    .Where((x => (x.TeamOneId == item || x.TeamTwoId == item) && x.EndTime != null)).ToList();
+                foreach (var element in dlm)
+                {
+                    doubleLeagueMatches.Add(element);
+                }
+            }
+
+            return GenerateDoubleLeagueMatches(doubleLeagueMatches, teamIds, userId); ;
+        }
+
+        private List<UserLastTen> GenerateDoubleLeagueMatches(List<DoubleLeagueMatchModel> doubleLeagueMatches, List<int> teamIds, int userId)
+        {
+            List<UserLastTen> result = null;
+            foreach (var item in doubleLeagueMatches)
+            {
+                int opponentId;
+                int opponentTwoId;
+                int teamMateId;
+                int userScore;
+                int opponentScore;
+                if (teamIds.Contains(item.TeamOneId))
+                {
+                    var uId = _context.DoubleLeaguePlayers.
+                        Where(x => x.DoubleLeagueTeamId == item.TeamOneId).Select(x => x.UserId).FirstOrDefault();
+                    teamMateId = uId;
+                    var opponentData = _context.DoubleLeaguePlayers
+                        .Where(x => x.DoubleLeagueTeamId == item.TeamTwoId).OrderBy(x => x.Id).Select(x => x.UserId);
+
+                    opponentId = opponentData.First();
+                    opponentTwoId = opponentData.Last();
+                    userScore = (int)item.TeamOneScore;
+                    opponentScore = (int)item.TeamTwoScore;
+                }
+                else
+                {
+                    var uId = _context.DoubleLeaguePlayers
+                        .Where(x => x.DoubleLeagueTeamId == item.TeamTwoId)
+                        .Select(x => x.UserId)
+                        .FirstOrDefault();
+
+                    var opponentData = _context.DoubleLeaguePlayers
+                        .Where(x => x.DoubleLeagueTeamId == item.TeamOneId)
+                        .Select(x => x.UserId)
+                        .ToList();
+
+                    teamMateId = uId;
+                    opponentId = opponentData.First();
+                    opponentTwoId = opponentData.LastOrDefault();
+                    userScore = (int)item.TeamTwoScore;
+                    opponentScore = (int)item.TeamOneScore;
+                }
+
+                UserLastTen lastTenObject = new UserLastTen
+                {
+                    TypeOfMatch = ETypeOfMatch.DoubleLeagueMatch,
+                    TypeOfMatchName = ETypeOfMatch.DoubleLeagueMatch.ToString(),
+                    UserId = userId,
+                    TeamMateId = teamMateId,
+                    TeamMateFirstName = _context.Users.Where(x => x.Id == teamMateId).Select(x => x.FirstName).FirstOrDefault().ToString(),
+                    TeamMateLastName = _context.Users.Where(x => x.Id == teamMateId).Select(x => x.LastName).FirstOrDefault().ToString(),
+                    MatchId = item.Id,
+                    OpponentId = opponentId,
+                    OpponentTwoId = null,
+                    OpponentOneFirstName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.FirstName).SingleOrDefault(),
+                    OpponentOneLastName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.LastName).SingleOrDefault(),
+                    OpponentTwoFirstName = _context.Users.Where(x => x.Id == opponentTwoId).Select(x => x.FirstName).SingleOrDefault(),
+                    OpponentTwoLastName = _context.Users.Where(x => x.Id == opponentTwoId).Select(x => x.LastName).SingleOrDefault(),
+                    UserScore = userScore,
+                    OpponentUserOrTeamScore = opponentScore,
+                    DateOfGame = (DateTime)item.EndTime
+                };
+                result.Add(lastTenObject);
+            }
+
+            return result;
+        }
+
+        private List<UserLastTen> GetPagnatedSingleLeagueMatches(int userId, int pageNumber, int pageSize)
+        {
+            List<UserLastTen> userLastTen = new List<UserLastTen>();
+
+            var singleLeagueMatches = _context.SingleLeagueMatches
+                .Where(x => (x.PlayerOne == userId || x.PlayerTwo == userId) && x.MatchEnded != null && x.MatchEnded != false)
+                .OrderByDescending(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            foreach (var match in singleLeagueMatches)
+            {
+                int oponentId = match.PlayerOne == userId ? match.PlayerTwo : match.PlayerOne;
+                UserLastTen userLastTenItem = new UserLastTen();
+                userLastTenItem.TypeOfMatch = ETypeOfMatch.SingleLeagueMatch;
+                userLastTenItem.TypeOfMatchName = ETypeOfMatch.SingleLeagueMatch.ToString();
+                userLastTenItem.UserId = userId;
+                userLastTenItem.TeamMateId = null;
+                userLastTenItem.TeamMateFirstName = null;
+                userLastTenItem.TeamMateLastName = null;
+                userLastTenItem.MatchId = match.Id;
+                userLastTenItem.OpponentId = oponentId;
+                userLastTenItem.OpponentTwoId = null;
+                userLastTenItem.OpponentOneFirstName = _context.Users.Where(x => x.Id == oponentId).Select(x => x.FirstName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentOneLastName = _context.Users.Where(x => x.Id == oponentId).Select(x => x.LastName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentTwoFirstName = null;
+                userLastTenItem.OpponentTwoLastName = null;
+                userLastTenItem.UserScore = userId == match.PlayerOne ? (int)match.PlayerOneScore : (int)match.PlayerTwoScore;
+                userLastTenItem.OpponentUserOrTeamScore = userId == match.PlayerOne ? (int)match.PlayerTwoScore : (int)match.PlayerOneScore;
+                userLastTenItem.DateOfGame = (DateTime)match.EndTime;
+
+                userLastTen.Add(userLastTenItem);
+            }
+
+            return userLastTen;
         }
     }
 }

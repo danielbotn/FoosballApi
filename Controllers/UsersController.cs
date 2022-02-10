@@ -1,5 +1,6 @@
 using AutoMapper;
 using FoosballApi.Dtos.Users;
+using FoosballApi.Filter;
 using FoosballApi.Helpers;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -147,6 +148,24 @@ namespace FoosballApi.Controllers
                 string userId = User.Identity.Name;
 
                 var data = _userService.GetLastTenMatchesByUserId(int.Parse(userId));
+
+                return Ok(_mapper.Map<IEnumerable<UserLastTenReadDto>>(data));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("stats/history")]
+        public ActionResult<IEnumerable<UserLastTenReadDto>> History([FromQuery] PaginationFilter filter)
+        {
+            try
+            {
+                var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+                string userId = User.Identity.Name;
+
+                var data = _userService.GetPagnatedHistory(int.Parse(userId), validFilter.PageNumber, validFilter.PageSize);
 
                 return Ok(_mapper.Map<IEnumerable<UserLastTenReadDto>>(data));
             }
