@@ -836,7 +836,7 @@ namespace FoosballApi.Services
 
         private List<UserLastTen> GenerateDoubleLeagueMatches(List<DoubleLeagueMatchModel> doubleLeagueMatches, List<int> teamIds, int userId)
         {
-            List<UserLastTen> result = null;
+            List<UserLastTen> result = new List<UserLastTen>();;
             foreach (var item in doubleLeagueMatches)
             {
                 int opponentId;
@@ -846,9 +846,8 @@ namespace FoosballApi.Services
                 int opponentScore;
                 if (teamIds.Contains(item.TeamOneId))
                 {
-                    var uId = _context.DoubleLeaguePlayers.
-                        Where(x => x.DoubleLeagueTeamId == item.TeamOneId).Select(x => x.UserId).FirstOrDefault();
-                    teamMateId = uId;
+                    teamMateId =  _context.DoubleLeaguePlayers.
+                        Where(x => x.DoubleLeagueTeamId == item.TeamOneId && x.UserId != userId).Select(x => x.UserId).SingleOrDefault();
                     var opponentData = _context.DoubleLeaguePlayers
                         .Where(x => x.DoubleLeagueTeamId == item.TeamTwoId).OrderBy(x => x.Id).Select(x => x.UserId);
 
@@ -859,17 +858,14 @@ namespace FoosballApi.Services
                 }
                 else
                 {
-                    var uId = _context.DoubleLeaguePlayers
-                        .Where(x => x.DoubleLeagueTeamId == item.TeamTwoId)
-                        .Select(x => x.UserId)
-                        .FirstOrDefault();
-
+                    teamMateId = _context.DoubleLeaguePlayers.
+                        Where(x => x.DoubleLeagueTeamId == item.TeamTwoId && x.UserId != userId).Select(x => x.UserId).SingleOrDefault();
+                        
                     var opponentData = _context.DoubleLeaguePlayers
                         .Where(x => x.DoubleLeagueTeamId == item.TeamOneId)
                         .Select(x => x.UserId)
                         .ToList();
 
-                    teamMateId = uId;
                     opponentId = opponentData.First();
                     opponentTwoId = opponentData.LastOrDefault();
                     userScore = (int)item.TeamTwoScore;

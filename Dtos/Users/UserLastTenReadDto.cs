@@ -10,6 +10,9 @@ namespace FoosballApi.Dtos.Users
         public int UserId { get; set; }
         public int? TeamMateId { get; set; }
 
+        public string TeamMateFirstName { get; set; }
+        public string TeamMateLastName { get; set; }
+
         public int MatchId { get; set; }
 
         public int OpponentId { get; set; }
