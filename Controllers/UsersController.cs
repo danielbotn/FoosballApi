@@ -140,8 +140,8 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("stats/last-ten-matches")]
-        [ProducesResponseType(typeof(IEnumerable<UserLastTenReadDto>), 200)]
-        public ActionResult<IEnumerable<UserLastTenReadDto>> GetLastTenMatches()
+        [ProducesResponseType(typeof(IEnumerable<MatchReadDto>), 200)]
+        public ActionResult<IEnumerable<MatchReadDto>> GetLastTenMatches()
         {
             try
             {
@@ -149,7 +149,7 @@ namespace FoosballApi.Controllers
 
                 var data = _userService.GetLastTenMatchesByUserId(int.Parse(userId));
 
-                return Ok(_mapper.Map<IEnumerable<UserLastTenReadDto>>(data));
+                return Ok(_mapper.Map<IEnumerable<MatchReadDto>>(data));
             }
             catch (Exception e)
             {
@@ -158,7 +158,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("stats/history")]
-        public ActionResult<IEnumerable<UserLastTenReadDto>> History([FromQuery] PaginationFilter filter)
+        public ActionResult<IEnumerable<MatchReadDto>> History([FromQuery] PaginationFilter filter)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace FoosballApi.Controllers
 
                 var data = _userService.GetPagnatedHistory(int.Parse(userId), validFilter.PageNumber, validFilter.PageSize);
 
-                return Ok(_mapper.Map<IEnumerable<UserLastTenReadDto>>(data));
+                return Ok(_mapper.Map<IEnumerable<MatchReadDto>>(data));
             }
             catch (Exception e)
             {

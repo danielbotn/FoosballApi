@@ -3,7 +3,7 @@ using FoosballApi.Enums;
 
 namespace FoosballApi.Dtos.Users
 {
-    public class UserLastTenReadDto
+    public class MatchReadDto
     {
         public ETypeOfMatch TypeOfMatch { get; set; }
         public string TypeOfMatchName { get; set; }

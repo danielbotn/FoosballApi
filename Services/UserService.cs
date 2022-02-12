@@ -19,8 +19,8 @@ namespace FoosballApi.Services
         void UpdateUser(User user);
         void DeleteUser(User user);
         UserStats GetUserStats(int userId);
-        IEnumerable<UserLastTen> GetLastTenMatchesByUserId(int userId);
-        IEnumerable<UserLastTen> GetPagnatedHistory(int userId, int pageNumber, int pageSize);
+        IEnumerable<Match> GetLastTenMatchesByUserId(int userId);
+        IEnumerable<Match> GetPagnatedHistory(int userId, int pageNumber, int pageSize);
     }
 
     public class UserService : IUserService
@@ -99,9 +99,9 @@ namespace FoosballApi.Services
             // Do nothing
         }
 
-        public IEnumerable<UserLastTen> GetLastTenMatchesByUserId(int userId)
+        public IEnumerable<Match> GetLastTenMatchesByUserId(int userId)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
             var lastTenFreehandMatches = GetLastTenFreehandMatches(userId);
             var lastTenFreehandDoubleMatches = GetLastTenFreehandDoubleMatches(userId);
@@ -131,19 +131,19 @@ namespace FoosballApi.Services
             return FilterLastTen(result);
         }
 
-        private IEnumerable<UserLastTen> FilterLastTen(IEnumerable<UserLastTen> lastTen)
+        private IEnumerable<Match> FilterLastTen(IEnumerable<Match> lastTen)
         {
             return lastTen.OrderByDescending(x => x.DateOfGame).Take(10);
         }
 
-        private IEnumerable<UserLastTen> OrderMatchesByDescending(IEnumerable<UserLastTen> lastTen)
+        private IEnumerable<Match> OrderMatchesByDescending(IEnumerable<Match> lastTen)
         {
             return lastTen.OrderByDescending(x => x.DateOfGame);
         }
 
-        private IEnumerable<UserLastTen> GetLastTenFreehandMatches(int userId)
+        private IEnumerable<Match> GetLastTenFreehandMatches(int userId)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
             var freehandMatches = _context.FreehandMatches
                 .Where(x => x.PlayerOneId == userId || x.PlayerTwoId == userId && x.EndTime != null)
                 .OrderByDescending(x => x.EndTime)
@@ -152,7 +152,7 @@ namespace FoosballApi.Services
 
             foreach (var item in freehandMatches)
             {
-                UserLastTen lastTenObject = new UserLastTen
+                Match match = new Match
                 {
                     TypeOfMatch = ETypeOfMatch.FreehandMatch,
                     TypeOfMatchName = ETypeOfMatch.FreehandMatch.ToString(),
@@ -173,14 +173,14 @@ namespace FoosballApi.Services
                     OpponentUserOrTeamScore = item.PlayerOneId == userId ? item.PlayerTwoScore : item.PlayerOneScore,
                     DateOfGame = (DateTime)item.EndTime
                 };
-                result.Add(lastTenObject);
+                result.Add(match);
             }
             return result;
         }
 
-        private IEnumerable<UserLastTen> GetLastTenFreehandDoubleMatches(int userId)
+        private IEnumerable<Match> GetLastTenFreehandDoubleMatches(int userId)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
             var lastTenDoubleFreehandMatches = _context.FreehandDoubleMatches
                 .Where(x => (x.PlayerOneTeamA == userId || x.PlayerTwoTeamA == userId || x.PlayerOneTeamB == userId || x.PlayerTwoTeamB == userId)
@@ -238,7 +238,7 @@ namespace FoosballApi.Services
                     theOpponentScore = (int)item.TeamBScore;
                 }
                 int? teamMateId = item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId ? item.PlayerOneTeamB != userId ? item.PlayerTwoTeamB : item.PlayerOneTeamB : item.PlayerOneTeamA != userId ? item.PlayerTwoTeamA : item.PlayerOneTeamA;
-                UserLastTen lastTenObject = new UserLastTen
+                Match match = new Match
                 {
                     TypeOfMatch = ETypeOfMatch.DoubleFreehandMatch,
                     TypeOfMatchName = ETypeOfMatch.DoubleFreehandMatch.ToString(),
@@ -257,7 +257,7 @@ namespace FoosballApi.Services
                     OpponentUserOrTeamScore = theOpponentScore,
                     DateOfGame = (DateTime)item.EndTime
                 };
-                result.Add(lastTenObject);
+                result.Add(match);
             }
             return result;
         }
@@ -335,9 +335,9 @@ namespace FoosballApi.Services
         }
 
 
-        private IEnumerable<UserLastTen> GetLastTenSingleLeagueMatches(int userId)
+        private IEnumerable<Match> GetLastTenSingleLeagueMatches(int userId)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
             var lastTenSingleLeagueMatches = _context.SingleLeagueMatches
                 .Where(x => (x.PlayerOne == userId || x.PlayerTwo == userId) && x.MatchEnded == true)
@@ -353,7 +353,7 @@ namespace FoosballApi.Services
                 playerTwo = item.PlayerTwo;
                 playerOneScore = (int)item.PlayerOneScore;
                 playerTwoScore = (int)item.PlayerTwoScore;
-                UserLastTen lastTenObject = new UserLastTen
+                Match match = new Match
                 {
                     TypeOfMatch = ETypeOfMatch.FreehandMatch,
                     TypeOfMatchName = ETypeOfMatch.FreehandMatch.ToString(),
@@ -374,16 +374,16 @@ namespace FoosballApi.Services
                     OpponentUserOrTeamScore = playerOne == userId ? playerTwoScore : playerOneScore,
                     DateOfGame = (DateTime)item.EndTime
                 };
-                result.Add(lastTenObject);
+                result.Add(match);
             }
             return result;
         }
 
-        private IEnumerable<UserLastTen> GetLastTenDoubleLeagueMatches(int userId)
+        private IEnumerable<Match> GetLastTenDoubleLeagueMatches(int userId)
         {
             List<DoubleLeagueMatchModel> doubleLeagueMatches = new();
             List<int> teamIds = new();
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
             // First find all team ids of user
             var teamIdsData = _context.DoubleLeaguePlayers.Where(x => x.UserId == userId).Select(x => x.DoubleLeagueTeamId).ToList();
@@ -429,7 +429,7 @@ namespace FoosballApi.Services
                     opponentScore = (int)item.TeamOneScore;
                 }
 
-                UserLastTen lastTenObject = new UserLastTen
+                Match match = new Match
                 {
                     TypeOfMatch = ETypeOfMatch.DoubleLeagueMatch,
                     TypeOfMatchName = ETypeOfMatch.DoubleLeagueMatch.ToString(),
@@ -446,7 +446,7 @@ namespace FoosballApi.Services
                     OpponentUserOrTeamScore = opponentScore,
                     DateOfGame = (DateTime)item.EndTime
                 };
-                result.Add(lastTenObject);
+                result.Add(match);
             }
 
             return result;
@@ -682,14 +682,14 @@ namespace FoosballApi.Services
         }
 
         // Get Pagnation for FreehandMatches FreehandDoubleMatches, SingleLeagueMatches, DoubleLeagueMatches
-        public IEnumerable<UserLastTen> GetPagnatedHistory(int userId, int pageNumber, int pageSize)
+        public IEnumerable<Match> GetPagnatedHistory(int userId, int pageNumber, int pageSize)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
-            List<UserLastTen> freehandMatches = GetPagnatedFreehandMatches(userId, pageNumber, pageSize);
-            List<UserLastTen> freehandDoubleMatches = GetPagnatedFreehandDoubleMatches(userId, pageNumber, pageSize);
-            List<UserLastTen> singleLeagueMatches = GetPagnatedSingleLeagueMatches(userId, pageNumber, pageSize);
-            List<UserLastTen> doubleLeagueMatches = GetPagnatedDoubleLeagueMatches(userId, pageNumber, pageSize);
+            List<Match> freehandMatches = GetPagnatedFreehandMatches(userId, pageNumber, pageSize);
+            List<Match> freehandDoubleMatches = GetPagnatedFreehandDoubleMatches(userId, pageNumber, pageSize);
+            List<Match> singleLeagueMatches = GetPagnatedSingleLeagueMatches(userId, pageNumber, pageSize);
+            List<Match> doubleLeagueMatches = GetPagnatedDoubleLeagueMatches(userId, pageNumber, pageSize);
 
             foreach (var fm in freehandMatches)
             {
@@ -714,9 +714,9 @@ namespace FoosballApi.Services
             return OrderMatchesByDescending(result);
         }
 
-        private List<UserLastTen> GetPagnatedFreehandMatches(int userId, int pageNumber, int pageSize)
+        private List<Match> GetPagnatedFreehandMatches(int userId, int pageNumber, int pageSize)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
             var freehandMatches = _context.FreehandMatches
             .Where(x => (x.PlayerOneId == userId || x.PlayerTwoId == userId) && x.GameFinished == true)
@@ -727,7 +727,7 @@ namespace FoosballApi.Services
 
             foreach (var match in freehandMatches)
             {
-                UserLastTen userLastTenItem = new UserLastTen();
+                Match userLastTenItem = new Match();
                 userLastTenItem.TypeOfMatch = ETypeOfMatch.FreehandMatch;
                 userLastTenItem.TypeOfMatchName = ETypeOfMatch.FreehandMatch.ToString();
                 userLastTenItem.UserId = userId;
@@ -753,9 +753,9 @@ namespace FoosballApi.Services
             return result;
         }
 
-        private List<UserLastTen> GetPagnatedFreehandDoubleMatches(int userId, int pageNumber, int pageSize)
+        private List<Match> GetPagnatedFreehandDoubleMatches(int userId, int pageNumber, int pageSize)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
 
             var freehandDoubleMatches = _context.FreehandDoubleMatches
             .Where(x => (x.PlayerOneTeamA == userId || x.PlayerOneTeamB == userId || x.PlayerTwoTeamA == userId || x.PlayerTwoTeamB == userId) && x.GameFinished == true)
@@ -766,7 +766,7 @@ namespace FoosballApi.Services
 
             foreach (var match in freehandDoubleMatches)
             {
-                UserLastTen userLastTenItem = new UserLastTen();
+                Match userLastTenItem = new Match();
                 int opponentId = match.PlayerOneTeamA != userId && match.PlayerTwoTeamA != userId ? match.PlayerOneTeamB : match.PlayerOneTeamA;
                 int? oponentTwoId = match.PlayerOneTeamA != userId && match.PlayerTwoTeamA != userId ? match.PlayerTwoTeamB : match.PlayerTwoTeamA;
 
@@ -805,9 +805,9 @@ namespace FoosballApi.Services
             return result;
         }
 
-        private List<UserLastTen> GetPagnatedDoubleLeagueMatches(int userId, int pageNumber, int pageSize)
+        private List<Match> GetPagnatedDoubleLeagueMatches(int userId, int pageNumber, int pageSize)
         {
-            List<UserLastTen> result = new List<UserLastTen>();
+            List<Match> result = new List<Match>();
             List<DoubleLeagueMatchModel> doubleLeagueMatches = new();
             List<int> teamIds = new();
 
@@ -834,9 +834,9 @@ namespace FoosballApi.Services
             return GenerateDoubleLeagueMatches(doubleLeagueMatches, teamIds, userId); ;
         }
 
-        private List<UserLastTen> GenerateDoubleLeagueMatches(List<DoubleLeagueMatchModel> doubleLeagueMatches, List<int> teamIds, int userId)
+        private List<Match> GenerateDoubleLeagueMatches(List<DoubleLeagueMatchModel> doubleLeagueMatches, List<int> teamIds, int userId)
         {
-            List<UserLastTen> result = new List<UserLastTen>();;
+            List<Match> result = new List<Match>();;
             foreach (var item in doubleLeagueMatches)
             {
                 int opponentId;
@@ -872,7 +872,7 @@ namespace FoosballApi.Services
                     opponentScore = (int)item.TeamOneScore;
                 }
 
-                UserLastTen lastTenObject = new UserLastTen
+                Match match = new Match
                 {
                     TypeOfMatch = ETypeOfMatch.DoubleLeagueMatch,
                     TypeOfMatchName = ETypeOfMatch.DoubleLeagueMatch.ToString(),
@@ -891,15 +891,15 @@ namespace FoosballApi.Services
                     OpponentUserOrTeamScore = opponentScore,
                     DateOfGame = (DateTime)item.EndTime
                 };
-                result.Add(lastTenObject);
+                result.Add(match);
             }
 
             return result;
         }
 
-        private List<UserLastTen> GetPagnatedSingleLeagueMatches(int userId, int pageNumber, int pageSize)
+        private List<Match> GetPagnatedSingleLeagueMatches(int userId, int pageNumber, int pageSize)
         {
-            List<UserLastTen> userLastTen = new List<UserLastTen>();
+            List<Match> userLastTen = new List<Match>();
 
             var singleLeagueMatches = _context.SingleLeagueMatches
                 .Where(x => (x.PlayerOne == userId || x.PlayerTwo == userId) && x.MatchEnded != null && x.MatchEnded != false)
@@ -911,7 +911,7 @@ namespace FoosballApi.Services
             foreach (var match in singleLeagueMatches)
             {
                 int oponentId = match.PlayerOne == userId ? match.PlayerTwo : match.PlayerOne;
-                UserLastTen userLastTenItem = new UserLastTen();
+                Match userLastTenItem = new Match();
                 userLastTenItem.TypeOfMatch = ETypeOfMatch.SingleLeagueMatch;
                 userLastTenItem.TypeOfMatchName = ETypeOfMatch.SingleLeagueMatch.ToString();
                 userLastTenItem.UserId = userId;
