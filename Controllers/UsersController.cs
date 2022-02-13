@@ -158,6 +158,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("stats/history")]
+        [ProducesResponseType(typeof(IEnumerable<MatchReadDto>), 200)]
         public ActionResult<IEnumerable<MatchReadDto>> History([FromQuery] PaginationFilter filter)
         {
             try
