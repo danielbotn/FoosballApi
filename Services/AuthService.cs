@@ -61,6 +61,9 @@ namespace FoosballApi.Services
             {
                 throw new ArgumentNullException(nameof(user));
             }
+            // get random number
+            Random rnd = new Random();
+            int randomNumber = rnd.Next(1, 99999);
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
             DateTime now = DateTime.Now;
             User tmpUser = new User();
@@ -69,6 +72,7 @@ namespace FoosballApi.Services
             tmpUser.FirstName = user.FirstName;
             tmpUser.LastName = user.LastName;
             tmpUser.Created_at = now;
+            tmpUser.PhotoUrl = "https://avatars.dicebear.com/api/personas/:" + randomNumber + ".png";
             _context.Users.Add(tmpUser);
             _context.SaveChanges();
         }
