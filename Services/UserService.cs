@@ -741,6 +741,9 @@ namespace FoosballApi.Services
                 userLastTenItem.OpponentOneLastName = match.PlayerOneId == userId ?
                         _context.Users.Where(x => x.Id == match.PlayerTwoId).Select(x => x.LastName).FirstOrDefault().ToString() :
                         _context.Users.Where(x => x.Id == match.PlayerOneId).Select(x => x.LastName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentOnePhotoUrl =  match.PlayerOneId == userId ?
+                        _context.Users.Where(x => x.Id == match.PlayerTwoId).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                        _context.Users.Where(x => x.Id == match.PlayerOneId).Select(x => x.PhotoUrl).FirstOrDefault().ToString();
                 userLastTenItem.OpponentTwoFirstName = null;
                 userLastTenItem.OpponentTwoLastName = null;
                 userLastTenItem.UserScore = match.PlayerOneId == userId ? match.PlayerOneScore : match.PlayerTwoScore;
@@ -783,6 +786,10 @@ namespace FoosballApi.Services
                     userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.LastName).FirstOrDefault().ToString() :
                     userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.LastName).FirstOrDefault().ToString() :
                     userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.LastName).FirstOrDefault().ToString() : null;
+                userLastTenItem.TeamMatePhotoUrl = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.PhotoUrl).FirstOrDefault().ToString() : null;
                 userLastTenItem.MatchId = match.Id;
                 userLastTenItem.OpponentId = opponentId;
                 userLastTenItem.OpponentTwoId = oponentTwoId;
@@ -790,11 +797,11 @@ namespace FoosballApi.Services
 
                 userLastTenItem.OpponentOneFirstName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.FirstName).FirstOrDefault().ToString();
                 userLastTenItem.OpponentOneLastName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.LastName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentOnePhotoUrl = _context.Users.Where(x => x.Id == opponentId).Select(x => x.PhotoUrl).FirstOrDefault().ToString();
 
                 userLastTenItem.OpponentTwoFirstName = _context.Users.Where(x => x.Id == oponentTwoId).Select(x => x.FirstName).FirstOrDefault().ToString();
                 userLastTenItem.OpponentTwoLastName = _context.Users.Where(x => x.Id == oponentTwoId).Select(x => x.LastName).FirstOrDefault().ToString();
-
-
+                userLastTenItem.OpponentTwoPhotoUrl = _context.Users.Where(x => x.Id == oponentTwoId).Select(x => x.PhotoUrl).FirstOrDefault().ToString();
                 userLastTenItem.UserScore = (int)match.PlayerOneTeamA == userId || (int)match.PlayerTwoTeamA == userId ? (int)match.TeamAScore : (int)match.TeamBScore;
                 userLastTenItem.OpponentUserOrTeamScore = (int)match.PlayerOneTeamA != userId && (int)match.PlayerTwoTeamA != userId ? (int)match.TeamAScore : (int)match.TeamBScore;
                 userLastTenItem.DateOfGame = (DateTime)match.EndTime;
@@ -880,13 +887,16 @@ namespace FoosballApi.Services
                     TeamMateId = teamMateId,
                     TeamMateFirstName = _context.Users.Where(x => x.Id == teamMateId).Select(x => x.FirstName).FirstOrDefault().ToString(),
                     TeamMateLastName = _context.Users.Where(x => x.Id == teamMateId).Select(x => x.LastName).FirstOrDefault().ToString(),
+                    TeamMatePhotoUrl = _context.Users.Where(x => x.Id == teamMateId).Select(x => x.PhotoUrl).FirstOrDefault().ToString(),
                     MatchId = item.Id,
                     OpponentId = opponentId,
                     OpponentTwoId = null,
                     OpponentOneFirstName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.FirstName).SingleOrDefault(),
                     OpponentOneLastName = _context.Users.Where(x => x.Id == opponentId).Select(x => x.LastName).SingleOrDefault(),
+                    OpponentOnePhotoUrl = _context.Users.Where(x => x.Id == opponentId).Select(x => x.PhotoUrl).SingleOrDefault(),
                     OpponentTwoFirstName = _context.Users.Where(x => x.Id == opponentTwoId).Select(x => x.FirstName).SingleOrDefault(),
                     OpponentTwoLastName = _context.Users.Where(x => x.Id == opponentTwoId).Select(x => x.LastName).SingleOrDefault(),
+                    OpponentTwoPhotoUrl = _context.Users.Where(x => x.Id == opponentTwoId).Select(x => x.PhotoUrl).SingleOrDefault(),
                     UserScore = userScore,
                     OpponentUserOrTeamScore = opponentScore,
                     DateOfGame = (DateTime)item.EndTime
@@ -923,6 +933,7 @@ namespace FoosballApi.Services
                 userLastTenItem.OpponentTwoId = null;
                 userLastTenItem.OpponentOneFirstName = _context.Users.Where(x => x.Id == oponentId).Select(x => x.FirstName).FirstOrDefault().ToString();
                 userLastTenItem.OpponentOneLastName = _context.Users.Where(x => x.Id == oponentId).Select(x => x.LastName).FirstOrDefault().ToString();
+                userLastTenItem.OpponentOnePhotoUrl = _context.Users.Where(x => x.Id == oponentId).Select(x => x.PhotoUrl).FirstOrDefault().ToString();
                 userLastTenItem.OpponentTwoFirstName = null;
                 userLastTenItem.OpponentTwoLastName = null;
                 userLastTenItem.UserScore = userId == match.PlayerOne ? (int)match.PlayerOneScore : (int)match.PlayerTwoScore;

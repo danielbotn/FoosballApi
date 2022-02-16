@@ -20,12 +20,18 @@ namespace FoosballApi.Models
 
         public string OpponentOneLastName { get; set; }
 
+        public string OpponentOnePhotoUrl { get; set; }
+
         public string OpponentTwoFirstName { get; set; }
         
         public string OpponentTwoLastName { get; set; }
 
+        public string OpponentTwoPhotoUrl { get; set; }
+
         public string TeamMateFirstName { get; set; }
         public string TeamMateLastName { get; set; }
+
+        public string TeamMatePhotoUrl { get; set; }
 
         public int UserScore { get; set; }
 

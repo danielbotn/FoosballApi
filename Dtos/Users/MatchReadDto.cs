@@ -13,6 +13,8 @@ namespace FoosballApi.Dtos.Users
         public string TeamMateFirstName { get; set; }
         public string TeamMateLastName { get; set; }
 
+        public string TeamMatePhotoUrl { get; set; }
+
         public int MatchId { get; set; }
 
         public int OpponentId { get; set; }
@@ -23,9 +25,13 @@ namespace FoosballApi.Dtos.Users
 
         public string OpponentOneLastName { get; set; }
 
+        public string OpponentOnePhotoUrl { get; set; }
+
         public string OpponentTwoFirstName { get; set; }
         
         public string OpponentTwoLastName { get; set; }
+
+        public string OpponentTwoPhotoUrl { get; set; }
 
         public int UserScore { get; set; }
 

@@ -36,6 +36,14 @@ When adding new tables to the database.
 
 4. dotnet ef database update
 
+Obs. Make sure to comment out line 
+```bash
+ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSnakeCaseNamingConvention();
+```
+
+inside `DataContext.cs` file during migrations and database update
+
+
 ## Env variables
 
 Secrets are added to `secrets.json` file with `dotnet user-secrets`
