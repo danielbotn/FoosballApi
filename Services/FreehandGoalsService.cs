@@ -12,9 +12,10 @@ namespace FoosballApi.Services
 {
     public interface IFreehandGoalsService
     {
-        IEnumerable<FreehandGoalModel> GetFreehandGoalsByMatchId(int matchId, int userId);
+        IEnumerable<FreehandGoalModelExtended> GetFreehandGoalsByMatchId(int matchId, int userId);
         FreehandGoalModel CreateFreehandGoal(int userId, FreehandGoalCreateDto freehandMatchCreateDto);
-        FreehandGoalModel GetFreehandGoalById(int goalId);
+        FreehandGoalModelExtended GetFreehandGoalById(int goalId);
+        FreehandGoalModel GetFreehandGoalByIdFromDatabase(int goalId);
         void DeleteFreehandGoal(FreehandGoalModel freehandGoalModel);
         void UpdateFreehandGoal(FreehandGoalModel freehandMatchModel);
         bool SaveChanges();
@@ -30,8 +31,9 @@ namespace FoosballApi.Services
             _context = context;
         }
 
-        public IEnumerable<FreehandGoalModel> GetFreehandGoalsByMatchId(int matchId, int userId)
+        public IEnumerable<FreehandGoalModelExtended> GetFreehandGoalsByMatchId(int matchId, int userId)
         {
+            List<FreehandGoalModelExtended> result = new List<FreehandGoalModelExtended>();
             var query = from lp in _context.FreehandGoals
                         where lp.MatchId == matchId
                         orderby lp.Id, lp.TimeOfGoal
@@ -46,8 +48,30 @@ namespace FoosballApi.Services
                             OponentScore = lp.OponentScore,
                             WinnerGoal = lp.WinnerGoal
                         };
+            var data = query.ToList();
 
-            return query.ToList();
+            foreach (var item in data)
+            {
+                FreehandGoalModelExtended fgme = new FreehandGoalModelExtended{
+                    Id = item.Id,
+                    TimeOfGoal = item.TimeOfGoal,
+                    MatchId = item.MatchId,
+                    ScoredByUserId = item.ScoredByUserId,
+                    ScoredByUserFirstName = _context.Users.Where(u => u.Id == item.ScoredByUserId).FirstOrDefault().FirstName,
+                    ScoredByUserLastName = _context.Users.Where(u => u.Id == item.ScoredByUserId).FirstOrDefault().LastName,
+                    ScoredByUserPhotoUrl = _context.Users.Where(u => u.Id == item.ScoredByUserId).FirstOrDefault().PhotoUrl,
+                    OponentId = item.OponentId,
+                    OponentFirstName = _context.Users.Where(u => u.Id == item.OponentId).FirstOrDefault().FirstName,
+                    OponentLastName = _context.Users.Where(u => u.Id == item.OponentId).FirstOrDefault().LastName,
+                    OponentPhotoUrl = _context.Users.Where(u => u.Id == item.OponentId).FirstOrDefault().PhotoUrl,
+                    ScoredByScore = item.ScoredByScore,
+                    OponentScore = item.OponentScore,
+                    WinnerGoal = item.WinnerGoal
+                };
+                result.Add(fgme);
+            }
+
+            return result;
         }
 
         public FreehandGoalModel CreateFreehandGoal(int userId, FreehandGoalCreateDto freehandGoalCreateDto)
@@ -69,9 +93,28 @@ namespace FoosballApi.Services
             return fhg;
         }
 
-        public FreehandGoalModel GetFreehandGoalById(int goalId)
+        public FreehandGoalModelExtended GetFreehandGoalById(int goalId)
         {
-            return _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
+            var data = _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
+            
+            FreehandGoalModelExtended result = new FreehandGoalModelExtended {
+                Id = data.Id,
+                TimeOfGoal = data.TimeOfGoal,
+                MatchId = data.MatchId,
+                ScoredByUserId = data.ScoredByUserId,
+                ScoredByUserFirstName = _context.Users.Where(u => u.Id == data.ScoredByUserId).FirstOrDefault().FirstName,
+                ScoredByUserLastName = _context.Users.Where(u => u.Id == data.ScoredByUserId).FirstOrDefault().LastName,
+                ScoredByUserPhotoUrl = _context.Users.Where(u => u.Id == data.ScoredByUserId).FirstOrDefault().PhotoUrl,
+                OponentId = data.OponentId,
+                OponentFirstName = _context.Users.Where(u => u.Id == data.OponentId).FirstOrDefault().FirstName,
+                OponentLastName = _context.Users.Where(u => u.Id == data.OponentId).FirstOrDefault().LastName,
+                OponentPhotoUrl = _context.Users.Where(u => u.Id == data.OponentId).FirstOrDefault().PhotoUrl,
+                ScoredByScore = data.ScoredByScore,
+                OponentScore = data.OponentScore,
+                WinnerGoal = data.WinnerGoal
+            };
+            
+            return result;
         }
 
         public void DeleteFreehandGoal(FreehandGoalModel freehandGoalModel)
@@ -135,6 +178,11 @@ namespace FoosballApi.Services
             }
            
             _context.SaveChanges();
+        }
+
+        public FreehandGoalModel GetFreehandGoalByIdFromDatabase(int goalId)
+        {
+            return _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
         }
     }
 }

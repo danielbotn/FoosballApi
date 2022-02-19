@@ -95,7 +95,7 @@ namespace FoosballApi.Controllers
             try
             {
                 string userId = User.Identity.Name;
-                var matchItem = _matchService.GetFreehandMatchById(matchId);
+                var matchItem = _matchService.GetFreehandMatchByIdFromDatabase(matchId);
                 if (matchItem == null)
                     return NotFound();
 
@@ -130,7 +130,7 @@ namespace FoosballApi.Controllers
             try
             {
                 string userId = User.Identity.Name;
-                var matchItem = _matchService.GetFreehandMatchById(matchId);
+                var matchItem = _matchService.GetFreehandMatchByIdFromDatabase(matchId);
                 if (matchItem == null)
                     return NotFound();
 

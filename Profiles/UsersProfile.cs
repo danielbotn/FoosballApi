@@ -49,6 +49,9 @@ namespace FoosballApi.Profiles
             CreateMap<FreehandMatchModel, FreehandMatchesReadDto>();
             CreateMap<FreehandMatchesReadDto, FreehandMatchModel>();
 
+            CreateMap<FreehandMatchModelExtended, FreehandMatchesReadDto>();
+            CreateMap<FreehandMatchesReadDto, FreehandMatchModelExtended>();
+
             CreateMap<FreehandMatchCreateDto, FreehandMatchModel>();
             CreateMap<FreehandMatchModel, FreehandMatchCreateDto>();
 
@@ -57,6 +60,9 @@ namespace FoosballApi.Profiles
 
             CreateMap<FreehandGoalModel, FreehandGoalReadDto>();
             CreateMap<FreehandGoalReadDto, FreehandGoalModel>();
+
+            CreateMap<FreehandGoalModelExtended, FreehandGoalReadDto>();
+            CreateMap<FreehandGoalReadDto, FreehandGoalModelExtended>();
 
             CreateMap<FreehandDoubleMatchReadDto, FreehandDoubleMatchModel>();
             CreateMap<FreehandDoubleMatchModel, FreehandDoubleMatchReadDto>();

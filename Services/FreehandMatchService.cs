@@ -10,9 +10,10 @@ namespace FoosballApi.Services
 {
     public interface IFreehandMatchService
     {
-        IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId);
+        IEnumerable<FreehandMatchModelExtended> GetAllFreehandMatches(int userId);
         FreehandMatchModel CreateFreehandMatch(int userId, int organisationId, FreehandMatchCreateDto freehandMatchCreateDto);
-        FreehandMatchModel GetFreehandMatchById(int matchId);
+        FreehandMatchModelExtended GetFreehandMatchById(int matchId);
+        FreehandMatchModel GetFreehandMatchByIdFromDatabase(int matchId);
         bool CheckFreehandMatchPermission(int matchId, int userId);
         void UpdateFreehandMatch(FreehandMatchModel freehandMatchModel);
         bool SaveChanges();
@@ -110,16 +111,66 @@ namespace FoosballApi.Services
             _context.FreehandMatches.Remove(freehandMatchModel);
         }
 
-        public IEnumerable<FreehandMatchModel> GetAllFreehandMatches(int userId)
+        public IEnumerable<FreehandMatchModelExtended> GetAllFreehandMatches(int userId)
         {
             var query = from fm in _context.FreehandMatches
                         where fm.PlayerOneId == userId || fm.PlayerTwoId == userId
                         select fm;
+            var data = query.ToList();
 
-            return query.ToList();
+            List<FreehandMatchModelExtended> freehandMatchModelExtendedList = new List<FreehandMatchModelExtended>();
+
+            foreach (var item in data)
+            {
+                FreehandMatchModelExtended fmme = new FreehandMatchModelExtended{
+                Id = item.Id,
+                PlayerOneId = item.PlayerOneId,
+                PlayerOneFirstName = _context.Users.FirstOrDefault(u => u.Id == item.PlayerOneId).FirstName,
+                PlayerOneLastName = _context.Users.FirstOrDefault(u => u.Id == item.PlayerOneId).LastName,
+                PlayerOnePhotoUrl = _context.Users.FirstOrDefault(u => u.Id == item.PlayerOneId).PhotoUrl,
+                PlayerTwoId = item.PlayerTwoId,
+                PlayerTwoFirstName = _context.Users.FirstOrDefault(u => u.Id == item.PlayerTwoId).FirstName,
+                PlayerTwoLastName = _context.Users.FirstOrDefault(u => u.Id == item.PlayerTwoId).LastName,
+                PlayerTwoPhotoUrl = _context.Users.FirstOrDefault(u => u.Id == item.PlayerTwoId).PhotoUrl,
+                StartTime = item.StartTime,
+                EndTime = item.EndTime,
+                PlayerOneScore = item.PlayerOneScore,
+                PlayerTwoScore = item.PlayerTwoScore,
+                UpTo = item.UpTo,
+                GameFinished = item.GameFinished,
+                GamePaused = item.GamePaused,
+                };
+                freehandMatchModelExtendedList.Add(fmme);
+            }
+
+            return freehandMatchModelExtendedList;
         }
 
-        public FreehandMatchModel GetFreehandMatchById(int matchId)
+        public FreehandMatchModelExtended GetFreehandMatchById(int matchId)
+        {
+            var data = _context.FreehandMatches.FirstOrDefault(f => f.Id == matchId);
+            FreehandMatchModelExtended fmme = new FreehandMatchModelExtended{
+                Id = data.Id,
+                PlayerOneId = data.PlayerOneId,
+                PlayerOneFirstName = _context.Users.FirstOrDefault(u => u.Id == data.PlayerOneId).FirstName,
+                PlayerOneLastName = _context.Users.FirstOrDefault(u => u.Id == data.PlayerOneId).LastName,
+                PlayerOnePhotoUrl = _context.Users.FirstOrDefault(u => u.Id == data.PlayerOneId).PhotoUrl,
+                PlayerTwoId = data.PlayerTwoId,
+                PlayerTwoFirstName = _context.Users.FirstOrDefault(u => u.Id == data.PlayerTwoId).FirstName,
+                PlayerTwoLastName = _context.Users.FirstOrDefault(u => u.Id == data.PlayerTwoId).LastName,
+                PlayerTwoPhotoUrl = _context.Users.FirstOrDefault(u => u.Id == data.PlayerTwoId).PhotoUrl,
+                StartTime = data.StartTime,
+                EndTime = data.EndTime,
+                PlayerOneScore = data.PlayerOneScore,
+                PlayerTwoScore = data.PlayerTwoScore,
+                UpTo = data.UpTo,
+                GameFinished = data.GameFinished,
+                GamePaused = data.GamePaused,
+            };
+            return fmme;
+        }
+
+        public FreehandMatchModel GetFreehandMatchByIdFromDatabase(int matchId)
         {
             return _context.FreehandMatches.FirstOrDefault(f => f.Id == matchId);
         }

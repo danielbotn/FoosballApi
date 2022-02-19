@@ -1,14 +1,14 @@
 using System;
 
-namespace FoosballApi.Dtos.Goals
+namespace FoosballApi.Models.Goals
 {
-    public class FreehandGoalReadDto
+    public class FreehandGoalModelExtended
     {
         public int Id { get; set; }
         public DateTime TimeOfGoal { get; set; }
         public int MatchId { get; set; }
         public int ScoredByUserId { get; set; }
-         public string ScoredByUserFirstName { get; set; }
+        public string ScoredByUserFirstName { get; set; }
         public string ScoredByUserLastName { get; set; }
         public string ScoredByUserPhotoUrl { get; set; }
         public int OponentId { get; set; }

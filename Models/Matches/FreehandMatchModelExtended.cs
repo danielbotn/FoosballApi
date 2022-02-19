@@ -1,8 +1,8 @@
 using System;
 
-namespace FoosballApi.Dtos.Matches
+namespace FoosballApi.Models.Matches
 {
-    public class FreehandMatchesReadDto
+    public class FreehandMatchModelExtended
     {
         public int Id { get; set; }
         public int PlayerOneId { get; set; }
@@ -14,7 +14,7 @@ namespace FoosballApi.Dtos.Matches
         public string PlayerTwoLastName { get; set; }
         public string PlayerTwoPhotoUrl { get; set; }
         public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
         public int PlayerOneScore { get; set; }
         public int PlayerTwoScore { get; set; }
         public int UpTo { get; set; }

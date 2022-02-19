@@ -24,5 +24,7 @@ namespace FoosballApi.Dtos.Users
         public DateTime CreatedAt { get; set; }
 
         public int? CurrentOrganisationId { get; set; }
+
+        public string PhotoUrl { get; set; }
     }
 }

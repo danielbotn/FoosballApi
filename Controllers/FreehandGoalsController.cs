@@ -39,10 +39,10 @@ namespace FoosballApi.Controllers
 
                 var allGoals = _goalService.GetFreehandGoalsByMatchId(int.Parse(matchId), int.Parse(userId));
 
-                if (allGoals != null)
-                    return Ok(_mapper.Map<IEnumerable<FreehandGoalReadDto>>(allGoals));
+                if (allGoals == null)
+                    return NotFound();
 
-                return NotFound();
+                return Ok(_mapper.Map<IEnumerable<FreehandGoalReadDto>>(allGoals));
             }
             catch (Exception e)
             {
@@ -112,7 +112,7 @@ namespace FoosballApi.Controllers
             try
             {
                 string userId = User.Identity.Name;
-                var goalItem = _goalService.GetFreehandGoalById(goalID);
+                var goalItem = _goalService.GetFreehandGoalByIdFromDatabase(goalID);
                 if (goalItem == null)
                     return NotFound();
 
@@ -137,7 +137,7 @@ namespace FoosballApi.Controllers
             try
             {
                 string userId = User.Identity.Name;
-                var goalItem = _goalService.GetFreehandGoalById(goalID);
+                var goalItem = _goalService.GetFreehandGoalByIdFromDatabase(goalID);
                 if (goalItem == null)
                     return NotFound();
 
