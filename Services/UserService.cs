@@ -196,19 +196,19 @@ namespace FoosballApi.Services
 
                 if (item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId)
                 {
-                    opponentOneFirstName = GetOpponentOneFirstName(item, "teamB");
-                    opponentOneLastName = GetOpponentOneLastName(item, "teamB");
-                    opponentTwoFirstName = GetOpponentTwoFirstName(item, "teamB");
-                    opponentTwoLastName = GetOpponentTwoLastName(item, "teamB");
+                    opponentOneFirstName = GetOpponentOneFirstName(item, "teamA");
+                    opponentOneLastName = GetOpponentOneLastName(item, "teamA");
+                    opponentTwoFirstName = GetOpponentTwoFirstName(item, "teamA");
+                    opponentTwoLastName = GetOpponentTwoLastName(item, "teamA");
                 }
                 else
                 {
-                    opponentOneFirstName = GetOpponentOneFirstName(item, "teamA");
-                    opponentOneLastName = GetOpponentOneLastName(item, "teamA");
+                    opponentOneFirstName = GetOpponentOneFirstName(item, "teamB");
+                    opponentOneLastName = GetOpponentOneLastName(item, "teamB");
 
-                    if (item.UserPlayerTwoTeamA != null)
+                    if (item.PlayerTwoTeamB != null)
                     {
-                        var opponentTwoData = _context.Users.Where(x => x.Id == item.UserPlayerTwoTeamA.Id);
+                        var opponentTwoData = _context.Users.Where(x => x.Id == item.PlayerTwoTeamB);
                         if (opponentTwoData != null)
                         {
                             opponentTwoFirstName = opponentTwoData.Select(x => x.FirstName).SingleOrDefault();
@@ -265,16 +265,16 @@ namespace FoosballApi.Services
         private string GetOpponentOneFirstName(FreehandDoubleMatchModel item, string teamAorTeamB)
         {
             string result = null;
-            if (teamAorTeamB == "teamA" && item.UserPlayerOneTeamA != null)
+            if (teamAorTeamB == "teamA")
             {
                 result = _context.Users
-                    .Where(x => x.Id == item.UserPlayerOneTeamA.Id)
+                    .Where(x => x.Id == item.PlayerOneTeamA)
                     .Select(x => x.FirstName).SingleOrDefault();
             }
-            else if (teamAorTeamB == "teamB" && item.UserPlayerOneTeamB != null)
+            else if (teamAorTeamB == "teamB")
             {
                 result = _context.Users
-                    .Where(x => x.Id == item.UserPlayerOneTeamB.Id)
+                    .Where(x => x.Id == item.PlayerOneTeamB)
                     .Select(x => x.FirstName).SingleOrDefault();
             }
             return result;
@@ -283,16 +283,16 @@ namespace FoosballApi.Services
         private string GetOpponentOneLastName(FreehandDoubleMatchModel item, string teamAorTeamB)
         {
             string result = null;
-            if (teamAorTeamB == "teamA" && item.UserPlayerOneTeamA != null)
+            if (teamAorTeamB == "teamA")
             {
                 result = _context.Users
-                        .Where(x => x.Id == item.UserPlayerOneTeamA.Id)
+                        .Where(x => x.Id == item.PlayerOneTeamA)
                         .Select(x => x.LastName).SingleOrDefault();
             }
-            else if (teamAorTeamB == "teamB" && item.UserPlayerOneTeamB != null)
+            else if (teamAorTeamB == "teamB")
             {
                 result = _context.Users
-                    .Where(x => x.Id == item.UserPlayerOneTeamB.Id)
+                    .Where(x => x.Id == item.PlayerOneTeamB)
                     .Select(x => x.LastName).SingleOrDefault();
             }
             return result;
@@ -301,16 +301,16 @@ namespace FoosballApi.Services
         private string GetOpponentTwoFirstName(FreehandDoubleMatchModel item, string teamAorTeamB)
         {
             string result = null;
-            if (teamAorTeamB == "teamA" && item.UserPlayerTwoTeamA != null)
+            if (teamAorTeamB == "teamA" && item.PlayerTwoTeamA != null)
             {
                 result = _context.Users
-                        .Where(x => x.Id == item.UserPlayerTwoTeamA.Id)
+                        .Where(x => x.Id == item.PlayerTwoTeamA)
                         .Select(x => x.FirstName).SingleOrDefault();
             }
-            else if (teamAorTeamB == "teamB" && item.UserPlayerTwoTeamB != null)
+            else if (teamAorTeamB == "teamB" && item.PlayerTwoTeamB != null)
             {
                 result = _context.Users
-                        .Where(x => x.Id == item.UserPlayerTwoTeamB.Id)
+                        .Where(x => x.Id == item.PlayerTwoTeamB)
                         .Select(x => x.FirstName).SingleOrDefault();
             }
             return result;
@@ -319,16 +319,16 @@ namespace FoosballApi.Services
         private string GetOpponentTwoLastName(FreehandDoubleMatchModel item, string teamAorTeamB)
         {
             string result = null;
-            if (teamAorTeamB == "teamA" && item.UserPlayerTwoTeamA != null)
+            if (teamAorTeamB == "teamA" && item.PlayerTwoTeamA != null)
             {
                 result = _context.Users
-                        .Where(x => x.Id == item.UserPlayerTwoTeamA.Id)
+                        .Where(x => x.Id == item.PlayerTwoTeamA)
                         .Select(x => x.FirstName).SingleOrDefault();
             }
-            else if (teamAorTeamB == "teamB" && item.UserPlayerTwoTeamB != null)
+            else if (teamAorTeamB == "teamB" && item.PlayerTwoTeamB != null)
             {
                 result = _context.Users
-                        .Where(x => x.Id == item.UserPlayerTwoTeamB.Id)
+                        .Where(x => x.Id == item.PlayerTwoTeamB)
                         .Select(x => x.LastName).SingleOrDefault();
             }
             return result;
@@ -410,7 +410,7 @@ namespace FoosballApi.Services
                 {
                     var uId = _context.DoubleLeaguePlayers.Where(x => x.DoubleLeagueTeamId == item.TeamOneId).Select(x => x.UserId).FirstOrDefault();
                     teamMateId = uId;
-                    var opponentData = _context.DoubleLeaguePlayers.Where(x => x.DoubleLeagueTeamId == item.TeamTwoId).OrderBy(x => x.Id).Select(x => x.UserId);
+                    var opponentData = _context.DoubleLeaguePlayers.Where(x => x.DoubleLeagueTeamId == item.TeamTwoId).OrderBy(x => x.Id).Select(x => x.UserId).ToList();
 
                     opponentId = opponentData.First();
                     opponentTwoId = opponentData.Last();
@@ -420,7 +420,7 @@ namespace FoosballApi.Services
                 else
                 {
                     var uId = _context.DoubleLeaguePlayers.Where(x => x.DoubleLeagueTeamId == item.TeamTwoId).Select(x => x.UserId).FirstOrDefault();
-                    var opponentData = _context.DoubleLeaguePlayers.Where(x => x.DoubleLeagueTeamId == item.TeamOneId).Select(x => x.UserId);
+                    var opponentData = _context.DoubleLeaguePlayers.Where(x => x.DoubleLeagueTeamId == item.TeamOneId).Select(x => x.UserId).ToList();
                     teamMateId = uId;
 
                     opponentId = opponentData.First();
