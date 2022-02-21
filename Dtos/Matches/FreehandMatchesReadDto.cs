@@ -15,6 +15,7 @@ namespace FoosballApi.Dtos.Matches
         public string PlayerTwoPhotoUrl { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public string TotalPlayingTime { get; set; }
         public int PlayerOneScore { get; set; }
         public int PlayerTwoScore { get; set; }
         public int UpTo { get; set; }

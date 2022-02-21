@@ -146,9 +146,18 @@ namespace FoosballApi.Services
             return freehandMatchModelExtendedList;
         }
 
+        public string ToReadableAgeString(TimeSpan span)
+        {
+            return string.Format("{0:hh\\:mm\\:ss}", span);
+        }
+
         public FreehandMatchModelExtended GetFreehandMatchById(int matchId)
         {
             var data = _context.FreehandMatches.FirstOrDefault(f => f.Id == matchId);
+            TimeSpan? playingTime = null;
+            if (data.EndTime != null) {
+                playingTime = data.EndTime - data.StartTime;
+            }
             FreehandMatchModelExtended fmme = new FreehandMatchModelExtended{
                 Id = data.Id,
                 PlayerOneId = data.PlayerOneId,
@@ -161,6 +170,7 @@ namespace FoosballApi.Services
                 PlayerTwoPhotoUrl = _context.Users.FirstOrDefault(u => u.Id == data.PlayerTwoId).PhotoUrl,
                 StartTime = data.StartTime,
                 EndTime = data.EndTime,
+                TotalPlayingTime = playingTime != null ? ToReadableAgeString(playingTime.Value) : null,
                 PlayerOneScore = data.PlayerOneScore,
                 PlayerTwoScore = data.PlayerTwoScore,
                 UpTo = data.UpTo,
