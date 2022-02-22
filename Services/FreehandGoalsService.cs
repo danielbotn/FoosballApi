@@ -55,6 +55,7 @@ namespace FoosballApi.Services
                 FreehandGoalModelExtended fgme = new FreehandGoalModelExtended{
                     Id = item.Id,
                     TimeOfGoal = item.TimeOfGoal,
+                    GoalTimeStopWatch = CalculateGoalTimeStopWatch(item.TimeOfGoal, item.MatchId),
                     MatchId = item.MatchId,
                     ScoredByUserId = item.ScoredByUserId,
                     ScoredByUserFirstName = _context.Users.Where(u => u.Id == item.ScoredByUserId).FirstOrDefault().FirstName,
@@ -71,6 +72,25 @@ namespace FoosballApi.Services
                 result.Add(fgme);
             }
 
+            return result;
+        }
+
+        private string CalculateGoalTimeStopWatch(DateTime timeOfGoal, int matchId)
+        {
+            var match = _context.FreehandMatches.Where(m => m.Id == matchId).FirstOrDefault();
+            DateTime? matchStarted = match.StartTime;
+            if (matchStarted == null)
+            {
+                matchStarted = DateTime.Now;
+            }
+            TimeSpan timeSpan = matchStarted.Value - timeOfGoal;
+            string result = timeSpan.ToString(@"hh\:mm\:ss");
+            string sub = result.Substring(0, 2);
+            // remove first two characters if they are "00:"
+            if (sub == "00")
+            {
+                result = result.Substring(3);
+            }
             return result;
         }
 

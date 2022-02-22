@@ -35,5 +35,9 @@ namespace FoosballApi.Models.Cms
         public string integration { get; set; }
         public string slack { get; set; }
         public string discord { get; set; }
+        public string matchDetails { get; set; }
+        public string totalPlayingTime { get; set; }
+        public string newMatch { get; set; }
+        public string rematch { get; set; }
     }
 }

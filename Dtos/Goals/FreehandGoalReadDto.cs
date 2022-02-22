@@ -6,6 +6,7 @@ namespace FoosballApi.Dtos.Goals
     {
         public int Id { get; set; }
         public DateTime TimeOfGoal { get; set; }
+        public string GoalTimeStopWatch { get; set; }
         public int MatchId { get; set; }
         public int ScoredByUserId { get; set; }
         public string ScoredByUserFirstName { get; set; }
