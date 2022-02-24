@@ -62,7 +62,7 @@ namespace FoosballApi.Controllers
                 if (!hasPermission)
                     return Forbid();
 
-                var match = _singleLeagueMatchService.GetSingleLeagueMatchById(matchId);
+                var match = _singleLeagueMatchService.GetSingleLeagueMatchByIdExtended(matchId);
 
                 if (match == null)
                     return NotFound();

@@ -11,6 +11,8 @@ namespace FoosballApi.Profiles
         {
             CreateMap<SingleLeagueMatchModel, SingleLeagueMatchReadDto>();
             CreateMap<SingleLeagueMatchReadDto, SingleLeagueMatchModel>();
+            CreateMap<SingleLeagueMatchModelExtended, SingleLeagueMatchReadDto>();
+            CreateMap<SingleLeagueMatchReadDto, SingleLeagueMatchModelExtended>();
             CreateMap<SingleLeagueMatchModel, SingleLeagueMatchUpdateDto>();
             CreateMap<SingleLeagueMatchUpdateDto, SingleLeagueMatchModel>();
             CreateMap<SingleLeagueStandingsReadDto, SingleLeagueStandingsQuery>();

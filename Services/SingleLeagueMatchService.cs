@@ -17,6 +17,8 @@ namespace FoosballApi.Services
         bool CheckLeaguePermission(int leagueId, int userId);
         bool CheckMatchPermission(int matchId, int userId);
         SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId);
+
+        SingleLeagueMatchModelExtended GetSingleLeagueMatchByIdExtended(int matchId);
         void UpdateSingleLeagueMatch(SingleLeagueMatchModel match);
         bool SaveChanges();
         IEnumerable<SingleLeagueStandingsQuery> GetSigleLeagueStandings(int leagueId);
@@ -125,6 +127,31 @@ namespace FoosballApi.Services
         public SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId)
         {
             return _context.SingleLeagueMatches.FirstOrDefault(f => f.Id == matchId);
+        }
+
+        public SingleLeagueMatchModelExtended GetSingleLeagueMatchByIdExtended(int matchId)
+        {
+            var data = _context.SingleLeagueMatches.FirstOrDefault(f => f.Id == matchId);
+            SingleLeagueMatchModelExtended match = new SingleLeagueMatchModelExtended {
+                Id = data.Id,
+                PlayerOne = data.PlayerOne,
+                PlayerOneFirstName = _context.Users.FirstOrDefault(f => f.Id == data.PlayerOne).FirstName,
+                PlayerOneLastName = _context.Users.FirstOrDefault(f => f.Id == data.PlayerOne).LastName,
+                PlayerOnePhotoUrl = _context.Users.FirstOrDefault(f => f.Id == data.PlayerOne).PhotoUrl,
+                PlayerTwo = data.PlayerTwo,
+                PlayerTwoFirstName = _context.Users.FirstOrDefault(f => f.Id == data.PlayerTwo).FirstName,
+                PlayerTwoLastName = _context.Users.FirstOrDefault(f => f.Id == data.PlayerTwo).LastName,
+                PlayerTwoPhotoUrl = _context.Users.FirstOrDefault(f => f.Id == data.PlayerTwo).PhotoUrl,
+                LeagueId = data.LeagueId,
+                StartTime = data.StartTime,
+                EndTime = data.EndTime,
+                PlayerOneScore = data.PlayerOneScore,
+                PlayerTwoScore = data.PlayerTwoScore,
+                MatchStarted = data.MatchStarted,
+                MatchEnded = data.MatchEnded,
+                MatchPaused = data.MatchPaused,
+            };
+            return match;
         }
 
         public bool SaveChanges()

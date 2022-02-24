@@ -1,8 +1,8 @@
 using System;
 
-namespace FoosballApi.Dtos.SingleLeagueMatches
+namespace FoosballApi.Models.Matches
 {
-    public class SingleLeagueMatchReadDto
+    public class SingleLeagueMatchModelExtended
     {
         public int Id { get; set; }
         public int PlayerOne { get; set; }
