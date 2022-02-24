@@ -17,7 +17,6 @@ namespace FoosballApi.Services
         bool CheckLeaguePermission(int leagueId, int userId);
         bool CheckMatchPermission(int matchId, int userId);
         SingleLeagueMatchModel GetSingleLeagueMatchById(int matchId);
-
         SingleLeagueMatchModelExtended GetSingleLeagueMatchByIdExtended(int matchId);
         void UpdateSingleLeagueMatch(SingleLeagueMatchModel match);
         bool SaveChanges();
@@ -132,6 +131,10 @@ namespace FoosballApi.Services
         public SingleLeagueMatchModelExtended GetSingleLeagueMatchByIdExtended(int matchId)
         {
             var data = _context.SingleLeagueMatches.FirstOrDefault(f => f.Id == matchId);
+            TimeSpan? playingTime = null;
+            if (data.EndTime != null) {
+                playingTime = data.EndTime - data.StartTime;
+            }
             SingleLeagueMatchModelExtended match = new SingleLeagueMatchModelExtended {
                 Id = data.Id,
                 PlayerOne = data.PlayerOne,
@@ -150,6 +153,7 @@ namespace FoosballApi.Services
                 MatchStarted = data.MatchStarted,
                 MatchEnded = data.MatchEnded,
                 MatchPaused = data.MatchPaused,
+                TotalPlayingTime = playingTime != null ? ToReadableAgeString(playingTime.Value) : null,
             };
             return match;
         }
@@ -162,6 +166,11 @@ namespace FoosballApi.Services
         public void UpdateSingleLeagueMatch(SingleLeagueMatchModel match)
         {
             // Do nothing
+        }
+
+        public string ToReadableAgeString(TimeSpan span)
+        {
+            return string.Format("{0:hh\\:mm\\:ss}", span);
         }
 
         private int GetTotalGoalsScored(int userId, int leagueId)

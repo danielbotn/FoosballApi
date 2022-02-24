@@ -1,8 +1,8 @@
 using System;
 
-namespace FoosballApi.Dtos.SingleLeagueGoals
+namespace FoosballApi.Models.SingleLeagueGoals
 {
-    public class SingleLeagueGoalReadDto
+    public class SingleLeagueGoalModelExtended
     {
         public int Id { get; set; }
         public DateTime TimeOfGoal { get; set; }

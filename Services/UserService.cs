@@ -899,7 +899,8 @@ namespace FoosballApi.Services
                     OpponentTwoPhotoUrl = _context.Users.Where(x => x.Id == opponentTwoId).Select(x => x.PhotoUrl).SingleOrDefault(),
                     UserScore = userScore,
                     OpponentUserOrTeamScore = opponentScore,
-                    DateOfGame = (DateTime)item.EndTime
+                    DateOfGame = (DateTime)item.EndTime,
+                    LeagueId = item.LeagueId
                 };
                 result.Add(match);
             }
@@ -939,7 +940,7 @@ namespace FoosballApi.Services
                 userLastTenItem.UserScore = userId == match.PlayerOne ? (int)match.PlayerOneScore : (int)match.PlayerTwoScore;
                 userLastTenItem.OpponentUserOrTeamScore = userId == match.PlayerOne ? (int)match.PlayerTwoScore : (int)match.PlayerOneScore;
                 userLastTenItem.DateOfGame = (DateTime)match.EndTime;
-
+                userLastTenItem.LeagueId = match.LeagueId;
                 userLastTen.Add(userLastTenItem);
             }
 

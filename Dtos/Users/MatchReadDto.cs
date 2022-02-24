@@ -39,5 +39,7 @@ namespace FoosballApi.Dtos.Users
 
         public DateTime DateOfGame { get; set; }
 
+        public int? LeagueId { get; set; }
+
     }
 }

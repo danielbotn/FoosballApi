@@ -10,7 +10,7 @@ namespace FoosballApi.Services
 {
     public interface ISingleLeagueGoalService
     {
-        IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByMatchId(int matchId);
+        IEnumerable<SingleLeagueGoalModelExtended> GetAllSingleLeagueGoalsByMatchId(int matchId);
         bool CheckSingleLeagueGoalPermission(int userId, int goalId, int organisationId);
         bool CheckCreatePermission(int userId, SingleLeagueCreateModel singleLeagueCreateModel);
         SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId);
@@ -100,7 +100,7 @@ namespace FoosballApi.Services
             _context.SaveChanges();
         }
 
-        public IEnumerable<SingleLeagueGoalModel> GetAllSingleLeagueGoalsByMatchId(int matchId)
+        public IEnumerable<SingleLeagueGoalModelExtended> GetAllSingleLeagueGoalsByMatchId(int matchId)
         {
             var query = _context.SingleLeagueGoals
                 .Where(x => x.MatchId == matchId)
@@ -114,9 +114,32 @@ namespace FoosballApi.Services
                     ScorerScore = slgm.ScorerScore,
                     OpponentScore = slgm.OpponentScore,
                     WinnerGoal = slgm.WinnerGoal
-                });
-
-            return query;
+                }).ToList();
+            
+            List<SingleLeagueGoalModelExtended> slgmList = new List<SingleLeagueGoalModelExtended>();
+            foreach (var slgm in query)
+            {
+                var slgmExtended = new SingleLeagueGoalModelExtended
+                {
+                    Id = slgm.Id,
+                    TimeOfGoal = slgm.TimeOfGoal,
+                    MatchId = slgm.MatchId,
+                    ScoredByUserId = slgm.ScoredByUserId,
+                    ScoredByUserFirstName = _context.Users.Where(x => x.Id == slgm.ScoredByUserId).FirstOrDefault().FirstName,
+                    ScoredByUserLastName = _context.Users.Where(x => x.Id == slgm.ScoredByUserId).FirstOrDefault().LastName,
+                    ScoredByUserPhotoUrl = _context.Users.Where(x => x.Id == slgm.ScoredByUserId).FirstOrDefault().PhotoUrl,
+                    OpponentId = slgm.OpponentId,
+                    OpponentFirstName = _context.Users.Where(x => x.Id == slgm.OpponentId).FirstOrDefault().FirstName,
+                    OpponentLastName = _context.Users.Where(x => x.Id == slgm.OpponentId).FirstOrDefault().LastName,
+                    OpponentPhotoUrl = _context.Users.Where(x => x.Id == slgm.OpponentId).FirstOrDefault().PhotoUrl,
+                    ScorerScore = slgm.ScorerScore,
+                    OpponentScore = slgm.OpponentScore,
+                    WinnerGoal = slgm.WinnerGoal,
+                    GoalTimeStopWatch = CalculateGoalTimeStopWatch(slgm.TimeOfGoal, slgm.MatchId),
+                };
+                slgmList.Add(slgmExtended);
+            }
+            return slgmList;
         }
 
         public SingleLeagueGoalModel GetSingleLeagueGoalById(int goaldId)
@@ -137,6 +160,25 @@ namespace FoosballApi.Services
                     matchToChange.PlayerTwoScore -= 1;
             }
             _context.SingleLeagueMatches.Update(matchToChange);
+        }
+
+        private string CalculateGoalTimeStopWatch(DateTime timeOfGoal, int matchId)
+        {
+            var match = _context.SingleLeagueMatches.Where(m => m.Id == matchId).FirstOrDefault();
+            DateTime? matchStarted = match.StartTime;
+            if (matchStarted == null)
+            {
+                matchStarted = DateTime.Now;
+            }
+            TimeSpan timeSpan = matchStarted.Value - timeOfGoal;
+            string result = timeSpan.ToString(@"hh\:mm\:ss");
+            string sub = result.Substring(0, 2);
+            // remove first two characters if they are "00:"
+            if (sub == "00")
+            {
+                result = result.Substring(3);
+            }
+            return result;
         }
     }
 }
