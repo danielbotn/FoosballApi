@@ -9,7 +9,7 @@ namespace FoosballApi.Services
 {
     public interface IFreehandDoubleGoalService
     {
-        IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId);
+        IEnumerable<FreehandDoubleGoalsExtendedDto> GetAllFreehandGoals(int matchId, int userId);
         FreehandDoubleGoalModel GetFreehandDoubleGoal(int goalId);
         bool CheckGoalPermission(int userId, int matchId, int goalId);
         FreehandDoubleGoalModel CreateDoubleFreehandGoal(int userId, FreehandDoubleGoalCreateDto freehandDoubleGoalCreateDto);
@@ -78,8 +78,9 @@ namespace FoosballApi.Services
             _context.SaveChanges();
         }
 
-        public IEnumerable<FreehandDoubleGoalsJoinDto> GetAllFreehandGoals(int matchId, int userId)
+        public IEnumerable<FreehandDoubleGoalsExtendedDto> GetAllFreehandGoals(int matchId, int userId)
         {
+            List<FreehandDoubleGoalsExtendedDto> result = new List<FreehandDoubleGoalsExtendedDto>();
             var query = (from fdg in _context.FreehandDoubleGoals
                          from fdm in _context.FreehandDoubleMatches
                          join u in _context.Users on fdg.ScoredByUserId equals u.Id
@@ -98,10 +99,30 @@ namespace FoosballApi.Services
                              TimeOfGoal = fdg.TimeOfGoal,
                              FirstName = u.FirstName,
                              LastName = u.LastName,
-                             Email = u.Email
+                             Email = u.Email,
+                             PhotoUrl = u.PhotoUrl
                          }).Distinct().OrderBy(f => f.Id).ToList();
+                        
+            foreach (var item in query)
+            {
+                FreehandDoubleGoalsExtendedDto fdg = new FreehandDoubleGoalsExtendedDto{
+                    Id = item.Id,
+                    ScoredByUserId = item.ScoredByUserId,
+                    DoubleMatchId = item.DoubleMatchId,
+                    ScorerTeamScore = item.ScorerTeamScore,
+                    OpponentTeamScore = item.OpponentTeamScore,
+                    WinnerGoal = item.WinnerGoal,
+                    TimeOfGoal = item.TimeOfGoal,
+                    GoalTimeStopWatch = CalculateGoalTimeStopWatch(item.TimeOfGoal, item.DoubleMatchId),
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    Email = item.Email,
+                    PhotoUrl = item.PhotoUrl
+                };
+                result.Add(fdg);
+            }
 
-            return query;
+            return result;
         }
 
         public FreehandDoubleGoalModel GetFreehandDoubleGoal(int goalId)
@@ -117,6 +138,25 @@ namespace FoosballApi.Services
         public void UpdateFreehanDoubledGoal(FreehandDoubleGoalModel goalItem)
         {
             // Do nothing
+        }
+
+        private string CalculateGoalTimeStopWatch(DateTime timeOfGoal, int matchId)
+        {
+            var match = _context.FreehandDoubleMatches.Where(m => m.Id == matchId).FirstOrDefault();
+            DateTime? matchStarted = match.StartTime;
+            if (matchStarted == null)
+            {
+                matchStarted = DateTime.Now;
+            }
+            TimeSpan timeSpan = matchStarted.Value - timeOfGoal;
+            string result = timeSpan.ToString(@"hh\:mm\:ss");
+            string sub = result.Substring(0, 2);
+            // remove first two characters if they are "00:"
+            if (sub == "00")
+            {
+                result = result.Substring(3);
+            }
+            return result;
         }
     }
 }

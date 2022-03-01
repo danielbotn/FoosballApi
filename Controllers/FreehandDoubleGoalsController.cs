@@ -26,7 +26,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("goals/{matchId}")]
-        public ActionResult<IEnumerable<FreehandDoubleGoalsJoinDto>> GetFreehandDoubleGoalsByMatchId()
+        public ActionResult<IEnumerable<FreehandDoubleGoalsExtendedDto>> GetFreehandDoubleGoalsByMatchId()
         {
             try
             {
@@ -43,7 +43,7 @@ namespace FoosballApi.Controllers
                 if (allGoals == null)
                     return NotFound();
 
-                return Ok(_mapper.Map<IEnumerable<FreehandDoubleGoalsJoinDto>>(allGoals));
+                return Ok(_mapper.Map<IEnumerable<FreehandDoubleGoalsExtendedDto>>(allGoals));
             }
             catch (Exception e)
             {

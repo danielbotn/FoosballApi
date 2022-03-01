@@ -2,7 +2,7 @@ using System;
 
 namespace FoosballApi.Dtos.DoubleGoals
 {
-    public class FreehandDoubleGoalsJoinDto
+    public class FreehandDoubleGoalsExtendedDto
     {
         public int Id { get; set; }
         public int ScoredByUserId { get; set; }
@@ -11,6 +11,7 @@ namespace FoosballApi.Dtos.DoubleGoals
         public int OpponentTeamScore { get; set; }
         public bool WinnerGoal { get; set; }
         public DateTime TimeOfGoal { get; set; }
+        public string GoalTimeStopWatch { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }

@@ -7,6 +7,7 @@ using FoosballApi.Dtos.DoubleMatches;
 using FoosballApi.Models;
 using FoosballApi.Models.Matches;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace FoosballApi.Services
 {
@@ -14,6 +15,7 @@ namespace FoosballApi.Services
     {
         IEnumerable<FreehandDoubleMatchModel> GetAllFreehandDoubleMatches(int userId);
         FreehandDoubleMatchModel GetFreehandDoubleMatchById(int matchId);
+        FreehandDoubleMatchModelExtended GetFreehandDoubleMatchByIdExtended(int matchId);
         bool CheckMatchPermission(int userId, int matchId);
         FreehandDoubleMatchModel CreateFreehandDoubleMatch(int userId, FreehandDoubleMatchCreateDto freehandDoubleMatchCreateDto);
         void UpdateFreehandMatch(FreehandDoubleMatchModel freehandMatchModel);
@@ -110,6 +112,46 @@ namespace FoosballApi.Services
             return match;
         }
 
+        public FreehandDoubleMatchModelExtended GetFreehandDoubleMatchByIdExtended(int matchId)
+        {
+            var data = _context.FreehandDoubleMatches.FirstOrDefault(x => x.Id == matchId);
+            TimeSpan? playingTime = null;
+            if (data.EndTime != null) {
+                playingTime = data.EndTime - data.StartTime;
+            }
+            FreehandDoubleMatchModelExtended fdme = new FreehandDoubleMatchModelExtended {
+                Id = data.Id,
+                PlayerOneTeamA = data.PlayerOneTeamA,
+                PlayerOneTeamAFirstName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerOneTeamA).FirstName,
+                PlayerOneTeamALastName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerOneTeamA).LastName,
+                PlayerOneTeamAPhotoUrl = _context.Users.FirstOrDefault(x => x.Id == data.PlayerOneTeamA).PhotoUrl,
+                PlayerTwoTeamA = data.PlayerTwoTeamA,
+                PlayerTwoTeamAFirstName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerTwoTeamA).FirstName,
+                PlayerTwoTeamALastName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerTwoTeamA).LastName,
+                PlayerTwoTeamAPhotoUrl = _context.Users.FirstOrDefault(x => x.Id == data.PlayerTwoTeamA).PhotoUrl,
+                PlayerOneTeamB = data.PlayerOneTeamB,
+                PlayerOneTeamBFirstName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerOneTeamB).FirstName,
+                PlayerOneTeamBLastName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerOneTeamB).LastName,
+                PlayerOneTeamBPhotoUrl = _context.Users.FirstOrDefault(x => x.Id == data.PlayerOneTeamB).PhotoUrl,
+                PlayerTwoTeamB = data.PlayerTwoTeamB,
+                PlayerTwoTeamBFirstName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerTwoTeamB).FirstName,
+                PlayerTwoTeamBLastName = _context.Users.FirstOrDefault(x => x.Id == data.PlayerTwoTeamB).LastName,
+                PlayerTwoTeamBPhotoUrl = _context.Users.FirstOrDefault(x => x.Id == data.PlayerTwoTeamB).PhotoUrl,
+                OrganisationId = data.OrganisationId,
+                StartTime = data.StartTime,
+                EndTime = data.EndTime,
+                TotalPlayingTime = playingTime != null ? ToReadableAgeString(playingTime.Value) : null,
+                TeamAScore = data.TeamAScore,
+                TeamBScore = data.TeamBScore,
+                NicknameTeamA = data.NicknameTeamA,
+                NicknameTeamB = data.NicknameTeamB,
+                UpTo = data.UpTo,
+                GameFinished = data.GameFinished,
+                GamePaused = data.GamePaused
+            };
+            return fdme;
+        }
+
         public bool SaveChanges()
         {
             return (_context.SaveChanges() >= 0);
@@ -119,5 +161,11 @@ namespace FoosballApi.Services
         {
             // Do nothing
         }
+
+        public string ToReadableAgeString(TimeSpan span)
+        {
+            return string.Format("{0:hh\\:mm\\:ss}", span);
+        }
+
     }
 }

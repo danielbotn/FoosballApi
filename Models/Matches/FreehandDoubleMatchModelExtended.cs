@@ -1,8 +1,8 @@
 using System;
 
-namespace FoosballApi.Dtos.DoubleMatches
+namespace FoosballApi.Models.Matches
 {
-    public class FreehandDoubleMatchReadDto
+    public class FreehandDoubleMatchModelExtended
     {
         public int Id { get; set; }
         public int PlayerOneTeamA { get; set; }

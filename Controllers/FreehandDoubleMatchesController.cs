@@ -56,7 +56,7 @@ namespace FoosballApi.Controllers
                 if (!access)
                     return Forbid();
 
-                var match = _doubleMatchService.GetFreehandDoubleMatchById(int.Parse(matchId));
+                var match = _doubleMatchService.GetFreehandDoubleMatchByIdExtended(int.Parse(matchId));
 
                 if (match == null)
                     return NotFound();
