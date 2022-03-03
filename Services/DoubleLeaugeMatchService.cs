@@ -136,6 +136,11 @@ namespace FoosballApi.Services
         {
             var query = _context.DoubleLeagueMatches.FirstOrDefault(x => x.Id == matchId);
 
+            TimeSpan? playingTime = null;
+            if (query.EndTime != null) {
+                playingTime = query.EndTime - query.StartTime;
+            }
+
             var subquery = from dlp in _context.DoubleLeaguePlayers
                            where dlp.DoubleLeagueTeamId == query.TeamOneId
                            join u in _context.Users on dlp.UserId equals u.Id
@@ -144,7 +149,8 @@ namespace FoosballApi.Services
                                Id = dlp.Id,
                                FirstName = u.FirstName,
                                LastName = u.LastName,
-                               Email = u.Email
+                               Email = u.Email,
+                               PhotoUrl = u.PhotoUrl
                            };
 
             var teamOne = subquery.ToArray();
@@ -157,7 +163,8 @@ namespace FoosballApi.Services
                                 Id = dlp.Id,
                                 FirstName = u.FirstName,
                                 LastName = u.LastName,
-                                Email = u.Email
+                                Email = u.Email,
+                                PhotoUrl = u.PhotoUrl
                             };
 
             var teamTwo = subquery2.ToArray();
@@ -175,6 +182,7 @@ namespace FoosballApi.Services
                 MatchStarted = (bool)query.MatchStarted,
                 MatchEnded = (bool)query.MatchEnded,
                 MatchPaused = (bool)query.MatchPaused,
+                TotalPlayingTime = playingTime != null ? ToReadableAgeString(playingTime.Value) : null,
                 TeamOne = teamOne,
                 TeamTwo = teamTwo
             };
@@ -245,6 +253,11 @@ namespace FoosballApi.Services
         public void UpdateDoubleLeagueMatch(DoubleLeagueMatchModel match)
         {
             // Do nothing
+        }
+
+        public string ToReadableAgeString(TimeSpan span)
+        {
+            return string.Format("{0:hh\\:mm\\:ss}", span);
         }
 
         private int GetTotalGoalsScored(int teamId)

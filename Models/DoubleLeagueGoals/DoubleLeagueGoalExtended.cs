@@ -2,7 +2,7 @@ using System;
 
 namespace FoosballApi.Models.DoubleLeagueGoals
 {
-    public class DoubleLeagueGoalDapper
+    public class DoubleLeagueGoalExtended
     {
         public int Id { get; set; }
         public DateTime TimeOfGoal { get; set; }
@@ -16,5 +16,6 @@ namespace FoosballApi.Models.DoubleLeagueGoals
         public string ScorerFirstName { get; set; }
         public string ScorerLastName { get; set; }
         public string ScorerPhotoUrl { get; set; }
+        public string GoalTimeStopWatch { get; set; }
     }
 }

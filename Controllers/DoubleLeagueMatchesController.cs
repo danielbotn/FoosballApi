@@ -25,6 +25,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("")]
+        [ProducesResponseType(typeof(List<AllMatchesModelReadDto>), 200)]
         public ActionResult<IEnumerable<AllMatchesModelReadDto>> GetAllDoubleLeaguesMatchesByLeagueId(int leagueId)
         {
             try
@@ -47,7 +48,8 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpGet("matchId")]
+        [HttpGet("{matchId}")]
+        [ProducesResponseType(typeof(AllMatchesModelReadDto), 200)]
         public ActionResult<AllMatchesModelReadDto> GetDoubleLeagueMatchById(int matchId)
         {
             try
@@ -71,6 +73,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch("")]
+        [ProducesResponseType(typeof(NoContentResult), 204)]
         public ActionResult UpdateDoubleLeagueMatch(int matchId, JsonPatchDocument<DoubleLeagueMatchUpdateDto> patchDoc)
         {
             try
@@ -108,6 +111,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPut("reset-match")]
+        [ProducesResponseType(typeof(NoContentResult), 204)]
         public ActionResult ResetDoubleLeagueMatchById(int matchId)
         {
             try

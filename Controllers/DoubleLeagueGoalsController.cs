@@ -25,7 +25,8 @@ namespace FoosballApi.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("")]
+        [HttpGet("match/{matchId}")]
+        [ProducesResponseType(typeof(List<DoubleLeagueGoalReadDto>), 200)]
         public async Task<ActionResult> GetAllDoubleLeaguesMatchesByLeagueId(int matchId)
         {
             try

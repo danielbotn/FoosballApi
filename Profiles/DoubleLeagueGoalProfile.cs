@@ -12,6 +12,8 @@ namespace FoosballApi.Profiles
             CreateMap<DoubleLeagueGoalDapper, DoubleLeagueGoalReadDto>();
             CreateMap<DoubleLeagueGoalReadDto, DoubleLeagueGoalModel>();
             CreateMap<DoubleLeagueGoalModel, DoubleLeagueGoalReadDto>();
+            CreateMap<DoubleLeagueGoalReadDto, DoubleLeagueGoalExtended>();
+            CreateMap<DoubleLeagueGoalExtended, DoubleLeagueGoalReadDto>();
         }
     }
 }

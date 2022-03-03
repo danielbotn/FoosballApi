@@ -11,7 +11,7 @@ namespace FoosballApi.Services
 {
     public interface IDoubleLeagueGoalService
     {
-        Task<IEnumerable<DoubleLeagueGoalDapper>> GetAllDoubleLeagueGoalsByMatchId(int matchId);
+        Task<IEnumerable<DoubleLeagueGoalExtended>> GetAllDoubleLeagueGoalsByMatchId(int matchId);
         Task<DoubleLeagueGoalDapper> GetDoubleLeagueGoalById(int goalId);
         bool CheckPermissionByGoalId(int goalId, int userId);
         DoubleLeagueGoalModel CreateDoubleLeagueGoal(DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto);
@@ -103,7 +103,7 @@ namespace FoosballApi.Services
             _context.SaveChanges();
         }
 
-        public async Task<IEnumerable<DoubleLeagueGoalDapper>> GetAllDoubleLeagueGoalsByMatchId(int matchId)
+        public async Task<IEnumerable<DoubleLeagueGoalExtended>> GetAllDoubleLeagueGoalsByMatchId(int matchId)
         {
             CancellationToken ct = new();
 
@@ -112,14 +112,36 @@ namespace FoosballApi.Services
             var dapperReadData = await _context.QueryAsync<DoubleLeagueGoalDapper>(ct, $@"
                 select distinct dlg.id, dlg.time_of_goal, dlg.scored_by_team_id, dlg.opponent_team_id, dlg.scorer_team_score, 
                 dlg.opponent_team_score, dlg.winner_goal, dlg.user_scorer_id, dlp.double_league_team_id, u.first_name as scorer_first_name, 
-                u.last_name as scorer_last_name
+                u.last_name as scorer_last_name,
+                u.photo_url as scorer_photo_url
                 from double_league_goals dlg
                 join double_league_players dlp on dlp.double_league_team_id = dlg.scored_by_team_id
                 join users u on u.id = dlg.user_scorer_id
                 where dlg.match_id = {matchId}
                 order by dlg.id");
+            
+            List<DoubleLeagueGoalExtended> result = new();
+            
+            foreach (var item in dapperReadData)
+            {
+                DoubleLeagueGoalExtended dlge = new DoubleLeagueGoalExtended{
+                    Id = item.Id,
+                    TimeOfGoal = item.TimeOfGoal,
+                    ScoredByTeamId = item.ScoredByTeamId,
+                    OpponentTeamId = item.OpponentTeamId,
+                    ScorerTeamScore = item.ScorerTeamScore,
+                    OpponentTeamScore = item.OpponentTeamScore,
+                    WinnerGoal = item.WinnerGoal,
+                    UserScorerId = item.UserScorerId,
+                    ScorerFirstName = item.ScorerFirstName,
+                    ScorerLastName = item.ScorerLastName,
+                    ScorerPhotoUrl = item.ScorerPhotoUrl,
+                    GoalTimeStopWatch = CalculateGoalTimeStopWatch(item.TimeOfGoal, matchId),
+                };
+                result.Add(dlge);
+            }
 
-            return dapperReadData;
+            return result;
         }
 
         public async Task<DoubleLeagueGoalDapper> GetDoubleLeagueGoalById(int goalId)
@@ -139,6 +161,25 @@ namespace FoosballApi.Services
                 order by dlg.id");
 
             return dapperReadData.FirstOrDefault();
+        }
+
+        private string CalculateGoalTimeStopWatch(DateTime timeOfGoal, int matchId)
+        {
+            var match = _context.DoubleLeagueMatches.Where(m => m.Id == matchId).FirstOrDefault();
+            DateTime? matchStarted = match.StartTime;
+            if (matchStarted == null)
+            {
+                matchStarted = DateTime.Now;
+            }
+            TimeSpan timeSpan = matchStarted.Value - timeOfGoal;
+            string result = timeSpan.ToString(@"hh\:mm\:ss");
+            string sub = result.Substring(0, 2);
+            // remove first two characters if they are "00:"
+            if (sub == "00")
+            {
+                result = result.Substring(3);
+            }
+            return result;
         }
     }
 }

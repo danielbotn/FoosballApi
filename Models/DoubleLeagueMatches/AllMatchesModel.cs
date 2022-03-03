@@ -15,6 +15,7 @@ namespace FoosballApi.Models.DoubleLeagueMatches
         public bool MatchStarted { get; set; }
         public bool MatchEnded { get; set; }
         public bool MatchPaused { get; set; }
+        public string TotalPlayingTime { get; set; }
         public TeamModel[] TeamOne { get; set; }
         public TeamModel[] TeamTwo { get; set; }
     }
