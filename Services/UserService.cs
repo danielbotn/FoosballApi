@@ -13,7 +13,7 @@ namespace FoosballApi.Services
     public interface IUserService
     {
         bool SaveChanges();
-        IEnumerable<User> GetAllUsers();
+        IEnumerable<User> GetAllUsers(int organisationId);
         User GetUserByEmail(string email);
         User GetUserById(int id);
         void UpdateUser(User user);
@@ -41,9 +41,9 @@ namespace FoosballApi.Services
             _context.Users.Remove(user);
         }
 
-        public IEnumerable<User> GetAllUsers()
+        public IEnumerable<User> GetAllUsers(int organisationId)
         {
-            return _context.Users.ToList();
+            return _context.Users.Where(x => x.CurrentOrganisationId == organisationId).ToList();
         }
 
         public User GetUserByEmail(string email)

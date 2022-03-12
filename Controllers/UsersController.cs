@@ -31,7 +31,8 @@ namespace FoosballApi.Controllers
         {
             try
             {
-                var allUsers = _userService.GetAllUsers();
+                string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+                var allUsers = _userService.GetAllUsers(int.Parse(currentOrganisationId));
 
                 return Ok(_mapper.Map<IEnumerable<UserReadDto>>(allUsers));
             }
