@@ -41,5 +41,8 @@ namespace FoosballApi.Models.Cms
         public string rematch { get; set; }
         public string twoPlayers { get; set; }
         public string fourPlayers { get; set; }
+        public string choosePlayers { get; set; }
+        public string match { get; set; }
+        public string startGame { get; set; }
     }
 }
