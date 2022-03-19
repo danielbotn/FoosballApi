@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Matches;
+using FoosballApi.Models.Matches;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -77,9 +78,9 @@ namespace FoosballApi.Controllers
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
-                var newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), int.Parse(currentOrganisationId), freehandMatchCreateDto);
+                FreehandMatchModel newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), int.Parse(currentOrganisationId), freehandMatchCreateDto);
 
-                var freehandMatchesReadDto = _mapper.Map<FreehandMatchesReadDto>(newMatch);
+                var freehandMatchesReadDto = _mapper.Map<FreehandMatchCreateResultDto>(newMatch);
 
                 return CreatedAtRoute("GetFreehandMatchById", new { matchId = newMatch.Id }, freehandMatchesReadDto);
             }
