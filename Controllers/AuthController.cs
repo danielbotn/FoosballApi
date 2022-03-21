@@ -4,6 +4,7 @@ using FoosballApi.Dtos.Users;
 using FoosballApi.Models;
 using FoosballApi.Models.Accounts;
 using FoosballApi.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -26,6 +27,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(typeof(UserLogin), StatusCodes.Status200OK)]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
             try
@@ -37,14 +39,16 @@ namespace FoosballApi.Controllers
 
                 string tokenString = _authService.CreateToken(user);
 
-                return Ok(new
+                UserLogin userLogin = new UserLogin
                 {
                     Id = user.Id,
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Token = tokenString
-                });
+                };
+
+                return Ok(userLogin);
             }
             catch (Exception e)
             {
@@ -53,6 +57,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("register")]
+        [ProducesResponseType(typeof(UserReadDto), StatusCodes.Status201Created)]
         public ActionResult<UserReadDto> CreateUser(UserCreateDto userCreateDto)
         {
             try
@@ -80,12 +85,17 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("verify-email")]
+        [ProducesResponseType(typeof(UserVerify), StatusCodes.Status200OK)]
         public IActionResult VerifyEmail(VerifyEmailRequest model)
         {
             try
             {
                 _authService.VerifyEmail(model.Token);
-                return Ok(new { message = "Verification successful, you can now login" });
+                UserVerify userVerify = new UserVerify
+                {
+                    Message = "Verification successful, you can now login"
+                };
+                return Ok(userVerify);
             }
             catch (Exception e)
             {
@@ -94,6 +104,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("forgot-password")]
+        [ProducesResponseType(typeof(UserForgotPassword), StatusCodes.Status200OK)]
         public IActionResult ForgotPassword(ForgotPasswordRequest model)
         {
             try
@@ -101,7 +112,11 @@ namespace FoosballApi.Controllers
                 var verification = _authService.ForgotPassword(model, Request.Headers["origin"]);
                 var user = _userService.GetUserByEmail(model.Email);
                 _emailService.SendPasswordResetEmail(verification, user, Request.Headers["origin"]);
-                return Ok(new { message = "Please check your email for password reset instructions" });
+                UserForgotPassword userForgotPassword = new UserForgotPassword
+                {
+                    Message = "Password reset successful, you can now login"
+                };
+                return Ok(userForgotPassword);
             }
             catch (Exception e)
             {
@@ -110,12 +125,17 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("reset-password")]
+        [ProducesResponseType(typeof(UserForgotPassword), StatusCodes.Status200OK)]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
             try
             {
                 _authService.ResetPassword(model);
-                return Ok(new { message = "Password reset successful, you can now login" });
+                UserForgotPassword userResetPassword = new UserForgotPassword
+                {
+                    Message = "Password reset successful, you can now login"
+                };
+                return Ok(userResetPassword);
             }
             catch (Exception e)
             {
