@@ -5,6 +5,7 @@ using AutoMapper;
 using FoosballApi.Dtos.DoubleLeagueGoals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -75,6 +76,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("")]
+        [ProducesResponseType(typeof(DoubleLeagueGoalReadDto), StatusCodes.Status201Created)]
         public ActionResult CreateDoubleLeagueGoal([FromBody] DoubleLeagueGoalCreateDto doubleLeagueGoalCreateDto)
         {
             try
@@ -100,6 +102,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{goalId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteDoubleLeagueGoal(int goalId)
         {
             try

@@ -5,6 +5,7 @@ using FoosballApi.Dtos.Matches;
 using FoosballApi.Models.Matches;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("")]
+        [ProducesResponseType(typeof(List<FreehandMatchesReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<FreehandMatchesReadDto>> GetAllFreehandMatchesByUser()
         {
             try
@@ -46,6 +48,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{matchId}", Name = "GetFreehandMatchById")]
+        [ProducesResponseType(typeof(FreehandMatchesReadDto), StatusCodes.Status200OK)]
         public ActionResult<FreehandMatchesReadDto> GetFreehandMatchById()
         {
             try
@@ -72,6 +75,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost()]
+        [ProducesResponseType(typeof(FreehandMatchCreateResultDto), StatusCodes.Status201Created)]
         public ActionResult CreateFreehandMatch([FromBody] FreehandMatchCreateDto freehandMatchCreateDto)
         {
             try
@@ -91,6 +95,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch()]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult UpdateFreehandMatch(int matchId, JsonPatchDocument<FreehandMatchUpdateDto> patchDoc)
         {
             try
@@ -126,6 +131,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{matchId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteFreehandMatchById(int matchId)
         {
             try

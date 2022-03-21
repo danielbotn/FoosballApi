@@ -6,6 +6,7 @@ using FoosballApi.Helpers;
 using FoosballApi.Models.Organisations;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -27,6 +28,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<OrganisationReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<OrganisationReadDto>> GetAllOrganisations()
         {
             try
@@ -42,6 +44,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(OrganisationReadDto), StatusCodes.Status201Created)]
         public ActionResult CreateOrganisation([FromBody] OrganisationModelCreate organisationModel)
         {
             try
@@ -61,6 +64,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{id}", Name = "getOrganisationById")]
+        [ProducesResponseType(typeof(OrganisationReadDto), StatusCodes.Status200OK)]
         public ActionResult<OrganisationReadDto> GetOrganisationById(int id)
         {
             try
@@ -79,6 +83,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult PartialOrganisationUpdate(int id, JsonPatchDocument<OrganisationUpdateDto> patchDoc)
         {
             try
@@ -114,6 +119,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("user")]
+        [ProducesResponseType(typeof(OrganisationReadDto), StatusCodes.Status200OK)]
         public ActionResult<OrganisationReadDto> GetOrganisationsByUser(int id)
         {
             try
@@ -129,6 +135,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteOrganisation(int id)
         {
             try

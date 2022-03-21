@@ -4,6 +4,7 @@ using AutoMapper;
 using FoosballApi.Dtos.DoubleGoals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("goals/{matchId}")]
+        [ProducesResponseType(typeof(List<FreehandDoubleGoalsExtendedDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<FreehandDoubleGoalsExtendedDto>> GetFreehandDoubleGoalsByMatchId()
         {
             try
@@ -52,6 +54,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{goalId}", Name = "GetFreehandDoubleGoalById")]
+        [ProducesResponseType(typeof(FreehandDoubleGoalReadDto), StatusCodes.Status200OK)]
         public ActionResult<FreehandDoubleGoalReadDto> GetFreehandDoubleGoalById(int goalId, int matchId)
         {
             try
@@ -79,6 +82,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("")]
+        [ProducesResponseType(typeof(FreehandDoubleGoalReadDto), StatusCodes.Status201Created)]
         public ActionResult CreateFreehandDoubleGoal([FromBody] FreehandDoubleGoalCreateDto freehandGoalCreateDto)
         {
             try
@@ -104,6 +108,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{goalId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteDoubleFreehandGoal(int goalId, int matchId)
         {
             try
@@ -129,6 +134,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch()]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult UpdateFreehandDoubleGoal(int goalId, int matchId, JsonPatchDocument<FreehandDoubleGoalUpdateDto> patchDoc)
         {
             try

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using FoosballApi.Dtos.DoubleMatches;
+using FoosballApi.Models.Cms;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +26,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("hardcoded-strings")]
+        [ProducesResponseType(typeof(HardcodedStrings), StatusCodes.Status201Created)]
         public async Task<IActionResult> GetHardcodedStrings(string language)
         {
             try 

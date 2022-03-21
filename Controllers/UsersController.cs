@@ -4,6 +4,7 @@ using FoosballApi.Filter;
 using FoosballApi.Helpers;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -27,6 +28,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<UserReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
             try
@@ -43,6 +45,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{id}", Name = "GetUserById")]
+        [ProducesResponseType(typeof(UserReadDto), StatusCodes.Status200OK)]
         public ActionResult<UserReadDto> GetUserById(int id)
         {
             try
@@ -61,6 +64,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult PartialUserUpdate(int id, JsonPatchDocument<UserUpdateDto> patchDoc)
         {
             try
@@ -96,6 +100,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteUser(int id)
         {
             try
@@ -123,7 +128,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("stats")]
-        [ProducesResponseType(typeof(UserStatsReadDto), 200)]
+        [ProducesResponseType(typeof(UserStatsReadDto), StatusCodes.Status200OK)]
         public ActionResult<UserStatsReadDto> GetUserMatchesStats()
         {
             try
@@ -141,7 +146,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("stats/last-ten-matches")]
-        [ProducesResponseType(typeof(IEnumerable<MatchReadDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<MatchReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<MatchReadDto>> GetLastTenMatches()
         {
             try
@@ -159,7 +164,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("stats/history")]
-        [ProducesResponseType(typeof(IEnumerable<MatchReadDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<MatchReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<MatchReadDto>> History([FromQuery] PaginationFilter filter)
         {
             try

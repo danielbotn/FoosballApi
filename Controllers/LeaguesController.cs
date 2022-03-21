@@ -7,6 +7,7 @@ using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Models.Leagues;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +36,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("organisation")]
+        [ProducesResponseType(typeof(List<LeagueReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<LeagueReadDto>> GetLeaguesByOrganisation(int organisationId)
         {
             try
@@ -59,6 +61,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(LeagueReadDto), StatusCodes.Status200OK)]
         public ActionResult<LeagueReadDto> GetLeagueById()
         {
             try
@@ -87,6 +90,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult PartialLeagueUpdate(int id, JsonPatchDocument<LeagueUpdateDto> patchDoc)
         {
             try
@@ -122,6 +126,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("league-players")]
+        [ProducesResponseType(typeof(List<LeaguePlayersReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<LeaguePlayersReadDto>> GetLeaguePlayers(int leagueId)
         {
             try
@@ -170,6 +175,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{leagueId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteLeagueById(int leagueId)
         {
             try
@@ -197,6 +203,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("single-league/standings")]
+        [ProducesResponseType(typeof(List<SingleLeagueStandingsReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<SingleLeagueStandingsReadDto>> GetSingleLeagueStandings(int leagueId)
         {
             try
@@ -218,6 +225,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("double-league/standings")]
+        [ProducesResponseType(typeof(List<SingleLeagueStandingsReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<DoubleLeagueStandingsReadDto>> GetDoubleLeagueStandings(int leagueId)
         {
             try

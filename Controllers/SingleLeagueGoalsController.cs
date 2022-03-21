@@ -5,6 +5,7 @@ using FoosballApi.Dtos.SingleLeagueGoals;
 using FoosballApi.Models.SingleLeagueGoals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +28,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet()]
+        [ProducesResponseType(typeof(List<SingleLeagueGoalReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<SingleLeagueGoalReadDto>> GetAllSingleLeagueGoalsByMatchId(int leagueId, int matchId)
         {
             try
@@ -49,6 +51,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{goalId}", Name = "getSingleLeagueById")]
+        [ProducesResponseType(typeof(SingleLeagueGoalReadDto), StatusCodes.Status200OK)]
         public ActionResult<SingleLeagueGoalReadDto> GetSingleLeagueGoalById(int goalId)
         {
             try
@@ -72,6 +75,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{goalId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteSingleLeagueGoalById(int goalId)
         {
             try
@@ -98,6 +102,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("")]
+        [ProducesResponseType(typeof(SingleLeagueGoalReadDto), StatusCodes.Status201Created)]
         public ActionResult CreateSingleLeagueGoal([FromBody] SingleLeagueCreateModel singleLeagueCreateModel)
         {
             try

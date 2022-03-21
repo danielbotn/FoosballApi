@@ -4,6 +4,7 @@ using AutoMapper;
 using FoosballApi.Dtos.DoubleLeagueTeams;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -23,6 +24,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{leagueId}")]
+        [ProducesResponseType(typeof(List<DoubleLeagueTeamReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<DoubleLeagueTeamReadDto>> GetDoubleLeagueTeamsByLeagueId(int leagueId)
         {
             try
@@ -48,6 +50,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("team/{id}", Name = "GetDoubleLeagueTeamById")]
+        [ProducesResponseType(typeof(DoubleLeagueTeamReadDto), StatusCodes.Status200OK)]
         public ActionResult<DoubleLeagueTeamReadDto> GetDoubleLeagueTeamById(int id)
         {
             try
@@ -71,6 +74,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost()]
+        [ProducesResponseType(typeof(DoubleLeagueTeamReadDto), StatusCodes.Status201Created)]
         public ActionResult CreateDoubleLeagueTeam(int leagueId, string name)
         {
             try
@@ -96,6 +100,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{leagueId}/{teamId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteDoubleLeagueTeam(int leagueId, int teamId)
         {
             try

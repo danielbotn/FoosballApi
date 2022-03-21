@@ -5,6 +5,7 @@ using AutoMapper;
 using FoosballApi.Dtos.DoubleLeaguePlayers;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoosballApi.Controllers
@@ -26,6 +27,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{leagueId}")]
+        [ProducesResponseType(typeof(List<DoubleLeaguePlayerReadDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetDoubleLeaguePlayersByLeagueId(int leagueId)
         {
             try
@@ -51,6 +53,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("player/{id}", Name = "GetDoubleLeaguePlayerById")]
+        [ProducesResponseType(typeof(DoubleLeaguePlayerReadDto), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetDoubleLeaguePlayerById(int id)
         {
             try

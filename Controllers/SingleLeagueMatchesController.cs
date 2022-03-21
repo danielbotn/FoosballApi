@@ -7,6 +7,7 @@ using FoosballApi.Dtos.SingleLeagueMatches;
 using FoosballApi.Models.Matches;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +28,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet()]
-        [ProducesResponseType(typeof(IEnumerable<SingleLeagueMatchReadDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<SingleLeagueMatchReadDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetAllSingleLeaguesMatchesByOrganisationId(int leagueId)
         {
             try
@@ -51,6 +52,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{matchId}", Name = "GetSingleLeagueMatchById")]
+        [ProducesResponseType(typeof(IEnumerable<SingleLeagueMatchReadDto>), StatusCodes.Status200OK)]
         public ActionResult<SingleLeagueMatchReadDto> GetSingleLeagueMatchById(int matchId)
         {
             try
@@ -76,6 +78,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch("")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult UpdateSingleLeagueMatch(int matchId, JsonPatchDocument<SingleLeagueMatchUpdateDto> patchDoc)
         {
             try
@@ -112,6 +115,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPut("reset-match")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> ResetSingleLeagueMatchById(int matchId)
         {
             try
