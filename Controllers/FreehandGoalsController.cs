@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using AutoMapper;
 using FoosballApi.Dtos.Goals;
+using FoosballApi.Models.Goals;
 using FoosballApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +28,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("goals/{matchId}")]
+        [ProducesResponseType(typeof(List<FreehandGoalReadDto>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<FreehandGoalReadDto>> GetFreehandGoalsByMatchId()
         {
             try
@@ -51,6 +54,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpGet("{goalId}", Name = "GetFreehandGoalById")]
+        [ProducesResponseType(typeof(FreehandGoalReadDto), StatusCodes.Status200OK)]
         public ActionResult<FreehandGoalReadDto> GetFreehandGoalById(int matchId)
         {
             try
@@ -82,6 +86,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("")]
+        [ProducesResponseType(typeof(FreehandGoalReadDto), StatusCodes.Status201Created)]
         public ActionResult CreateFreehandGoal([FromBody] FreehandGoalCreateDto freehandGoalCreateDto)
         {
             try
@@ -107,6 +112,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpDelete("{goalId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteFeehandGoal(int goalID, int matchId)
         {
             try
@@ -132,6 +138,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPatch]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult UpdateFreehandGoal(int goalID, int matchID, JsonPatchDocument<FreehandGoalUpdateDto> patchDoc)
         {
             try
