@@ -86,7 +86,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost("")]
-        [ProducesResponseType(typeof(FreehandGoalReadDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(FreehandGoalCreateResultDto), StatusCodes.Status201Created)]
         public ActionResult CreateFreehandGoal([FromBody] FreehandGoalCreateDto freehandGoalCreateDto)
         {
             try
@@ -101,7 +101,7 @@ namespace FoosballApi.Controllers
 
                 var newGoal = _goalService.CreateFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
 
-                var freehandGoalReadDto = _mapper.Map<FreehandGoalReadDto>(newGoal);
+                var freehandGoalReadDto = _mapper.Map<FreehandGoalCreateResultDto>(newGoal);
 
                 return CreatedAtRoute("GetFreehandGoalById", new { goalId = newGoal.Id }, freehandGoalReadDto);
             }
