@@ -82,6 +82,12 @@ namespace FoosballApi.Controllers
             {
                 string userId = User.Identity.Name;
                 string currentOrganisationId = User.FindFirst("CurrentOrganisationId").Value;
+                
+                if (freehandMatchCreateDto.PlayerOneId != int.Parse(userId) && freehandMatchCreateDto.PlayerTwoId != int.Parse(userId))
+                {
+                    return Forbid();
+                }
+
                 FreehandMatchModel newMatch = _matchService.CreateFreehandMatch(int.Parse(userId), int.Parse(currentOrganisationId), freehandMatchCreateDto);
 
                 var freehandMatchesReadDto = _mapper.Map<FreehandMatchCreateResultDto>(newMatch);

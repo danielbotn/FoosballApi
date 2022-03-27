@@ -78,6 +78,14 @@ namespace FoosballApi.Controllers
         {
             string userId = User.Identity.Name;
 
+            if (freehandDoubleMatchCreateDto.PlayerOneTeamA != int.Parse(userId) 
+                && freehandDoubleMatchCreateDto.PlayerOneTeamB != int.Parse(userId)
+                && freehandDoubleMatchCreateDto.PlayerTwoTeamA != int.Parse(userId)
+                && freehandDoubleMatchCreateDto.PlayerTwoTeamB != int.Parse(userId))
+            {
+                return Forbid();
+            }
+
             var newMatch = _doubleMatchService.CreateFreehandDoubleMatch(int.Parse(userId), freehandDoubleMatchCreateDto);
 
             var freehandDoubleMatchReadDto = _mapper.Map<FreehandDoubleMatchReadDto>(newMatch);

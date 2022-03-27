@@ -98,6 +98,9 @@ namespace FoosballApi.Controllers
 
                 if (!access)
                     return Forbid();
+                
+                if (freehandGoalCreateDto.ScoredByUserId != int.Parse(userId) && freehandGoalCreateDto.OponentId != int.Parse(userId))
+                    return Forbid();
 
                 var newGoal = _goalService.CreateFreehandGoal(int.Parse(userId), freehandGoalCreateDto);
 

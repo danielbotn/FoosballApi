@@ -44,5 +44,10 @@ namespace FoosballApi.Models.Cms
         public string choosePlayers { get; set; }
         public string match { get; set; }
         public string startGame { get; set; }
+        public string chooseTeammate { get; set; }
+        public string chooseOpponent { get; set; }
+        public string chooseOpponents  { get; set; }
+        public string matchReport { get; set; }
+        public string game { get; set; }
     }
 }
