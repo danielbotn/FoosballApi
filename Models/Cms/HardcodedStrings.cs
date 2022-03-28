@@ -49,5 +49,8 @@ namespace FoosballApi.Models.Cms
         public string chooseOpponents  { get; set; }
         public string matchReport { get; set; }
         public string game { get; set; }
+        public string resume { get; set; }
+        public string pause { get; set; }
+        public string close { get; set; }
     }
 }
