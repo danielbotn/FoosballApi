@@ -147,7 +147,7 @@ namespace FoosballApi.Services
             var freehandMatches = _context.FreehandMatches
                 .Where(x => x.PlayerOneId == userId || x.PlayerTwoId == userId && x.EndTime != null)
                 .OrderByDescending(x => x.EndTime)
-                // .Take(10)
+                .Take(10)
                 .ToList();
 
             foreach (var item in freehandMatches)
