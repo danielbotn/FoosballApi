@@ -147,7 +147,7 @@ namespace FoosballApi.Services
             var freehandMatches = _context.FreehandMatches
                 .Where(x => x.PlayerOneId == userId || x.PlayerTwoId == userId && x.EndTime != null)
                 .OrderByDescending(x => x.EndTime)
-                .Take(10)
+                // .Take(10)
                 .ToList();
 
             foreach (var item in freehandMatches)
@@ -169,7 +169,7 @@ namespace FoosballApi.Services
                         _context.Users.Where(x => x.Id == item.PlayerOneId).Select(x => x.LastName).FirstOrDefault().ToString(),
                     OpponentTwoFirstName = null,
                     OpponentTwoLastName = null,
-                    UserScore = item.PlayerOneId == userId ? item.PlayerTwoScore : item.PlayerTwoScore,
+                    UserScore = item.PlayerOneId == userId ? item.PlayerOneScore : item.PlayerTwoScore,
                     OpponentUserOrTeamScore = item.PlayerOneId == userId ? item.PlayerTwoScore : item.PlayerOneScore,
                     DateOfGame = (DateTime)item.EndTime
                 };
