@@ -73,7 +73,7 @@ namespace FoosballApi.Controllers
         }
 
         [HttpPost()]
-        [ProducesResponseType(typeof(FreehandDoubleMatchReadDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(FreehandDoubleMatchResponseDto), StatusCodes.Status201Created)]
         public ActionResult CreateDoubleFreehandMatch([FromBody] FreehandDoubleMatchCreateDto freehandDoubleMatchCreateDto)
         {
             string userId = User.Identity.Name;
@@ -88,7 +88,7 @@ namespace FoosballApi.Controllers
 
             var newMatch = _doubleMatchService.CreateFreehandDoubleMatch(int.Parse(userId), freehandDoubleMatchCreateDto);
 
-            var freehandDoubleMatchReadDto = _mapper.Map<FreehandDoubleMatchReadDto>(newMatch);
+            var freehandDoubleMatchReadDto = _mapper.Map<FreehandDoubleMatchResponseDto>(newMatch);
 
             return CreatedAtRoute("GetFreehandDoubleMatchByMatchId", new { matchId = newMatch.Id }, freehandDoubleMatchReadDto);
         }

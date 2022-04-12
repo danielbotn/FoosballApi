@@ -4,6 +4,7 @@ using System.Linq;
 using FoosballApi.Data;
 using FoosballApi.Dtos.DoubleGoals;
 using FoosballApi.Models.Goals;
+using FoosballApi.Models.Matches;
 
 namespace FoosballApi.Services
 {
@@ -64,6 +65,8 @@ namespace FoosballApi.Services
             fhg.WinnerGoal = freehandDoubleGoalCreateDto.WinnerGoal;
             _context.FreehandDoubleGoals.Add(fhg);
             _context.SaveChanges();
+
+            UpdateFreehandDoubleMatchScore(userId, freehandDoubleGoalCreateDto);
 
             return fhg;
         }
@@ -138,6 +141,28 @@ namespace FoosballApi.Services
         public void UpdateFreehanDoubledGoal(FreehandDoubleGoalModel goalItem)
         {
             // Do nothing
+        }
+
+        private void UpdateFreehandDoubleMatchScore(int userId, FreehandDoubleGoalCreateDto freehandGoalCreateDto)
+        {
+            FreehandDoubleMatchModel fmm = _context.FreehandDoubleMatches.FirstOrDefault(f => f.Id == freehandGoalCreateDto.DoubleMatchId);
+            if (fmm.PlayerOneTeamA == freehandGoalCreateDto.ScoredByUserId || fmm.PlayerTwoTeamA == freehandGoalCreateDto.ScoredByUserId)
+            {
+                fmm.TeamAScore = freehandGoalCreateDto.ScorerTeamScore;
+            }
+            else
+            {
+                fmm.TeamBScore = freehandGoalCreateDto.ScorerTeamScore;
+            }
+
+            // Check if match is finished
+            if (freehandGoalCreateDto.WinnerGoal == true)
+            {
+                fmm.EndTime = DateTime.Now;
+                fmm.GameFinished = true;
+            }
+           
+            _context.SaveChanges();
         }
 
         private string CalculateGoalTimeStopWatch(DateTime timeOfGoal, int matchId)

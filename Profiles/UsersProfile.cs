@@ -73,7 +73,10 @@ namespace FoosballApi.Profiles
             CreateMap<FreehandDoubleMatchReadDto, FreehandDoubleMatchModel>();
             CreateMap<FreehandDoubleMatchModel, FreehandDoubleMatchReadDto>();
 
-             CreateMap<FreehandDoubleMatchReadDto, FreehandDoubleMatchModelExtended>();
+            CreateMap<FreehandDoubleMatchResponseDto, FreehandDoubleMatchModel>();
+            CreateMap<FreehandDoubleMatchModel, FreehandDoubleMatchResponseDto>();
+
+            CreateMap<FreehandDoubleMatchReadDto, FreehandDoubleMatchModelExtended>();
             CreateMap<FreehandDoubleMatchModelExtended, FreehandDoubleMatchReadDto>();
 
             CreateMap<FreehandDoubleGoalReadDto, FreehandDoubleGoalModel>();

@@ -66,6 +66,9 @@ namespace FoosballApi.Services
             fdm.PlayerTwoTeamA = freehandDoubleMatchCreateDto.PlayerTwoTeamA;
             fdm.PlayerTwoTeamB = freehandDoubleMatchCreateDto.PlayerTwoTeamB;
             fdm.StartTime = now;
+            fdm.EndTime = null;
+            fdm.TeamAScore = freehandDoubleMatchCreateDto.TeamAScore;
+            fdm.TeamBScore = freehandDoubleMatchCreateDto.TeamBScore;
 
             if (!string.IsNullOrEmpty(freehandDoubleMatchCreateDto.NicknameTeamA))
                 fdm.NicknameTeamA = freehandDoubleMatchCreateDto.NicknameTeamA;
