@@ -52,5 +52,9 @@ namespace FoosballApi.Models.Cms
         public string resume { get; set; }
         public string pause { get; set; }
         public string close { get; set; }
+        public string yes { get; set; }
+        public string no { get; set; }
+        public string cancel { get; set; }
+        public string areYouSureAlert { get; set; }
     }
 }
