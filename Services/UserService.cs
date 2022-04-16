@@ -229,13 +229,13 @@ namespace FoosballApi.Services
 
                 if (item.PlayerOneTeamA == userId || item.PlayerTwoTeamA == userId)
                 {
-                    theUserScore = (int)item.TeamBScore;
-                    theOpponentScore = (int)item.TeamAScore;
+                    theUserScore = (int)item.TeamAScore;
+                    theOpponentScore = (int)item.TeamBScore;
                 }
                 else
                 {
-                    theUserScore = (int)item.TeamAScore;
-                    theOpponentScore = (int)item.TeamBScore;
+                    theUserScore = (int)item.TeamBScore;
+                    theOpponentScore = (int)item.TeamAScore;
                 }
                 int? teamMateId = item.PlayerOneTeamA != userId && item.PlayerTwoTeamA != userId ? item.PlayerOneTeamB != userId ? item.PlayerTwoTeamB : item.PlayerOneTeamB : item.PlayerOneTeamA != userId ? item.PlayerTwoTeamA : item.PlayerOneTeamA;
                 Match match = new Match
@@ -770,26 +770,26 @@ namespace FoosballApi.Services
             foreach (var match in freehandDoubleMatches)
             {
                 Match userLastTenItem = new Match();
-                int opponentId = match.PlayerOneTeamA != userId && match.PlayerTwoTeamA != userId ? match.PlayerOneTeamB : match.PlayerOneTeamA;
-                int? oponentTwoId = match.PlayerOneTeamA != userId && match.PlayerTwoTeamA != userId ? match.PlayerTwoTeamB : match.PlayerTwoTeamA;
+                int opponentId = match.PlayerOneTeamA != userId || match.PlayerTwoTeamA != userId ? match.PlayerOneTeamB : match.PlayerOneTeamA;
+                int? oponentTwoId = match.PlayerOneTeamA != userId || match.PlayerTwoTeamA != userId ? match.PlayerTwoTeamB : match.PlayerTwoTeamA;
 
                 userLastTenItem.TypeOfMatch = ETypeOfMatch.DoubleFreehandMatch;
                 userLastTenItem.TypeOfMatchName = ETypeOfMatch.DoubleFreehandMatch.ToString();
                 userLastTenItem.UserId = userId;
-                userLastTenItem.TeamMateId = userId == match.PlayerOneTeamA ? match.PlayerOneTeamB : userId == match.PlayerOneTeamB ? match.PlayerOneTeamA :
-                                            userId == match.PlayerTwoTeamA ? match.PlayerTwoTeamB : userId == match.PlayerTwoTeamB ? match.PlayerTwoTeamA : null;
-                userLastTenItem.TeamMateFirstName = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.FirstName).FirstOrDefault().ToString() :
-                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.FirstName).FirstOrDefault().ToString() :
-                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.FirstName).FirstOrDefault().ToString() :
-                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.FirstName).FirstOrDefault().ToString() : null;
-                userLastTenItem.TeamMateLastName = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.LastName).FirstOrDefault().ToString() :
-                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.LastName).FirstOrDefault().ToString() :
-                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.LastName).FirstOrDefault().ToString() :
-                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.LastName).FirstOrDefault().ToString() : null;
-                userLastTenItem.TeamMatePhotoUrl = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
-                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
-                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
-                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.PhotoUrl).FirstOrDefault().ToString() : null;
+                userLastTenItem.TeamMateId = userId == match.PlayerOneTeamA ? match.PlayerTwoTeamA : userId == match.PlayerOneTeamB ? match.PlayerTwoTeamB :
+                                            userId == match.PlayerTwoTeamA ? match.PlayerOneTeamA : userId == match.PlayerTwoTeamB ? match.PlayerOneTeamB : null;
+                userLastTenItem.TeamMateFirstName = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.FirstName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.FirstName).FirstOrDefault().ToString() : null;
+                userLastTenItem.TeamMateLastName = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.LastName).FirstOrDefault().ToString() :
+                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.LastName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.LastName).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.LastName).FirstOrDefault().ToString() : null;
+                userLastTenItem.TeamMatePhotoUrl = userId == match.PlayerOneTeamA ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamA).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                    userId == match.PlayerOneTeamB ? _context.Users.Where(x => x.Id == match.PlayerTwoTeamB).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamA ? _context.Users.Where(x => x.Id == match.PlayerOneTeamA).Select(x => x.PhotoUrl).FirstOrDefault().ToString() :
+                    userId == match.PlayerTwoTeamB ? _context.Users.Where(x => x.Id == match.PlayerOneTeamB).Select(x => x.PhotoUrl).FirstOrDefault().ToString() : null;
                 userLastTenItem.MatchId = match.Id;
                 userLastTenItem.OpponentId = opponentId;
                 userLastTenItem.OpponentTwoId = oponentTwoId;
