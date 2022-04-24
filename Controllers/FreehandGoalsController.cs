@@ -114,18 +114,18 @@ namespace FoosballApi.Controllers
             }
         }
 
-        [HttpDelete("{goalId}")]
+        [HttpDelete("{matchId}/{goalId}/")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult DeleteFeehandGoal(int goalID, int matchId)
+        public ActionResult DeleteFeehandGoal(string goalId, string matchId)
         {
             try
             {
                 string userId = User.Identity.Name;
-                var goalItem = _goalService.GetFreehandGoalByIdFromDatabase(goalID);
+                var goalItem = _goalService.GetFreehandGoalByIdFromDatabase(int.Parse(goalId));
                 if (goalItem == null)
                     return NotFound();
 
-                bool hasPermission = _matchService.CheckFreehandMatchPermission(matchId, int.Parse(userId));
+                bool hasPermission = _matchService.CheckFreehandMatchPermission(int.Parse(matchId), int.Parse(userId));
 
                 if (!hasPermission)
                     return Forbid();

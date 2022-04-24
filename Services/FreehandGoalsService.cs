@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using FoosballApi.Data;
 using FoosballApi.Models.Goals;
 using System.Linq;
-using FoosballApi.Dtos.Matches;
 using System;
-using FoosballApi.Models;
 using FoosballApi.Models.Matches;
 using FoosballApi.Dtos.Goals;
 
@@ -52,7 +50,8 @@ namespace FoosballApi.Services
 
             foreach (var item in data)
             {
-                FreehandGoalModelExtended fgme = new FreehandGoalModelExtended{
+                FreehandGoalModelExtended fgme = new FreehandGoalModelExtended
+                {
                     Id = item.Id,
                     TimeOfGoal = item.TimeOfGoal,
                     GoalTimeStopWatch = CalculateGoalTimeStopWatch(item.TimeOfGoal, item.MatchId),
@@ -116,8 +115,9 @@ namespace FoosballApi.Services
         public FreehandGoalModelExtended GetFreehandGoalById(int goalId)
         {
             var data = _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
-            
-            FreehandGoalModelExtended result = new FreehandGoalModelExtended {
+
+            FreehandGoalModelExtended result = new FreehandGoalModelExtended
+            {
                 Id = data.Id,
                 TimeOfGoal = data.TimeOfGoal,
                 MatchId = data.MatchId,
@@ -133,7 +133,7 @@ namespace FoosballApi.Services
                 OponentScore = data.OponentScore,
                 WinnerGoal = data.WinnerGoal
             };
-            
+
             return result;
         }
 
@@ -143,6 +143,7 @@ namespace FoosballApi.Services
             {
                 throw new ArgumentNullException(nameof(freehandGoalModel));
             }
+            SubtractFreehandMatchScore(freehandGoalModel);
             _context.FreehandGoals.Remove(freehandGoalModel);
             _context.SaveChanges();
         }
@@ -178,6 +179,27 @@ namespace FoosballApi.Services
             return false;
         }
 
+        public FreehandGoalModel GetFreehandGoalByIdFromDatabase(int goalId)
+        {
+            return _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
+        }
+
+        private void SubtractFreehandMatchScore(FreehandGoalModel freehandGoalModel)
+        {
+            var match = _context.FreehandMatches.Where(m => m.Id == freehandGoalModel.MatchId).FirstOrDefault();
+            if (freehandGoalModel.ScoredByUserId == match.PlayerOneId)
+            {
+                if (match.PlayerOneScore > 0)
+                    match.PlayerOneScore -= 1;
+            }
+            else
+            {
+                if (match.PlayerTwoScore > 0)
+                    match.PlayerTwoScore -= 1;
+            }
+            _context.SaveChanges();
+        }
+
         private void UpdateFreehandMatchScore(int userId, FreehandGoalCreateDto freehandGoalCreateDto)
         {
             FreehandMatchModel fmm = _context.FreehandMatches.FirstOrDefault(f => f.Id == freehandGoalCreateDto.MatchId);
@@ -196,13 +218,8 @@ namespace FoosballApi.Services
                 fmm.EndTime = DateTime.Now;
                 fmm.GameFinished = true;
             }
-           
-            _context.SaveChanges();
-        }
 
-        public FreehandGoalModel GetFreehandGoalByIdFromDatabase(int goalId)
-        {
-            return _context.FreehandGoals.FirstOrDefault(x => x.Id == goalId);
+            _context.SaveChanges();
         }
     }
 }
