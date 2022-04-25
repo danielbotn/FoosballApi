@@ -77,6 +77,7 @@ namespace FoosballApi.Services
             {
                 throw new ArgumentNullException(nameof(freehandDoubleGoalModel));
             }
+            SubtractDoubleFreehandMatchScore(freehandDoubleGoalModel);
             _context.FreehandDoubleGoals.Remove(freehandDoubleGoalModel);
             _context.SaveChanges();
         }
@@ -105,10 +106,11 @@ namespace FoosballApi.Services
                              Email = u.Email,
                              PhotoUrl = u.PhotoUrl
                          }).Distinct().OrderBy(f => f.Id).ToList();
-                        
+
             foreach (var item in query)
             {
-                FreehandDoubleGoalsExtendedDto fdg = new FreehandDoubleGoalsExtendedDto{
+                FreehandDoubleGoalsExtendedDto fdg = new FreehandDoubleGoalsExtendedDto
+                {
                     Id = item.Id,
                     ScoredByUserId = item.ScoredByUserId,
                     DoubleMatchId = item.DoubleMatchId,
@@ -143,6 +145,23 @@ namespace FoosballApi.Services
             // Do nothing
         }
 
+        private void SubtractDoubleFreehandMatchScore(FreehandDoubleGoalModel freehandDoubleGoalModel)
+        {
+            var match = _context.FreehandDoubleMatches.FirstOrDefault(x => x.Id == freehandDoubleGoalModel.DoubleMatchId);
+
+            if (freehandDoubleGoalModel.ScoredByUserId == match.PlayerOneTeamA || freehandDoubleGoalModel.ScoredByUserId == match.PlayerTwoTeamA)
+            {
+                if (match.TeamAScore > 0)
+                    match.TeamAScore -= 1;
+            }
+            else
+            {
+                if (match.TeamBScore > 0)
+                    match.TeamBScore -= 1;
+            }
+            _context.SaveChanges();
+        }
+
         private void UpdateFreehandDoubleMatchScore(int userId, FreehandDoubleGoalCreateDto freehandGoalCreateDto)
         {
             FreehandDoubleMatchModel fmm = _context.FreehandDoubleMatches.FirstOrDefault(f => f.Id == freehandGoalCreateDto.DoubleMatchId);
@@ -161,7 +180,7 @@ namespace FoosballApi.Services
                 fmm.EndTime = DateTime.Now;
                 fmm.GameFinished = true;
             }
-           
+
             _context.SaveChanges();
         }
 
