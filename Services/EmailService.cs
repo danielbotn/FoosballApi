@@ -68,9 +68,8 @@ namespace FoosballApi
             string message;
             if (!string.IsNullOrEmpty(origin))
             {
-                var verifyUrl = $"{origin}/auth/verify-email?token={vModel.VerificationToken}";
-                message = $@"<p>Please click the below link to verify your email address:</p>
-                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>";
+                message = $@"<p>Your conformation code:</p>
+                             <p>{vModel.VerificationToken}</p>";
             }
             else
             {

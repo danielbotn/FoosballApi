@@ -6,5 +6,7 @@ namespace FoosballApi.Models.Accounts
     {
         [Required]
         public string Token { get; set; }
+        [Required]
+        public int UserId { get; set; }
     }
 }

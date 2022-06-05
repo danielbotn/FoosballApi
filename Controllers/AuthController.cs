@@ -72,7 +72,7 @@ namespace FoosballApi.Controllers
                 var tmpUser = _userService.GetUserByEmail(userCreateDto.Email);
                 var vModel = _authService.AddVerificationInfo(tmpUser, Request.Headers["origin"]);
 
-                var userReadDto = _mapper.Map<UserReadDto>(userModel);
+                var userReadDto = _mapper.Map<UserReadDto>(tmpUser);
 
                 _emailService.SendVerificationEmail(vModel, tmpUser, Request.Headers["origin"]);
 
@@ -90,12 +90,21 @@ namespace FoosballApi.Controllers
         {
             try
             {
-                _authService.VerifyEmail(model.Token);
-                UserVerify userVerify = new UserVerify
+                bool isCodeValid = _authService.VerifyCode(model.Token, model.UserId);
+
+                if (isCodeValid)
                 {
-                    Message = "Verification successful, you can now login"
-                };
-                return Ok(userVerify);
+                    UserVerify userVerify = new UserVerify
+                    {
+                        Message = "Verification successful, you can now login"
+                    };
+                    return Ok(userVerify);
+                }
+                else
+                {
+                    // return statusCode not allowed with a message
+                    return StatusCode(StatusCodes.Status403Forbidden, "Verification code is invalid");
+                }
             }
             catch (Exception e)
             {

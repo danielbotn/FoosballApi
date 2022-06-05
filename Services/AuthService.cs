@@ -16,7 +16,8 @@ namespace FoosballApi.Services
     {
         User Authenticate(string username, string password);
         void CreateUser(User user);
-        void VerifyEmail(string token);
+        bool VerifyEmail(string token);
+        bool VerifyCode(string token, int userId);
         VerificationModel ForgotPassword(ForgotPasswordRequest model, string origin);
         bool SaveChanges();
         VerificationModel AddVerificationInfo(User user, string origin);
@@ -101,8 +102,24 @@ namespace FoosballApi.Services
             return (_context.SaveChanges() >= 0);
         }
 
-        public void VerifyEmail(string token)
+        public bool VerifyCode(string token, int userId)
         {
+            var vModel = _context.Verifications.SingleOrDefault(x => x.UserId == userId && x.VerificationToken == token);
+            if (vModel == null) return false;
+            if (vModel.VerificationToken == token)
+            {
+                vModel.HasVerified = true;
+                vModel.VerificationToken = null;
+                _context.Verifications.Update(vModel);
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool VerifyEmail(string token)
+        {
+            bool hasVerified = false;
             var account = _context.Verifications.SingleOrDefault(x => x.VerificationToken == token);
 
             if (account == null)
@@ -115,6 +132,16 @@ namespace FoosballApi.Services
 
             _context.Verifications.Update(account);
             _context.SaveChanges();
+
+            if (account != null) 
+            {
+                hasVerified = true;
+            }
+            else
+            {
+                hasVerified = false;
+            }
+            return hasVerified;
         }
 
         public VerificationModel AddVerificationInfo(User user, string origin)
@@ -135,7 +162,9 @@ namespace FoosballApi.Services
             var randomBytes = new byte[40];
             rngCryptoServiceProvider.GetBytes(randomBytes);
             // convert random bytes to hex string
-            return BitConverter.ToString(randomBytes).Replace("-", "");
+            string token = BitConverter.ToString(randomBytes).Replace("-", "");
+            string firstFiveOfToken = token.Substring(0, 5);
+            return firstFiveOfToken;
         }
 
         public void ResetPassword(ResetPasswordRequest model)
